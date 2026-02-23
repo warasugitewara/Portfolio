@@ -98,7 +98,8 @@ MIT
 
 ---
 
-## 著者
+## 著者[貢献順]
 - warasugi
 - claude haiku 4.5
-- GPT-5.2-Codex
+- GPT-5.3-Codex
+- claude Opus 4.6
