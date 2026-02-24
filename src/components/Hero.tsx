@@ -46,6 +46,34 @@ export const Hero = ({ i18n }: HeroProps) => {
           {profile && (
             <p className="hero-location">📍 {profile.location}</p>
           )}
+          <div style={{ marginTop: '2rem' }}>
+            <a 
+              href="/infrastructure" 
+              style={{
+                display: 'inline-block',
+                padding: '0.8rem 1.5rem',
+                backgroundColor: '#00ff88',
+                color: '#0a0e27',
+                textDecoration: 'none',
+                borderRadius: '4px',
+                fontWeight: 'bold',
+                fontSize: '1rem',
+                fontFamily: 'monospace',
+                cursor: 'pointer',
+                transition: 'all 0.3s',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.opacity = '0.8';
+                e.currentTarget.style.transform = 'scale(1.05)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.opacity = '1';
+                e.currentTarget.style.transform = 'scale(1)';
+              }}
+            >
+              🖧 {i18n.nav.infrastructure}
+            </a>
+          </div>
         </div>
       </div>
     </section>
