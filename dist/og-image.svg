@@ -1,0 +1,120 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630">
+  <!-- Background -->
+  <defs>
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0a0e27;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#1a1f3a;stop-opacity:1" />
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  
+  <rect width="1200" height="630" fill="url(#bgGradient)"/>
+  
+  <!-- Grid pattern overlay -->
+  <defs>
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#00ff88" stroke-width="0.5" opacity="0.1"/>
+    </pattern>
+  </defs>
+  <rect width="1200" height="630" fill="url(#grid)"/>
+  
+  <!-- Title: warasugi -->
+  <text x="600" y="140" font-family="monospace" font-size="72" font-weight="bold" fill="#00ff88" text-anchor="middle" filter="url(#glow)">
+    warasugi
+  </text>
+  
+  <!-- Subtitle -->
+  <text x="600" y="200" font-family="monospace" font-size="28" fill="#ffffff" text-anchor="middle" opacity="0.8">
+    CLI • Infrastructure • Design
+  </text>
+  
+  <!-- Icon Row: 3 columns with icons + labels -->
+  
+  <!-- Column 1: Code/Development -->
+  <g>
+    <!-- Background box -->
+    <rect x="150" y="280" width="240" height="200" fill="#00ff88" opacity="0.1" rx="8"/>
+    
+    <!-- Icon: Code bracket -->
+    <g transform="translate(270, 320)">
+      <path d="M -20 -15 L -30 0 L -20 15 M 20 -15 L 30 0 L 20 15" stroke="#00ff88" stroke-width="3" fill="none" stroke-linecap="round"/>
+      <circle cx="0" cy="0" r="35" fill="none" stroke="#00ff88" stroke-width="1.5" opacity="0.3"/>
+    </g>
+    
+    <!-- Label -->
+    <text x="270" y="420" font-family="monospace" font-size="18" fill="#00ff88" text-anchor="middle" font-weight="bold">
+      Development
+    </text>
+    <text x="270" y="450" font-family="monospace" font-size="14" fill="#cccccc" text-anchor="middle">
+      TypeScript • Rust
+    </text>
+    <text x="270" y="468" font-family="monospace" font-size="14" fill="#cccccc" text-anchor="middle">
+      React • Vite
+    </text>
+  </g>
+  
+  <!-- Column 2: Infrastructure (Proxmox) -->
+  <g>
+    <!-- Background box -->
+    <rect x="480" y="280" width="240" height="200" fill="#00ff88" opacity="0.1" rx="8"/>
+    
+    <!-- Icon: Proxmox-style stack -->
+    <g transform="translate(600, 330)">
+      <!-- 3 stacked boxes representing VMs/LXC -->
+      <rect x="-25" y="-20" width="50" height="15" fill="none" stroke="#00ff88" stroke-width="2.5" rx="2"/>
+      <rect x="-25" y="-2" width="50" height="15" fill="none" stroke="#00ff88" stroke-width="2.5" rx="2"/>
+      <rect x="-25" y="16" width="50" height="15" fill="none" stroke="#00ff88" stroke-width="2.5" rx="2"/>
+      <!-- Side bracket -->
+      <path d="M -40 -25 L -35 -25 L -35 35 L -40 35" stroke="#00ff88" stroke-width="2" fill="none"/>
+    </g>
+    
+    <!-- Label -->
+    <text x="600" y="420" font-family="monospace" font-size="18" fill="#00ff88" text-anchor="middle" font-weight="bold">
+      Infrastructure
+    </text>
+    <text x="600" y="450" font-family="monospace" font-size="14" fill="#cccccc" text-anchor="middle">
+      Proxmox VE
+    </text>
+    <text x="600" y="468" font-family="monospace" font-size="14" fill="#cccccc" text-anchor="middle">
+      Zero Trust • Twingate
+    </text>
+  </g>
+  
+  <!-- Column 3: Security/DevOps -->
+  <g>
+    <!-- Background box -->
+    <rect x="810" y="280" width="240" height="200" fill="#00ff88" opacity="0.1" rx="8"/>
+    
+    <!-- Icon: Shield/Lock -->
+    <g transform="translate(930, 320)">
+      <path d="M 0 -20 L -25 -5 L -25 10 Q 0 28 0 28 Q 25 28 25 10 L 25 -5 Z" fill="none" stroke="#00ff88" stroke-width="2.5" stroke-linejoin="round"/>
+      <!-- Checkmark inside -->
+      <path d="M -8 8 L -2 14 L 12 2" stroke="#00ff88" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    </g>
+    
+    <!-- Label -->
+    <text x="930" y="420" font-family="monospace" font-size="18" fill="#00ff88" text-anchor="middle" font-weight="bold">
+      Security
+    </text>
+    <text x="930" y="450" font-family="monospace" font-size="14" fill="#cccccc" text-anchor="middle">
+      Ed25519 Keys
+    </text>
+    <text x="930" y="468" font-family="monospace" font-size="14" fill="#cccccc" text-anchor="middle">
+      Zero External Ports
+    </text>
+  </g>
+  
+  <!-- Bottom accent line -->
+  <line x1="200" y1="570" x2="1000" y2="570" stroke="#00ff88" stroke-width="2" opacity="0.5"/>
+  
+  <!-- Footer: GitHub handle -->
+  <text x="600" y="610" font-family="monospace" font-size="16" fill="#888888" text-anchor="middle">
+    github.com/warasugitewara
+  </text>
+</svg>
