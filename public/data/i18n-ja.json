@@ -2,6 +2,7 @@
   "nav": {
     "about": "プロフィール",
     "skills": "スキル",
+    "infrastructure": "自作鯖構成",
     "projects": "プロジェクト",
     "philosophy": "開発哲学",
     "contact": "連絡先"
@@ -36,5 +37,15 @@
   },
   "footer": {
     "copyright": "© 2026 warasugi. All rights reserved."
+  },
+  "infrastructure": {
+    "title": "自作鯖構成",
+    "designPhilosophy": "設計思想",
+    "hypervisor": "ハイパーバイザー",
+    "nodes": "ノード構成",
+    "networkDesign": "ネットワーク設計",
+    "securityModel": "セキュリティモデル",
+    "technologyStack": "技術スタック",
+    "learningOutcomes": "学習成果"
   }
 }
