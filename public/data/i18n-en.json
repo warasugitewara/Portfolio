@@ -2,6 +2,7 @@
   "nav": {
     "about": "About",
     "skills": "Skills",
+    "infrastructure": "Self-Hosted Infrastructure",
     "projects": "Projects",
     "philosophy": "Philosophy",
     "contact": "Contact"
@@ -36,5 +37,15 @@
   },
   "footer": {
     "copyright": "© 2026 warasugi. All rights reserved."
+  },
+  "infrastructure": {
+    "title": "Self-Hosted Infrastructure",
+    "designPhilosophy": "Design Philosophy",
+    "hypervisor": "Hypervisor",
+    "nodes": "Infrastructure Nodes",
+    "networkDesign": "Network Design",
+    "securityModel": "Security Model",
+    "technologyStack": "Technology Stack",
+    "learningOutcomes": "Learning Outcomes"
   }
 }
