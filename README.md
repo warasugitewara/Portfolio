@@ -24,7 +24,7 @@
 - **フレームワーク**: React 19 + TypeScript
 - **ビルドツール**: Vite 7
 - **ルーティング**: React Router DOM v6
-- **スタイル**: 素のCSS
+- **スタイル**: CSS
 - **データ**: `public/data/*.json` + GitHub API
 - **i18n**: カスタムフック（`localStorage`で言語保持）
 - **デプロイ**: GitHub Pages（GitHub Actions）
