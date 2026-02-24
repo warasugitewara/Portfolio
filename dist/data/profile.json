@@ -6,7 +6,10 @@
   "location": "北海道 (Hokkaido)",
   "github": "https://github.com/warasugitewara",
   "email": "contact@example.com",
-  "school": "旭川実業高等学校 (2027年卒)",
+  "school": "旭川実業高等学校 (卒業予定)",
+  "credentials": [
+    "ITパスポート (IPA)"
+  ],
   "socials": {
     "github": "https://github.com/warasugitewara",
     "twitter": "https://x.com/Warasg_Parasite",

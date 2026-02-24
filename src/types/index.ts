@@ -20,6 +20,7 @@ export interface Profile {
   github: string;
   email: string;
   school: string;
+  credentials?: string[];
   socials: {
     github: string;
     twitter: string;

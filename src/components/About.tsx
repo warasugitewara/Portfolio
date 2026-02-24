@@ -32,9 +32,15 @@ export const About = ({ i18n }: AboutProps) => {
         <h2 className="section-title">{i18n.about.title}</h2>
         <div className="about-content">
           <p>{i18n.about.description}</p>
+          <p style={{ marginTop: '1rem' }}>最近は自作鯖で遊びながら学んでいます。</p>
           <p style={{ marginTop: '1rem' }}>
             <strong>学歴:</strong> {profile.school}
           </p>
+          {profile.credentials && profile.credentials.length > 0 && (
+            <p style={{ marginTop: '1rem' }}>
+              <strong>資格:</strong> {profile.credentials.join(', ')}
+            </p>
+          )}
           <p style={{ marginTop: '1rem' }}>
             <strong>GitHub:</strong> <a href={profile.github} target="_blank" rel="noopener noreferrer">@warasugitewara</a>
           </p>
