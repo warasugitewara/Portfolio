@@ -6,6 +6,7 @@ import { Hero } from './components/Hero';
 import { About } from './components/About';
 import { Snake } from './components/Snake';
 import { Skills } from './components/Skills';
+import { Infrastructure } from './components/Infrastructure';
 import { Projects } from './components/Projects';
 import { Contact } from './components/Contact';
 
@@ -47,6 +48,9 @@ function App() {
             <a href="#skills" className="nav-link">
               {i18n.nav.skills}
             </a>
+            <a href="#infrastructure" className="nav-link">
+              Infrastructure
+            </a>
             <a href="#projects" className="nav-link">
               {i18n.nav.projects}
             </a>
@@ -84,6 +88,7 @@ function App() {
         <About i18n={i18n} />
         <Snake i18n={i18n} />
         <Skills i18n={i18n} />
+        <Infrastructure i18n={i18n} />
         <Projects i18n={i18n} />
         <Contact i18n={i18n} />
       </main>

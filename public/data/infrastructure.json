@@ -1,0 +1,162 @@
+{
+  "infrastructure": {
+    "title": "Self-Hosted Infrastructure",
+    "subtitle": "Proxmox-based homelab with zero trust network design",
+    "overview": "A production-grade infrastructure built on Proxmox VE, emphasizing security, simplicity, and scalability. All services are accessed securely via Twingate without exposing ports to the internet.",
+    
+    "design_philosophy": [
+      "Zero trust network access — no inbound ports exposed",
+      "Role-separated compute nodes for fault isolation",
+      "Ed25519 SSH keys with disabled password authentication",
+      "Encrypted backups across multiple media (USB + cloud)",
+      "Minimal, maintainable architecture for home operations"
+    ],
+    
+    "hypervisor": {
+      "platform": "Proxmox VE 8.x",
+      "purpose": "KVM/QEMU virtualization with LXC containers",
+      "key_features": [
+        "HA-ready clustering support",
+        "ZFS storage with snapshots",
+        "Two-factor authentication (TOTP)",
+        "Web-based management interface"
+      ]
+    },
+    
+    "nodes": [
+      {
+        "id": "node1",
+        "name": "Node1",
+        "hardware": "Core2Duo + 8GB RAM",
+        "role": "Edge / Gateway",
+        "purpose": "Lightweight connector node, minimal resource footprint",
+        "workloads": [
+          {
+            "type": "LXC Container",
+            "name": "Twingate Connector",
+            "description": "Zero Trust tunnel endpoint for secure remote access"
+          }
+        ],
+        "rationale": "Separated to reduce blast radius. If this node fails, only the access tunnel is affected."
+      },
+      {
+        "id": "node2",
+        "name": "Node2",
+        "hardware": "Dell Server + 32GB RAM + NVMe SSD",
+        "role": "Compute Node",
+        "purpose": "Primary development and application workloads",
+        "workloads": [
+          {
+            "type": "VM",
+            "name": "dVM",
+            "os": "Debian 12",
+            "purpose": "Development environment for API, services, and experiments",
+            "planned_services": [
+              "Hono API framework",
+              "Node.js applications",
+              "Docker daemon"
+            ]
+          },
+          {
+            "type": "VM",
+            "name": "Music Bot",
+            "os": "Ubuntu 24.04",
+            "purpose": "Discord music bot and audio processing",
+            "details": "Isolated to prevent resource contention with dev workloads"
+          },
+          {
+            "type": "LXC Container",
+            "name": "Twingate Connector",
+            "description": "Secondary connector for redundancy"
+          }
+        ]
+      }
+    ],
+    
+    "network_design": {
+      "topology": "Internal LAN (192.168.x.x) + Zero Trust Overlay",
+      "gateway": "Node1 (edge connector)",
+      "security": [
+        "Twingate for all remote access — no VPN/SSH exposed on internet",
+        "Internal network isolated from external threats",
+        "VLAN segmentation planned for future expansion"
+      ],
+      "dns": "Local resolver with encrypted upstream"
+    },
+    
+    "security_model": {
+      "ssh": {
+        "root_login": "Disabled",
+        "password_auth": "Disabled",
+        "key_type": "Ed25519",
+        "access_method": "Twingate tunnel only"
+      },
+      "backup_strategy": [
+        "Google Drive encrypted backups (automated)",
+        "USB offline storage (cold backup)",
+        "Proxmox snapshots for quick recovery"
+      ],
+      "authentication": {
+        "proxmox": "TOTP 2FA enabled",
+        "linux_vms": "Ed25519 SSH keys only"
+      }
+    },
+    
+    "future_roadmap": {
+      "phase_1_current": {
+        "status": "✅ Operational",
+        "components": ["Proxmox dual-node cluster", "Twingate connectivity", "Basic VMs"]
+      },
+      "phase_2_planned": {
+        "status": "🚧 In Progress",
+        "components": [
+          "Reverse proxy layer (nginx/Caddy)",
+          "Hono API framework deployment",
+          "Docker support for containerized workloads"
+        ]
+      },
+      "phase_3_future": {
+        "status": "📋 Planned",
+        "components": [
+          "Kubernetes cluster (k3s)",
+          "Service mesh for inter-service communication",
+          "Observability stack (Prometheus + Grafana)",
+          "Event logging and centralized monitoring"
+        ]
+      }
+    },
+    
+    "technology_stack": {
+      "virtualization": ["KVM/QEMU", "LXC"],
+      "networking": ["Twingate", "Linux native tools"],
+      "storage": ["ZFS", "Ext4"],
+      "security": ["Ed25519", "TOTP", "TLS encryption"],
+      "planned_apps": ["Hono", "Docker", "nginx", "Node.js"]
+    },
+    
+    "learning_outcomes": [
+      "KVM/QEMU virtualization primitives",
+      "Proxmox cluster administration",
+      "Zero trust security architecture",
+      "Network isolation and VLAN design",
+      "Storage management (ZFS snapshots, backups)",
+      "SSH key-based authentication hardening",
+      "Infrastructure as Code principles (future)"
+    ],
+    
+    "operational_practices": {
+      "monitoring": "Proxmox web UI + manual checks",
+      "backups": "Automated + manual offline redundancy",
+      "updates": "Staged (test first, then production)",
+      "documentation": "ASCII diagrams + markdown runbooks"
+    },
+    
+    "why_proxmox": [
+      "Open source and community-driven",
+      "Low overhead (native Linux KVM)",
+      "Web UI reduces CLI learning curve",
+      "Excellent for homelab without licensing costs",
+      "Suitable for scaling to small production clusters"
+    ]
+  }
+}
