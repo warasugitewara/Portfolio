@@ -1,9 +1,11 @@
 # warasugi - ポートフォリオ
 
 私のポートフォリオです。
+2026-3-2
+- Github Pages → 自宅鯖でセルフホスティング
+- Hono導入
 
-
-🌐 **公開サイト**: https://wc.f5.si  
+🌐 **公開サイト**: https://portfolio.wc.f5.si/#projects
 🔗 **GitHub**: https://github.com/warasugitewara
 
 ---
