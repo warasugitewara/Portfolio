@@ -2,7 +2,7 @@
 
 私のポートフォリオです。
 2026-3-2
-- Github Pages → 自宅鯖でセルフホスティング
+- Github Pages → 自宅鯖の仮想環境上にてセルフホスティング移行
 - Hono導入
 
 🌐 **公開サイト**: https://portfolio.wc.f5.si/#projects
