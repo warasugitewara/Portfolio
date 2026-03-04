@@ -1,162 +1,168 @@
 {
   "infrastructure": {
     "title": "自作鯖構成",
-    "subtitle": "Proxmox VE によるゼロトラスト型ホームラブ",
-    "overview": "Proxmox VEを基盤とした自作インフラ。セキュリティ、シンプルさ、スケーラビリティを重視した設計。全サービスはTwingate経由のセキュアなアクセスで、インターネットへのポート公開なし。",
-    
+    "subtitle": "Proxmox VE によるゼロトラスト型ホームラボ",
+    "overview": "Proxmox VE を基盤とした個人インフラ環境。ゼロトラストアクセスとシンプルな構成を重視。全サービスは Twingate を経由したセキュアなアクセスで、インターネットへの直接ポート公開は行わない。",
+
     "design_philosophy": [
       "ゼロトラスト型ネットワークアクセス — インターネットへのポート公開なし",
-      "ノード役割分離による障害ドメイン分割",
-      "Ed25519 SSH鍵認証パスワード認証無効化",
-      "複数メディアへの暗号化バックアップ (USB + クラウド)",
-      "自宅運用のためのシンプルで保守性の高いアーキテクチャ"
+      "シンプルで保守性の高い構成",
+      "Ed25519 SSH鍵認証 + パスワード認証無効化",
+      "複数メディアへのバックアップ (USB + クラウド)",
+      "ホームラボとして拡張可能なアーキテクチャ"
     ],
-    
+
     "hypervisor": {
-      "platform": "Proxmox VE 8.x",
+      "platform": "Proxmox VE 9.x",
       "purpose": "KVM/QEMU virtualization with LXC containers",
       "key_features": [
-        "HA-ready clustering support",
-        "ZFS storage with snapshots",
-        "Two-factor authentication (TOTP)",
-        "Web-based management interface"
+        "Web-based virtualization management",
+        "VM / LXC コンテナ統合管理",
+        "スナップショットとバックアップ",
+        "TOTP 二要素認証"
       ]
     },
-    
+
     "nodes": [
       {
         "id": "node1",
-        "name": "Node1",
-        "hardware": "Core2Duo + RAM 4GB",
-        "role": "エッジ / ゲートウェイ",
-        "purpose": "軽量なコネクタノード。リソースフットプリントを最小限に",
-        "workloads": [
-          {
-            "type": "LXCコンテナ",
-            "name": "Twingate Connector",
-            "description": "セキュアなリモートアクセスのためのゼロトラストトンネルエンドポイント"
-          }
-        ],
-        "rationale": "ノード役割を分離することで障害の影響を最小化。このノードが停止しても、アクセストンネルのみが影響される。"
-      },
-      {
-        "id": "node2",
-        "name": "Node2",
-        "hardware": "Dell PowerEdge + RAM 32GB + NVMe SSD",
-        "role": "コンピュートノード",
-        "purpose": "開発・アプリケーションワークロードの主要処理",
+        "name": "Dell-1",
+        "hardware": "Intel Core i3-6100 (4 threads) + RAM 16GB + SSD 128GB ＋ HDD 512GB",
+        "role": "メインコンピュートノード",
+        "purpose": "開発・サービス・ホームラボ実験環境の中心",
+
         "workloads": [
           {
             "type": "VM",
-            "name": "dVM",
-            "os": "Debian 12",
-            "purpose": "API、サービス、実験のための開発環境",
-            "planned_services": [
-              "Hono APIフレームワーク",
-              "Node.jsアプリケーション",
-              "Dockerデーモン"
+            "name": "dev-01",
+            "os": "Debian 13",
+            "purpose": "SSHベースの開発環境",
+            "details": [
+              "WezTerm + SSH による開発",
+              "Neovim / CLI中心ワークフロー",
+              "GitHub連携"
             ]
           },
           {
             "type": "VM",
             "name": "Music Bot",
             "os": "Ubuntu 24.04",
-            "purpose": "Discord音楽ボット・オーディオ処理",
-            "details": "開発ワークロードとのリソース競合を防ぐため隔離"
+            "purpose": "Discord 音楽ボット",
+            "details": "systemd サービスとして常時稼働"
           },
           {
-            "type": "LXCコンテナ",
+            "type": "LXC",
             "name": "Twingate Connector",
-            "description": "冗長性を確保するためのセカンダリコネクタ"
+            "purpose": "ゼロトラストリモートアクセスのためのトンネルエンドポイント"
+          },
+          {
+            "type": "LXC",
+            "name": "Obsidian_container",
+            "purpose": "ObsidianのLivesync用DB"
           }
         ]
       }
     ],
-    
+
     "network_design": {
-      "topology": "内部LAN (192.168.x.x) + ゼロトラストオーバーレイ",
-      "gateway": "Node1 (エッジコネクタ)",
+      "topology": "ホームLAN (192.168.x.x) + Twingate overlay network",
       "security": [
-        "全リモートアクセスに Twingate を使用 — インターネットに VPN/SSH を公開しない",
-        "内部ネットワークを外部脅威から隔離",
-        "将来の拡張に向けた VLAN セグメンテーション"
+        "インターネットへのポート公開なし",
+        "全リモートアクセスは Twingate 経由",
+        "SSHは内部ネットワークのみ",
+        "外部とのゼロトラスト通信VPN"
       ],
-      "dns": "ローカルリゾルバー + 暗号化アップストリーム"
+      "dns": "ローカルDNS + ISP DNS"
     },
-    
+
     "security_model": {
       "ssh": {
-        "root_login": "無効",
-        "password_auth": "無効",
+        "root_login": "disabled",
+        "password_auth": "disabled",
         "key_type": "Ed25519",
-        "access_method": "Twingate トンネル経由のみ"
+        "access_method": "Twingate tunnel only"
       },
+
       "backup_strategy": [
-        "Google Drive 暗号化バックアップ (自動)",
-        "USB オフラインストレージ (コールドバックアップ)",
-        "Proxmox スナップショット (高速復旧用)"
+        "Google Drive クラウドバックアップ",
+        "USBストレージ コールドバックアップ",
+        "Proxmox VMバックアップ"
       ],
+
       "authentication": {
-        "proxmox": "TOTP 2FA有効",
-        "linux_vms": "Ed25519 SSH鍵認証のみ"
+        "proxmox": "TOTP 2FA enabled",
+        "linux_vms": "SSH key authentication only"
       }
     },
-    
+
     "future_roadmap": {
       "phase_1_current": {
         "status": "✅ 運用中",
-        "components": ["Proxmox 2ノード クラスタ", "Twingate 接続", "基本 VM"]
-      },
-      "phase_2_planned": {
-        "status": "🚧 進行中",
         "components": [
-          "リバースプロキシレイヤー (nginx/Caddy)",
-          "Hono API フレームワークのデプロイ",
-          "コンテナ化ワークロード対応 (Docker)"
+          "Proxmox 単一ノード",
+          "Twingate remote access",
+          "dev-01 開発VM",
+          "Music bot VM",
+          "Obsidian Web container"
         ]
       },
-      "phase_3_future": {
-        "status": "📋 計画中",
+
+      "phase_2_planned": {
+        "status": "🚧 進行予定",
         "components": [
-          "Kubernetes クラスタ (k3s)",
-          "サービスメッシュ",
-          "可観測性スタック (Prometheus + Grafana)",
-          "集約ログ・中央監視"
+          "Z240 ノード追加",
+          "Proxmox クラスタ構築 (3ノード構成)",
+          "開発VMのGPUパススルー",
+          "バックアップストレージ分離"
+        ]
+      },
+
+      "phase_3_future": {
+        "status": "📋 検討中",
+        "components": [
+          "VLAN ネットワーク分離",
+          "リバースプロキシ (Caddy / nginx)",
+          "Prometheus + Grafana monitoring",
+          "IaC automation"
         ]
       }
     },
-    
+
     "technology_stack": {
-      "virtualization": ["KVM/QEMU", "LXC"],
-      "networking": ["Twingate", "Linux native tools"],
-      "storage": ["ZFS", "Ext4"],
-      "security": ["Ed25519", "TOTP", "TLS encryption"],
-      "planned_apps": ["Hono", "Docker", "nginx", "Node.js"]
+      "virtualization": ["KVM", "QEMU", "LXC"],
+      "networking": ["Twingate", "Linux networking"],
+      "storage": ["Ext4", "バックアップストレージ"],
+      "security": ["Ed25519 SSH keys", "TOTP 2FA"],
+      "applications": [
+        "Neovim",
+        "Node.js",
+        "Discord bot",
+        "Obsidian Web"
+      ]
     },
-    
+
     "learning_outcomes": [
-      "KVM/QEMU 仮想化プリミティブ",
-      "Proxmox クラスタ管理",
-      "ゼロトラスト セキュリティアーキテクチャ",
-      "ネットワーク隔離と VLAN 設計",
-      "ストレージ管理 (ZFS スナップショット、バックアップ)",
-      "SSH 鍵ベース認証のセキュリティ強化",
-      "Infrastructure as Code の原則 (将来計画)"
+      "Proxmox 仮想化環境構築",
+      "ゼロトラストアクセス設計",
+      "SSH鍵認証セキュリティ",
+      "ホームラボサーバ運用",
+      "Linux VM管理",
+      "コンテナベースサービス運用"
     ],
-    
+
     "operational_practices": {
-      "monitoring": "Proxmox ウェブUI + 手動確認",
-      "backups": "自動 + 手動オフライン冗長化",
-      "updates": "段階的実行 (テスト優先、本番後)",
-      "documentation": "ASCII図解 + Markdown 運用ノート"
+      "monitoring": "Proxmox Web UI",
+      "backups": "手動 + クラウドバックアップ",
+      "updates": "定期更新 + 手動確認",
+      "documentation": "Obsidian Markdown ノート"
     },
-    
+
     "why_proxmox": [
-      "オープンソース・コミュニティ駆動",
-      "低オーバーヘッド (ネイティブ Linux KVM)",
-      "ウェブUI で CLI学習曲線を軽減",
-      "ホームラボ向けライセンス費用なし",
-      "小規模本番クラスタへスケーリング可能"
+      "オープンソース",
+      "KVMベースで低オーバーヘッド",
+      "Web UI + CLI 両対応",
+      "ホームラボ向け",
+      "将来的なクラスタ構築が可能"
     ]
   }
 }
