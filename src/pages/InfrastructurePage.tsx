@@ -25,17 +25,13 @@ interface InfrastructureData {
       workloads: Array<{
         type: string;
         name: string;
-        description?: string;
         os?: string;
         purpose?: string;
-        planned_services?: string[];
-        details?: string;
+        details?: string[];
       }>;
-      rationale?: string;
     }>;
     network_design: {
       topology: string;
-      gateway: string;
       security: string[];
       dns: string;
     };
@@ -57,9 +53,14 @@ interface InfrastructureData {
       networking: string[];
       storage: string[];
       security: string[];
-      planned_apps: string[];
+      applications: string[];
     };
     learning_outcomes: string[];
+    future_roadmap: {
+      phase_1_current: { status: string; components: string[] };
+      phase_2_planned: { status: string; components: string[] };
+      phase_3_future: { status: string; components: string[] };
+    };
   };
 }
 
@@ -67,12 +68,13 @@ export const InfrastructurePage = ({ i18n }: InfrastructurePageProps) => {
   const [infra, setInfra] = useState<InfrastructureData | null>(null);
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({
     philosophy: true,
+    diagram: true,
     hypervisor: true,
     nodes: true,
     network: false,
     security: false,
-    diagram: false,
     techStack: false,
+    roadmap: false,
     learning: false,
   });
   const [expandedNode, setExpandedNode] = useState<string | null>(null);
@@ -117,7 +119,7 @@ export const InfrastructurePage = ({ i18n }: InfrastructurePageProps) => {
           <p style={{ lineHeight: '1.8', margin: '0' }}>{infra.infrastructure.overview}</p>
         </div>
 
-        {/* Architecture Diagram - NEW */}
+        {/* Architecture Diagram */}
         <div style={{ marginBottom: '2rem' }}>
           <button
             onClick={() => toggleSection('diagram')}
@@ -143,128 +145,132 @@ export const InfrastructurePage = ({ i18n }: InfrastructurePageProps) => {
           {expandedSections.diagram && (
             <div style={{ padding: '2rem', marginTop: '1rem', backgroundColor: 'rgba(0,255,136,0.03)', borderRadius: '4px', border: '1px solid rgba(0,255,136,0.2)', overflowX: 'auto' }}>
               <div style={{ minWidth: '100%', backgroundColor: '#0a0e27', padding: '1rem', borderRadius: '4px' }}>
-                <svg viewBox="0 0 1000 700" style={{ width: '100%', height: 'auto', minHeight: '500px' }}>
+                <svg viewBox="0 0 1200 800" style={{ width: '100%', height: 'auto', minHeight: '600px' }}>
                   <defs>
                     <style>{`
                       .node-rect { fill: rgba(0,255,136,0.1); stroke: #00ff88; stroke-width: 2; }
                       .node-text { fill: #00ff88; font-family: monospace; font-size: 14px; font-weight: bold; }
                       .label-text { fill: #ccc; font-family: monospace; font-size: 12px; }
+                      .container-rect { fill: rgba(100,200,255,0.08); stroke: rgba(100,200,255,0.5); stroke-width: 1; }
                       .connector-line { stroke: #00ff88; stroke-width: 2; fill: none; }
                       .arrow { fill: #00ff88; }
                       .section-label { fill: #999; font-family: monospace; font-size: 12px; font-style: italic; }
-                      .title-text { fill: #00ff88; font-family: monospace; font-size: 16px; font-weight: bold; }
+                      .title-text { fill: #00ff88; font-family: monospace; font-size: 18px; font-weight: bold; }
                     `}</style>
                   </defs>
                   
                   {/* Title */}
-                  <text x="500" y="30" textAnchor="middle" className="title-text">ホームラボ インフラストラクチャ — Proxmox VE 2ノード クラスタ</text>
+                  <text x="600" y="30" textAnchor="middle" className="title-text">ホームラボ インフラストラクチャ — Proxmox VE 9.x</text>
 
                   {/* Internet Section */}
-                  <text x="50" y="80" className="section-label">インターネット層</text>
-                  <rect x="40" y="90" width="200" height="60" className="node-rect" rx="4"/>
-                  <text x="140" y="130" textAnchor="middle" className="node-text">Internet</text>
+                  <text x="50" y="80" className="section-label">インターネット</text>
+                  <rect x="40" y="90" width="180" height="60" className="node-rect" rx="4"/>
+                  <text x="130" y="130" textAnchor="middle" className="node-text">Internet</text>
 
                   {/* Twingate Section */}
-                  <text x="350" y="80" className="section-label">ゼロトラスト</text>
-                  <rect x="320" y="90" width="200" height="60" className="node-rect" rx="4"/>
-                  <text x="420" y="125" textAnchor="middle" className="node-text">Twingate Network</text>
-                  <text x="420" y="140" textAnchor="middle" className="label-text">セキュアトンネル</text>
+                  <text x="300" y="80" className="section-label">ゼロトラスト層</text>
+                  <rect x="280" y="90" width="220" height="60" className="node-rect" rx="4"/>
+                  <text x="390" y="120" textAnchor="middle" className="node-text">🔒 Twingate Network</text>
+                  <text x="390" y="140" textAnchor="middle" className="label-text">セキュアトンネル</text>
 
                   {/* Local Network */}
-                  <text x="700" y="80" className="section-label">ローカルネットワーク</text>
-                  <rect x="650" y="90" width="300" height="60" className="node-rect" rx="4"/>
-                  <text x="800" y="130" textAnchor="middle" className="node-text">LAN 192.168.0.x / ゼロトラスト</text>
+                  <text x="650" y="80" className="section-label">ローカルネットワーク</text>
+                  <rect x="620" y="90" width="540" height="60" className="node-rect" rx="4"/>
+                  <text x="900" y="130" textAnchor="middle" className="node-text">🏠 Home LAN (192.168.x.x)</text>
 
-                  {/* Arrows from Internet to Twingate */}
-                  <path d="M 240 120 L 320 120" className="connector-line" markerEnd="url(#arrowhead)"/>
-                  <polygon points="320,120 310,115 315,120 310,125" className="arrow"/>
+                  {/* Arrows from Internet */}
+                  <path d="M 220 120 L 280 120" className="connector-line" markerEnd="url(#arrowhead)"/>
+                  <polygon points="280,120 270,115 275,120 270,125" className="arrow"/>
+                  <path d="M 500 120 L 620 120" className="connector-line" markerEnd="url(#arrowhead)"/>
+                  <polygon points="620,120 610,115 615,120 610,125" className="arrow"/>
 
-                  {/* Node 1 - Edge Gateway */}
-                  <text x="50" y="250" className="section-label">Node1 — エッジ/ゲートウェイ</text>
-                  <text x="50" y="265" className="label-text">Core2Duo + 4GB RAM</text>
-                  <rect x="40" y="280" width="280" height="140" className="node-rect" rx="4"/>
-                  <text x="180" y="305" textAnchor="middle" className="node-text">🖧 Node1</text>
-                  
-                  {/* Node1 Workloads */}
-                  <rect x="60" y="320" width="240" height="30" fill="rgba(100,200,255,0.1)" stroke="rgba(100,200,255,0.5)" strokeWidth="1" rx="2"/>
-                  <text x="180" y="340" textAnchor="middle" className="label-text">Twingate Connector (LXC)</text>
-                  
-                  <text x="70" y="375" className="label-text" style={{ fontSize: '11px' }}>• リソース最小化</text>
-                  <text x="70" y="390" className="label-text" style={{ fontSize: '11px' }}>• 軽量エッジデバイス</text>
-                  <text x="70" y="405" className="label-text" style={{ fontSize: '11px' }}>• 障害隔離</text>
+                  {/* Dell-1 Node */}
+                  <text x="50" y="230" className="section-label">Dell-1 メインコンピュートノード</text>
+                  <text x="50" y="245" className="label-text">Intel Core i3-6100 + 16GB RAM + SSD 128GB + HDD 512GB</text>
+                  <rect x="40" y="260" width="1130" height="480" className="node-rect" rx="4"/>
+                  <text x="605" y="285" textAnchor="middle" className="node-text">🖥️ Dell-1 (Proxmox VE 9.x)</text>
 
-                  {/* Node 2 - Compute */}
-                  <text x="380" y="250" className="section-label">Node2 — コンピュート</text>
-                  <text x="380" y="265" className="label-text">Dell PowerEdge + 32GB RAM + NVMe</text>
-                  <rect x="340" y="280" width="310" height="140" className="node-rect" rx="4"/>
-                  <text x="495" y="305" textAnchor="middle" className="node-text">🖥️ Node2</text>
-                  
-                  {/* Node2 Workloads */}
-                  <rect x="360" y="320" width="270" height="25" fill="rgba(100,200,255,0.1)" stroke="rgba(100,200,255,0.5)" strokeWidth="1" rx="2"/>
-                  <text x="495" y="337" textAnchor="middle" className="label-text">dVM (Debian 12) - 開発/API</text>
-                  
-                  <rect x="360" y="350" width="270" height="25" fill="rgba(100,200,255,0.1)" stroke="rgba(100,200,255,0.5)" strokeWidth="1" rx="2"/>
-                  <text x="495" y="367" textAnchor="middle" className="label-text">Music Bot (Ubuntu 24.04)</text>
-                  
-                  <rect x="360" y="380" width="270" height="25" fill="rgba(100,200,255,0.1)" stroke="rgba(100,200,255,0.5)" strokeWidth="1" rx="2"/>
-                  <text x="495" y="397" textAnchor="middle" className="label-text">Twingate Connector (LXC)</text>
+                  {/* VM Section */}
+                  <text x="60" y="320" className="section-label">仮想マシン (VM)</text>
+                  <rect x="55" y="330" width="220" height="100" className="container-rect" rx="3"/>
+                  <text x="165" y="355" textAnchor="middle" className="node-text">dev-01</text>
+                  <text x="165" y="370" textAnchor="middle" className="label-text">Debian 13</text>
+                  <text x="60" y="385" className="label-text" style={{ fontSize: '11px' }}>• SSH開発環境</text>
+                  <text x="60" y="398" className="label-text" style={{ fontSize: '11px' }}>• Neovim + CLI</text>
+                  <text x="60" y="411" className="label-text" style={{ fontSize: '11px' }}>• GitHub連携</text>
 
-                  {/* Node 3 - Storage/Future */}
-                  <text x="700" y="250" className="section-label">ストレージ + 冗長性</text>
-                  <rect x="650" y="280" width="300" height="140" className="node-rect" rx="4"/>
-                  <text x="800" y="310" textAnchor="middle" className="node-text">📦 Proxmox Storage</text>
-                  
-                  <rect x="670" y="330" width="260" height="25" fill="rgba(100,200,255,0.1)" stroke="rgba(100,200,255,0.5)" strokeWidth="1" rx="2"/>
-                  <text x="800" y="347" textAnchor="middle" className="label-text">ZFS スナップショット</text>
-                  
-                  <rect x="670" y="360" width="260" height="25" fill="rgba(100,200,255,0.1)" stroke="rgba(100,200,255,0.5)" strokeWidth="1" rx="2"/>
-                  <text x="800" y="377" textAnchor="middle" className="label-text">Google Drive (暗号化)</text>
-                  
-                  <rect x="670" y="390" width="260" height="25" fill="rgba(100,200,255,0.1)" stroke="rgba(100,200,255,0.5)" strokeWidth="1" rx="2"/>
-                  <text x="800" y="407" textAnchor="middle" className="label-text">USB オフライン</text>
+                  {/* LXC Containers Section */}
+                  <text x="330" y="320" className="section-label">LXC コンテナ</text>
 
-                  {/* Connectors between nodes */}
-                  <path d="M 320 350 L 340 350" className="connector-line" markerEnd="url(#arrowhead)"/>
-                  <path d="M 650 350 L 650 350" className="connector-line"/>
+                  {/* Music Bot */}
+                  <rect x="305" y="330" width="160" height="100" className="container-rect" rx="3"/>
+                  <text x="385" y="360" textAnchor="middle" className="node-text">🎵 Music Bot</text>
+                  <text x="385" y="375" textAnchor="middle" className="label-text">Discord音楽ボット</text>
 
-                  {/* Bottom - Security & Tech Stack */}
-                  <text x="50" y="500" className="section-label">セキュリティ基盤</text>
-                  <rect x="40" y="510" width="450" height="100" className="node-rect" rx="4"/>
-                  <text x="265" y="535" textAnchor="middle" className="node-text">🔐 セキュリティモデル</text>
-                  <text x="50" y="560" className="label-text">• Ed25519 SSH鍵認証 (パスワード無効)</text>
-                  <text x="50" y="575" className="label-text">• Twingate ゼロトラストアクセス</text>
-                  <text x="50" y="590" className="label-text">• Proxmox TOTP 2FA</text>
-                  <text x="50" y="605" className="label-text">• インターネットにポート公開なし</text>
+                  {/* Twingate Connector */}
+                  <rect x="500" y="330" width="160" height="100" className="container-rect" rx="3"/>
+                  <text x="580" y="360" textAnchor="middle" className="node-text">🔐 Twingate</text>
+                  <text x="580" y="375" textAnchor="middle" className="label-text">トンネル</text>
+                  <text x="580" y="388" textAnchor="middle" className="label-text">エンドポイント</text>
 
-                  {/* Tech Stack */}
-                  <text x="550" y="500" className="section-label">テクノロジースタック</text>
-                  <rect x="540" y="510" width="410" height="100" className="node-rect" rx="4"/>
-                  <text x="745" y="535" textAnchor="middle" className="node-text">🛠️ 技術スタック</text>
-                  <text x="550" y="560" className="label-text">• Proxmox VE 8.x (KVM/QEMU + LXC)</text>
-                  <text x="550" y="575" className="label-text">• ZFS ストレージ • Twingate VPN</text>
-                  <text x="550" y="590" className="label-text">• Node.js • Docker • Hono API</text>
-                  <text x="550" y="605" className="label-text">• 将来: k3s • Prometheus • Grafana</text>
+                  {/* Obsidian */}
+                  <rect x="695" y="330" width="160" height="100" className="container-rect" rx="3"/>
+                  <text x="775" y="360" textAnchor="middle" className="node-text">📓 Obsidian</text>
+                  <text x="775" y="375" textAnchor="middle" className="label-text">livesync DB</text>
 
-                  {/* Footer */}
-                  <text x="500" y="680" textAnchor="middle" className="section-label">設計思想: ゼロトラスト + シンプル + スケーラブル</text>
+                  {/* Portfolio */}
+                  <rect x="890" y="330" width="160" height="100" className="container-rect" rx="3"/>
+                  <text x="970" y="360" textAnchor="middle" className="node-text">🌐 Portfolio</text>
+                  <text x="970" y="375" textAnchor="middle" className="label-text">Bun + Hono</text>
+                  <text x="970" y="388" textAnchor="middle" className="label-text" style={{ fontSize: '10px' }}>wc.f5.si</text>
+
+                  {/* Storage Section */}
+                  <text x="60" y="490" className="section-label">ストレージ &amp; バックアップ</text>
+                  <rect x="55" y="500" width="220" height="100" className="container-rect" rx="3"/>
+                  <text x="165" y="530" textAnchor="middle" className="node-text">💾 ストレージ</text>
+                  <text x="60" y="550" className="label-text" style={{ fontSize: '11px' }}>• SSD: 128GB</text>
+                  <text x="60" y="563" className="label-text" style={{ fontSize: '11px' }}>• HDD: 512GB</text>
+                  <text x="60" y="576" className="label-text" style={{ fontSize: '11px' }}>• スナップショット</text>
+
+                  {/* Backup Section */}
+                  <rect x="305" y="500" width="220" height="100" className="container-rect" rx="3"/>
+                  <text x="415" y="530" textAnchor="middle" className="node-text">☁️ バックアップ</text>
+                  <text x="310" y="550" className="label-text" style={{ fontSize: '11px' }}>• Google Drive</text>
+                  <text x="310" y="563" className="label-text" style={{ fontSize: '11px' }}>• USBコールド</text>
+                  <text x="310" y="576" className="label-text" style={{ fontSize: '11px' }}>• Proxmoxバックアップ</text>
+
+                  {/* Security Section */}
+                  <rect x="555" y="500" width="240" height="100" className="container-rect" rx="3"/>
+                  <text x="675" y="530" textAnchor="middle" className="node-text">🔐 セキュリティ</text>
+                  <text x="560" y="550" className="label-text" style={{ fontSize: '11px' }}>• Ed25519 SSH鍵</text>
+                  <text x="560" y="563" className="label-text" style={{ fontSize: '11px' }}>• パスワード認証無効</text>
+                  <text x="560" y="576" className="label-text" style={{ fontSize: '11px' }}>• TOTP 2FA (Proxmox)</text>
+
+                  {/* Legend */}
+                  <text x="60" y="670" className="section-label">凡例</text>
+                  <rect x="55" y="680" width="1030" height="100" className="node-rect" rx="3"/>
+                  <text x="70" y="705" className="label-text">🖧 = Proxmox VE 9.x | 🖥️ = コンピュートノード | 📊 = 管理インターフェース</text>
+                  <text x="70" y="725" className="label-text">🔒 = ゼロトラストセキュリティ | 🌐 = Webサービス | 💾 = ストレージ</text>
+                  <text x="70" y="745" className="label-text">🎵 = 音声/メディアボット | 📓 = データベース | ☁️ = クラウドバックアップ | 🔐 = セキュリティ機能</text>
+                  <text x="70" y="765" className="label-text">フェーズ: Phase 1 ✅ 運用中 | Phase 2 🚧 進行予定 (Z240追加・クラスタ構築) | Phase 3 📋 検討中 (VLAN・監視)</text>
                 </svg>
               </div>
-              
-              {/* Legend */}
-              <div style={{ marginTop: '1rem', padding: '1rem', backgroundColor: 'rgba(0,255,136,0.05)', borderRadius: '4px', border: '1px solid rgba(0,255,136,0.1)' }}>
-                <h4 style={{ color: '#00ff88', marginBottom: '0.5rem', fontSize: '0.9rem' }}>凡例</h4>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '0.5rem', fontSize: '0.85rem', color: '#ccc' }}>
-                  <div>🖧 Node1 = エッジ/ゲートウェイノード</div>
-                  <div>🖥️ Node2 = コンピュートノード</div>
-                  <div>📦 = ストレージ/バックアップ層</div>
-                  <div>🔐 = セキュリティ基盤</div>
-                </div>
+
+              {/* Architecture Notes */}
+              <div style={{ marginTop: '1.5rem', padding: '1rem', backgroundColor: 'rgba(0,255,136,0.05)', borderRadius: '4px', border: '1px solid rgba(0,255,136,0.1)' }}>
+                <h4 style={{ color: '#00ff88', marginBottom: '0.5rem', fontSize: '0.9rem' }}>アーキテクチャポイント</h4>
+                <ul style={{ fontSize: '0.85rem', color: '#ccc', listStyle: 'none', padding: '0', margin: '0' }}>
+                  <li style={{ marginBottom: '0.3rem' }}>✓ シンプル単一ノード構成で保守性を確保</li>
+                  <li style={{ marginBottom: '0.3rem' }}>✓ Twingate経由で完全なゼロトラストアクセス</li>
+                  <li style={{ marginBottom: '0.3rem' }}>✓ 複数サービスをLXCコンテナで効率的に運用</li>
+                  <li>✓ Phase 2で3ノードクラスタへ拡張予定</li>
+                </ul>
               </div>
             </div>
           )}
         </div>
 
-        {/* Design Philosophy - Collapsible */}
+        {/* Design Philosophy */}
         <div style={{ marginBottom: '2rem' }}>
           <button
             onClick={() => toggleSection('philosophy')}
@@ -284,14 +290,14 @@ export const InfrastructurePage = ({ i18n }: InfrastructurePageProps) => {
               fontFamily: 'monospace',
             }}
           >
-            {i18n.infrastructure.designPhilosophy}
+            {i18n.infrastructure?.designPhilosophy || '設計哲学'}
             <span>{expandedSections.philosophy ? '▼' : '▶'}</span>
           </button>
           {expandedSections.philosophy && (
             <div style={{ padding: '1rem', marginTop: '1rem' }}>
               <ul style={{ listStyle: 'none', padding: '0' }}>
                 {infra.infrastructure.design_philosophy.map((item, idx) => (
-                  <li key={idx} style={{ marginBottom: '0.8rem', paddingLeft: '1.5rem', position: 'relative' }}>        
+                  <li key={idx} style={{ marginBottom: '0.8rem', paddingLeft: '1.5rem', position: 'relative' }}>
                     <span style={{ position: 'absolute', left: '0', color: '#00ff88' }}>✓</span>
                     {item}
                   </li>
@@ -301,7 +307,7 @@ export const InfrastructurePage = ({ i18n }: InfrastructurePageProps) => {
           )}
         </div>
 
-        {/* Hypervisor - Collapsible */}
+        {/* Hypervisor */}
         <div style={{ marginBottom: '2rem' }}>
           <button
             onClick={() => toggleSection('hypervisor')}
@@ -321,7 +327,7 @@ export const InfrastructurePage = ({ i18n }: InfrastructurePageProps) => {
               fontFamily: 'monospace',
             }}
           >
-            🖥️ {i18n.infrastructure.hypervisor}
+            🖥️ {i18n.infrastructure?.hypervisor || 'Proxmox VE'}
             <span>{expandedSections.hypervisor ? '▼' : '▶'}</span>
           </button>
           {expandedSections.hypervisor && (
@@ -343,7 +349,7 @@ export const InfrastructurePage = ({ i18n }: InfrastructurePageProps) => {
           )}
         </div>
 
-        {/* Nodes - Collapsible */}
+        {/* Nodes */}
         <div style={{ marginBottom: '2rem' }}>
           <button
             onClick={() => toggleSection('nodes')}
@@ -363,7 +369,7 @@ export const InfrastructurePage = ({ i18n }: InfrastructurePageProps) => {
               fontFamily: 'monospace',
             }}
           >
-            {i18n.infrastructure.nodes}
+            {i18n.infrastructure?.nodes || 'ノード構成'}
             <span>{expandedSections.nodes ? '▼' : '▶'}</span>
           </button>
           {expandedSections.nodes && (
@@ -402,25 +408,25 @@ export const InfrastructurePage = ({ i18n }: InfrastructurePageProps) => {
                   </div>
 
                   {expandedNode === node.id && (
-                    <div style={{ marginTop: '1rem', paddingTop: '1rem', borderTop: '1px solid rgba(0,255,136,0.2)' }}> 
+                    <div style={{ marginTop: '1rem', paddingTop: '1rem', borderTop: '1px solid rgba(0,255,136,0.2)' }}>
                       <p style={{ marginBottom: '0.5rem' }}><strong>目的:</strong></p>
                       <p style={{ margin: '0 0 0.8rem 0', color: '#ccc' }}>{node.purpose}</p>
-
-                      {node.rationale && (
-                        <>
-                          <p style={{ marginBottom: '0.5rem' }}><strong>設計理由:</strong></p>
-                          <p style={{ margin: '0 0 0.8rem 0', color: '#ccc' }}>{node.rationale}</p>
-                        </>
-                      )}
 
                       <p style={{ marginBottom: '0.5rem' }}><strong>ワークロード:</strong></p>
                       <ul style={{ listStyle: 'none', padding: '0', margin: '0' }}>
                         {node.workloads.map((wl, idx) => (
-                          <li key={idx} style={{ marginBottom: '0.5rem', paddingLeft: '1rem', position: 'relative', color: '#ccc' }}>
+                          <li key={idx} style={{ marginBottom: '0.8rem', paddingLeft: '1rem', position: 'relative', color: '#ccc' }}>
                             <span style={{ position: 'absolute', left: '0', color: '#00ff88' }}>→</span>
                             <strong>{wl.name}</strong> ({wl.type})
                             {wl.os && ` - ${wl.os}`}
-                            {wl.purpose && <span style={{ display: 'block', fontSize: '0.85rem', marginTop: '0.2rem' }}>{wl.purpose}</span>}
+                            {wl.purpose && <p style={{ margin: '0.3rem 0 0 0', fontSize: '0.85rem', color: '#aaa' }}>{wl.purpose}</p>}
+                            {wl.details && (
+                              <ul style={{ listStyle: 'none', padding: '0.3rem 0 0 1rem', margin: '0', fontSize: '0.85rem' }}>
+                                {wl.details.map((detail, didx) => (
+                                  <li key={didx} style={{ color: '#888' }}>• {detail}</li>
+                                ))}
+                              </ul>
+                            )}
                           </li>
                         ))}
                       </ul>
@@ -432,7 +438,7 @@ export const InfrastructurePage = ({ i18n }: InfrastructurePageProps) => {
           )}
         </div>
 
-        {/* Network Design - Collapsible */}
+        {/* Network Design */}
         <div style={{ marginBottom: '2rem' }}>
           <button
             onClick={() => toggleSection('network')}
@@ -452,14 +458,13 @@ export const InfrastructurePage = ({ i18n }: InfrastructurePageProps) => {
               fontFamily: 'monospace',
             }}
           >
-            {i18n.infrastructure.networkDesign}
+            {i18n.infrastructure?.networkDesign || 'ネットワーク設計'}
             <span>{expandedSections.network ? '▼' : '▶'}</span>
           </button>
           {expandedSections.network && (
             <div style={{ padding: '1rem', marginTop: '1rem', backgroundColor: 'rgba(0,255,136,0.03)', borderRadius: '4px' }}>
               <p style={{ marginBottom: '0.5rem' }}><strong>トポロジー:</strong> {infra.infrastructure.network_design.topology}</p>
-              <p style={{ marginBottom: '0.5rem' }}><strong>ゲートウェイ:</strong> {infra.infrastructure.network_design.gateway}</p>
-              <p style={{ marginBottom: '0.5rem' }}><strong>DNS:</strong> {infra.infrastructure.network_design.dns}</p> 
+              <p style={{ marginBottom: '0.5rem' }}><strong>DNS:</strong> {infra.infrastructure.network_design.dns}</p>
               <p style={{ marginBottom: '0.5rem' }}><strong>セキュリティ対策:</strong></p>
               <ul style={{ listStyle: 'none', padding: '0', margin: '0' }}>
                 {infra.infrastructure.network_design.security.map((sec, idx) => (
@@ -473,7 +478,7 @@ export const InfrastructurePage = ({ i18n }: InfrastructurePageProps) => {
           )}
         </div>
 
-        {/* Security Model - Collapsible */}
+        {/* Security Model */}
         <div style={{ marginBottom: '2rem' }}>
           <button
             onClick={() => toggleSection('security')}
@@ -493,7 +498,7 @@ export const InfrastructurePage = ({ i18n }: InfrastructurePageProps) => {
               fontFamily: 'monospace',
             }}
           >
-            🔐 {i18n.infrastructure.securityModel}
+            🔐 {i18n.infrastructure?.securityModel || 'セキュリティモデル'}
             <span>{expandedSections.security ? '▼' : '▶'}</span>
           </button>
           {expandedSections.security && (
@@ -504,14 +509,14 @@ export const InfrastructurePage = ({ i18n }: InfrastructurePageProps) => {
                   <li style={{ marginBottom: '0.3rem' }}>Root ログイン: <strong>{infra.infrastructure.security_model.ssh.root_login}</strong></li>
                   <li style={{ marginBottom: '0.3rem' }}>パスワード認証: <strong>{infra.infrastructure.security_model.ssh.password_auth}</strong></li>
                   <li style={{ marginBottom: '0.3rem' }}>鍵タイプ: <strong>{infra.infrastructure.security_model.ssh.key_type}</strong></li>
-                  <li>アクセス方法: <strong>{infra.infrastructure.security_model.ssh.access_method}</strong></li>       
+                  <li>アクセス方法: <strong>{infra.infrastructure.security_model.ssh.access_method}</strong></li>
                 </ul>
               </div>
               <div style={{ padding: '1rem', backgroundColor: 'rgba(0,255,136,0.05)', borderRadius: '4px', border: '1px solid rgba(0,255,136,0.2)' }}>
                 <h4 style={{ marginBottom: '0.5rem', color: '#00ff88' }}>認証</h4>
                 <ul style={{ listStyle: 'none', padding: '0', margin: '0', fontSize: '0.9rem' }}>
                   <li style={{ marginBottom: '0.3rem' }}>Proxmox: <strong>{infra.infrastructure.security_model.authentication.proxmox}</strong></li>
-                  <li>Linux VM: <strong>{infra.infrastructure.security_model.authentication.linux_vms}</strong></li>    
+                  <li>Linux VM: <strong>{infra.infrastructure.security_model.authentication.linux_vms}</strong></li>
                 </ul>
               </div>
               <div style={{ padding: '1rem', backgroundColor: 'rgba(0,255,136,0.05)', borderRadius: '4px', border: '1px solid rgba(0,255,136,0.2)' }}>
@@ -526,7 +531,7 @@ export const InfrastructurePage = ({ i18n }: InfrastructurePageProps) => {
           )}
         </div>
 
-        {/* Technology Stack - Collapsible */}
+        {/* Technology Stack */}
         <div style={{ marginBottom: '2rem' }}>
           <button
             onClick={() => toggleSection('techStack')}
@@ -546,7 +551,7 @@ export const InfrastructurePage = ({ i18n }: InfrastructurePageProps) => {
               fontFamily: 'monospace',
             }}
           >
-            {i18n.infrastructure.technologyStack}
+            {i18n.infrastructure?.technologyStack || 'テクノロジースタック'}
             <span>{expandedSections.techStack ? '▼' : '▶'}</span>
           </button>
           {expandedSections.techStack && (
@@ -558,7 +563,7 @@ export const InfrastructurePage = ({ i18n }: InfrastructurePageProps) => {
                     {category === 'networking' && 'ネットワーク'}
                     {category === 'storage' && 'ストレージ'}
                     {category === 'security' && 'セキュリティ'}
-                    {category === 'planned_apps' && '計画中アプリ'}
+                    {category === 'applications' && 'アプリケーション'}
                   </h4>
                   <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
                     {(Array.isArray(items) ? items : [items]).map((item, idx) => (
@@ -573,7 +578,54 @@ export const InfrastructurePage = ({ i18n }: InfrastructurePageProps) => {
           )}
         </div>
 
-        {/* Learning Outcomes - Collapsible */}
+        {/* Future Roadmap */}
+        <div style={{ marginBottom: '2rem' }}>
+          <button
+            onClick={() => toggleSection('roadmap')}
+            style={{
+              width: '100%',
+              padding: '1rem',
+              backgroundColor: 'rgba(0,255,136,0.1)',
+              border: '1px solid #00ff88',
+              borderRadius: '4px',
+              color: '#00ff88',
+              fontSize: '1.1rem',
+              fontWeight: 'bold',
+              cursor: 'pointer',
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              fontFamily: 'monospace',
+            }}
+          >
+            🛣️ 今後のロードマップ
+            <span>{expandedSections.roadmap ? '▼' : '▶'}</span>
+          </button>
+          {expandedSections.roadmap && (
+            <div style={{ marginTop: '1rem', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1rem' }}>
+              {Object.entries(infra.infrastructure.future_roadmap).map(([phase, data]: [string, any]) => (
+                <div key={phase} style={{ padding: '1rem', backgroundColor: 'rgba(0,255,136,0.05)', borderRadius: '4px', border: '1px solid rgba(0,255,136,0.2)' }}>
+                  <h4 style={{ marginBottom: '0.5rem', color: '#00ff88' }}>
+                    {phase === 'phase_1_current' && 'フェーズ 1: 現在'}
+                    {phase === 'phase_2_planned' && 'フェーズ 2: 進行中'}
+                    {phase === 'phase_3_future' && 'フェーズ 3: 検討中'}
+                  </h4>
+                  <p style={{ margin: '0 0 0.5rem 0', fontSize: '0.85rem', color: '#aaa' }}>{data.status}</p>
+                  <ul style={{ listStyle: 'none', padding: '0', margin: '0', fontSize: '0.9rem' }}>
+                    {data.components.map((comp: string, idx: number) => (
+                      <li key={idx} style={{ marginBottom: '0.3rem', paddingLeft: '1rem', position: 'relative' }}>
+                        <span style={{ position: 'absolute', left: '0', color: '#00ff88' }}>▸</span>
+                        {comp}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Learning Outcomes */}
         <div style={{ marginBottom: '2rem' }}>
           <button
             onClick={() => toggleSection('learning')}
@@ -593,14 +645,14 @@ export const InfrastructurePage = ({ i18n }: InfrastructurePageProps) => {
               fontFamily: 'monospace',
             }}
           >
-            📚 {i18n.infrastructure.learningOutcomes}
+            📚 学習成果
             <span>{expandedSections.learning ? '▼' : '▶'}</span>
           </button>
           {expandedSections.learning && (
             <div style={{ padding: '1rem', marginTop: '1rem' }}>
               <ul style={{ listStyle: 'none', padding: '0' }}>
                 {infra.infrastructure.learning_outcomes.map((outcome, idx) => (
-                  <li key={idx} style={{ marginBottom: '0.5rem', paddingLeft: '1.5rem', position: 'relative' }}>        
+                  <li key={idx} style={{ marginBottom: '0.5rem', paddingLeft: '1.5rem', position: 'relative' }}>
                     <span style={{ position: 'absolute', left: '0', color: '#00ff88' }}>→</span>
                     {outcome}
                   </li>
