@@ -33,8 +33,30 @@ export const Hero = ({ i18n }: HeroProps) => {
   if (!i18n) return null;
 
   return (
-    <section className="hero">
-      <div className="hero-container">
+    <section 
+      className="hero"
+      style={{
+        backgroundImage: 'url(minecraft-city.png)',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundAttachment: 'fixed',
+        position: 'relative',
+      }}
+    >
+      {/* Dark overlay for text readability */}
+      <div
+        style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: 'rgba(10, 14, 39, 0.75)',
+          zIndex: 1,
+        }}
+      />
+
+      <div className="hero-container" style={{ position: 'relative', zIndex: 2 }}>
         {avatar && (
           <div className="hero-avatar">
             <img src={avatar} alt="warasugi" loading="lazy" />
