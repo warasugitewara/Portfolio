@@ -18,11 +18,9 @@ export const Hero = ({ i18n }: HeroProps) => {
         if (!response.ok) throw new Error(`Failed to load profile: ${response.status}`);
         const data = await response.json();
         setProfile(data);
-        // Use avatar from profile data
         setAvatar(data.avatar);
       } catch (error) {
         console.error('Failed to load profile:', error);
-        // Fallback to hardcoded avatar
         setAvatar('https://avatars.githubusercontent.com/u/87893552?v=4');
       }
     };
@@ -36,7 +34,7 @@ export const Hero = ({ i18n }: HeroProps) => {
     <section 
       className="hero"
       style={{
-        backgroundImage: 'url(minecraft-city.png)',
+        backgroundImage: 'url(/minecraft-city.png)',
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         backgroundAttachment: 'fixed',
