@@ -9,19 +9,12 @@ export const Snake = ({ i18n }: SnakeProps) => {
   const [hasSnake, setHasSnake] = useState(false);
 
   useEffect(() => {
-    // Check if snake SVG exists (try both light and dark versions)
+    // Check if snake SVG is accessible from GitHub
     const checkSnake = async () => {
       try {
-        // Check if either SVG exists
-        const darkUrl = '/github-contribution-grid-snake-dark.svg';
-        const lightUrl = '/github-contribution-grid-snake.svg';
-        
-        const [darkRes, lightRes] = await Promise.all([
-          fetch(darkUrl),
-          fetch(lightUrl),
-        ]);
-        
-        setHasSnake(darkRes.ok || lightRes.ok);
+        const darkUrl = 'https://raw.githubusercontent.com/warasugitewara/warasugitewara/main/dist/github-contribution-grid-snake-dark.svg';
+        const response = await fetch(darkUrl);
+        setHasSnake(response.ok);
       } catch {
         setHasSnake(false);
       }
@@ -44,8 +37,7 @@ export const Snake = ({ i18n }: SnakeProps) => {
 
   if (!i18n) return null;
 
-  const snakeDarkUrl = '/github-contribution-grid-snake-dark.svg';
-  const snakeLightUrl = '/github-contribution-grid-snake.svg';
+  const snakeDarkUrl = 'https://raw.githubusercontent.com/warasugitewara/warasugitewara/main/dist/github-contribution-grid-snake-dark.svg';
 
   return (
     <section className="section snake">
@@ -53,26 +45,16 @@ export const Snake = ({ i18n }: SnakeProps) => {
         <h2 className="section-title">Contributions</h2>
         <div className="snake-container">
           {hasSnake ? (
-            <picture>
-              <source
-                media="(prefers-color-scheme: dark)"
-                srcSet={snakeDarkUrl}
-              />
-              <source
-                media="(prefers-color-scheme: light)"
-                srcSet={snakeLightUrl}
-              />
-              <img
-                alt="github contribution grid snake animation"
-                src={snakeDarkUrl}
-                loading="lazy"
-              />
-            </picture>
+            <img
+              alt="github contribution grid snake animation"
+              src={snakeDarkUrl}
+              loading="lazy"
+            />
           ) : (
             <div className="snake-placeholder">
               <p>🐍 GitHub contribution animation generating...</p>
               <p style={{ fontSize: '0.85rem', color: 'var(--color-text-secondary)', marginTop: '0.5rem' }}>
-                Trigger the workflow on GitHub Actions to generate the snake animation
+                Fetching snake animation from GitHub...
               </p>
             </div>
           )}
