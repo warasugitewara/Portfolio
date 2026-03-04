@@ -12,12 +12,6 @@
       "ホームラボとして拡張可能なアーキテクチャ"
     ],
 
-    "architecture_diagrams": {
-      "current_infrastructure": "Internet → Router → LAN → Dell-1(Proxmox) → [dev-01 VM, MusicBot VM, Twingate LXC, Obsidian_container LXC]",
-      "remote_access": "Client Devices → Twingate → Secure Tunnel → HomeLab Services",
-      "future_cluster": "Internet → Router → LAN → Proxmox Cluster (Dell-1 + Z240-1 + Z240-2)"
-    },
-
     "hypervisor": {
       "platform": "Proxmox VE 9.x",
       "purpose": "KVM/QEMU virtualization with LXC containers",
@@ -50,11 +44,9 @@
             ]
           },
           {
-            "type": "VM",
+            "type": "LXC",
             "name": "Music Bot",
-            "os": "Ubuntu 24.04",
-            "purpose": "Discord 音楽ボット",
-            "details": "systemd サービスとして常時稼働"
+            "purpose": "Discord 音楽ボット"
           },
           {
             "type": "LXC",
@@ -63,8 +55,13 @@
           },
           {
             "type": "LXC",
-            "name": "Obsidian_container",
-            "purpose": "Obsidian LiveSync 用データベース"
+            "name": "Obsidian-host",
+            "purpose": "Obsidian-livesync用のDB"
+          },
+          {
+            "type": "LXC",
+            "name": "portfolio",
+            "purpose": "Bun+Honoで動作中のポートフォリオサイトhttps://portfolio.wc.f5.si/"
           }
         ]
       }
@@ -75,8 +72,7 @@
       "security": [
         "インターネットへのポート公開なし",
         "全リモートアクセスは Twingate 経由",
-        "SSHは内部ネットワークのみ",
-        "外部とのゼロトラスト通信VPN"
+        "SSHは内部ネットワークのみ"
       ],
       "dns": "ローカルDNS + ISP DNS"
     },
@@ -109,16 +105,16 @@
           "Twingate remote access",
           "dev-01 開発VM",
           "Music bot VM",
-          "Obsidian_container"
+          "Obsidian Web container"
         ]
       },
 
       "phase_2_planned": {
         "status": "🚧 進行予定",
         "components": [
-          "HP Z240 ノード追加",
+          "Z240 ノード追加",
           "Proxmox クラスタ構築 (3ノード構成)",
-          "開発VM GPUパススルー",
+          "開発VMのGPUパススルー",
           "バックアップストレージ分離"
         ]
       },
@@ -129,27 +125,9 @@
           "VLAN ネットワーク分離",
           "リバースプロキシ (Caddy / nginx)",
           "Prometheus + Grafana monitoring",
-          "Infrastructure as Code",
-          "集中ログ管理"
+          "IaC automation"
         ]
       }
-    },
-
-    "expansion_strategy": {
-      "planned_nodes": [
-        {
-          "name": "Z240-1",
-          "role": "Compute Node",
-          "purpose": "VM workload分散"
-        },
-        {
-          "name": "Z240-2",
-          "role": "Compute Node",
-          "purpose": "GPU passthrough development environment"
-        }
-      ],
-
-      "cluster_goal": "3ノードProxmoxクラスタによる高可用性とリソース分散"
     },
 
     "technology_stack": {
@@ -161,7 +139,7 @@
         "Neovim",
         "Node.js",
         "Discord bot",
-        "Obsidian LiveSync"
+        "Obsidian Web"
       ]
     },
 
@@ -174,18 +152,10 @@
       "コンテナベースサービス運用"
     ],
 
-    "lab_goals": [
-      "企業レベルのインフラ設計思想を自宅環境で再現",
-      "仮想化基盤の理解",
-      "ゼロトラストセキュリティ実装",
-      "クラスタリングと高可用性の実験",
-      "インフラエンジニアリングスキルの実践"
-    ],
-
     "operational_practices": {
       "monitoring": "Proxmox Web UI",
       "backups": "手動 + クラウドバックアップ",
-      "updates": "段階的更新",
+      "updates": "定期更新 + 手動確認",
       "documentation": "Obsidian Markdown ノート"
     },
 
