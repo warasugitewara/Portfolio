@@ -203,7 +203,7 @@ a:hover {
   padding: 4rem 0 2rem;
   min-height: 500px;
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: center;
   background-size: cover;
   background-position: center;
