@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0a0e27"/>
+      <stop offset="100%" stop-color="#16213e"/>
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="1.5" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="100" height="100" rx="14" fill="url(#bg)"/>
+
+  <!-- Outer border glow -->
+  <rect x="1.5" y="1.5" width="97" height="97" rx="13" fill="none"
+        stroke="#00ff88" stroke-width="1.5" opacity="0.45"/>
+
+  <!-- Title bar area -->
+  <rect x="0" y="0" width="100" height="28" rx="14" fill="#16213e" opacity="0.8"/>
+  <rect x="0" y="14" width="100" height="14" fill="#16213e" opacity="0.8"/>
+
+  <!-- macOS-style traffic lights -->
+  <circle cx="17" cy="15" r="5" fill="#ff5f57"/>
+  <circle cx="31" cy="15" r="5" fill="#ffbd2e"/>
+  <circle cx="45" cy="15" r="5" fill="#28c840"/>
+
+  <!-- Separator -->
+  <line x1="8" y1="28" x2="92" y2="28" stroke="#00ff88" stroke-width="0.8" opacity="0.25"/>
+
+  <!-- Prompt > in neon green with glow -->
+  <text x="9" y="73" font-family="'Courier New',Courier,monospace"
+        font-size="42" fill="#10b981" font-weight="bold" filter="url(#glow)">&gt;</text>
+
+  <!-- W in cyan with glow -->
+  <text x="40" y="73" font-family="'Courier New',Courier,monospace"
+        font-size="42" fill="#06b6d4" font-weight="bold" filter="url(#glow)">W</text>
+
+  <!-- Cursor block -->
+  <rect x="78" y="49" width="11" height="24" rx="1" fill="#00ff88" opacity="0.85"/>
+</svg>

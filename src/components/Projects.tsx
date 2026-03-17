@@ -68,7 +68,7 @@ export const Projects = ({ i18n, lang }: ProjectsProps) => {
             <p>Unable to load repositories from GitHub</p>
             <p style={{ fontSize: '0.9rem', color: 'var(--color-text-secondary)', marginTop: '0.5rem' }}>
               <a href="https://github.com/warasugitewara" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--color-accent)' }}>
-                View on GitHub &rarr;
+                View on GitHub &#8594;
               </a>
             </p>
           </div>
