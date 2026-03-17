@@ -4,27 +4,39 @@
     "principles": [
       {
         "title": "Lightweight First",
-        "description": "Build systems that are lean, fast, and efficient. Avoid bloat."
+        "title_ja": "軽量優先",
+        "description": "Build systems that are lean, fast, and efficient. Avoid bloat.",
+        "description_ja": "無駄を省いた、速く効率的なシステムを構築する。"
       },
       {
         "title": "CLI Oriented",
-        "description": "Embrace terminal-centric development. Power in simplicity."
+        "title_ja": "CLI志向",
+        "description": "Embrace terminal-centric development. Power in simplicity.",
+        "description_ja": "ターミナル中心の開発を大切にする。シンプルさの中に力がある。"
       },
       {
         "title": "Infrastructure Matters",
-        "description": "Understand the infrastructure. Design with operations in mind."
+        "title_ja": "インフラを理解する",
+        "description": "Understand the infrastructure. Design with operations in mind.",
+        "description_ja": "インフラを深く理解し、運用を意識した設計をする。"
       },
       {
         "title": "Custom Tools",
-        "description": "Build your own tools when needed. Understand what you use."
+        "title_ja": "自作ツール",
+        "description": "Build your own tools when needed. Understand what you use.",
+        "description_ja": "必要なら自分でツールを作る。使うものを深く理解する。"
       },
       {
         "title": "Type Safety",
-        "description": "Use TypeScript and static analysis to prevent bugs early."
+        "title_ja": "型安全",
+        "description": "Use TypeScript and static analysis to prevent bugs early.",
+        "description_ja": "TypeScriptと静的解析でバグを早期に防ぐ。"
       },
       {
         "title": "Edge Ready",
-        "description": "Design systems compatible with edge computing and serverless."
+        "title_ja": "エッジ対応",
+        "description": "Design systems compatible with edge computing and serverless.",
+        "description_ja": "エッジコンピューティングやサーバーレス環境にも対応した設計をする。"
       }
     ]
   }

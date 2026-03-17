@@ -15,13 +15,18 @@ export const About = ({ i18n, profile }: AboutProps) => {
         <div className="about-content">
           <p>{i18n.about.description}</p>
           <p style={{ marginTop: '1rem' }}>{i18n.about.hobby}</p>
-          <p style={{ marginTop: '1rem' }}>
+          <div style={{ marginTop: '1rem' }}>
             <strong>{i18n.about.school}:</strong> {profile.school}
-          </p>
+          </div>
           {profile.credentials && profile.credentials.length > 0 && (
-            <p style={{ marginTop: '1rem' }}>
-              <strong>{i18n.about.credentials}:</strong> {profile.credentials.join(', ')}
-            </p>
+            <div style={{ marginTop: '1rem' }}>
+              <strong>{i18n.about.credentials}:</strong>
+              <ul className="credentials-list">
+                {profile.credentials.map((c) => (
+                  <li key={c}>{c}</li>
+                ))}
+              </ul>
+            </div>
           )}
           <p style={{ marginTop: '1rem' }}>
             <strong>GitHub:</strong>{' '}

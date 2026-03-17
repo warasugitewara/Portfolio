@@ -605,3 +605,66 @@ a:hover {
     padding: 0 0.75rem;
   }
 }
+
+/* Credentials list */
+.credentials-list {
+  margin-top: 0.5rem;
+  padding-left: 1.5rem;
+  color: var(--color-text-secondary);
+  line-height: 1.9;
+}
+
+/* Philosophy */
+.principles-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1rem;
+}
+
+.principle-card {
+  padding: 1.2rem;
+  background: rgba(22, 33, 62, 0.3);
+  border: 1px solid rgba(0, 255, 136, 0.1);
+  border-radius: 2px;
+  transition: all 0.3s ease;
+}
+
+.principle-card:hover {
+  border-color: var(--color-neon-green);
+  background: rgba(22, 33, 62, 0.5);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(16, 185, 129, 0.15);
+}
+
+.principle-title {
+  color: var(--color-neon-green);
+  font-size: 0.95rem;
+  margin-bottom: 0.5rem;
+}
+
+.principle-description {
+  font-size: 0.9rem;
+  color: var(--color-text-secondary);
+  line-height: 1.6;
+}
+
+/* Projects empty state */
+.projects-empty {
+  text-align: center;
+  color: var(--color-text-secondary);
+  padding: 2rem;
+  border: 1px dashed rgba(0, 255, 136, 0.2);
+  border-radius: 2px;
+}
+
+/* Missing fadeInScale keyframe for hero avatar */
+@keyframes fadeInScale {
+  from {
+    opacity: 0;
+    transform: scale(0.85);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}

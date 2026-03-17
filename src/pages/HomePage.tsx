@@ -4,6 +4,7 @@ import { Hero } from '../components/Hero';
 import { About } from '../components/About';
 import { Snake } from '../components/Snake';
 import { Skills } from '../components/Skills';
+import { Philosophy } from '../components/Philosophy';
 import { Projects } from '../components/Projects';
 import { Contact } from '../components/Contact';
 import type { Profile } from '../types';
@@ -11,9 +12,10 @@ import { getDataUrl } from '../utils/path';
 
 interface HomePageProps {
   i18n: any;
+  lang: string;
 }
 
-export const HomePage = ({ i18n }: HomePageProps) => {
+export const HomePage = ({ i18n, lang }: HomePageProps) => {
   const [showBoot, setShowBoot] = useState(() => {
     if (typeof window !== 'undefined') {
       const shown = localStorage.getItem('bootAnimationShown');
@@ -53,7 +55,8 @@ export const HomePage = ({ i18n }: HomePageProps) => {
       <About i18n={i18n} profile={profile} />
       <Snake i18n={i18n} />
       <Skills i18n={i18n} />
-      <Projects i18n={i18n} />
+      <Philosophy i18n={i18n} lang={lang} />
+      <Projects i18n={i18n} lang={lang} />
       <Contact i18n={i18n} profile={profile} />
     </>
   );

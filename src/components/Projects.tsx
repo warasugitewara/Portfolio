@@ -3,6 +3,7 @@ import type { I18n, GitHubRepo } from '../types';
 
 interface ProjectsProps {
   i18n: I18n | null;
+  lang: string;
 }
 
 interface GitHubRepoRaw {
@@ -15,7 +16,7 @@ interface GitHubRepoRaw {
   updated_at: string;
 }
 
-export const Projects = ({ i18n }: ProjectsProps) => {
+export const Projects = ({ i18n, lang }: ProjectsProps) => {
   const [repos, setRepos] = useState<GitHubRepo[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -27,6 +28,7 @@ export const Projects = ({ i18n }: ProjectsProps) => {
           'https://api.github.com/users/warasugitewara/repos?sort=updated&per_page=12&type=owner'
         );
         const data: GitHubRepoRaw[] = await response.json();
+        const locale = lang === 'ja' ? 'ja-JP' : 'en-US';
 
         const repos: GitHubRepo[] = data
           .filter((repo) => !repo.fork && repo.description)
@@ -37,7 +39,7 @@ export const Projects = ({ i18n }: ProjectsProps) => {
             url: repo.html_url,
             language: repo.language || '',
             stars: repo.stargazers_count,
-            updated: new Date(repo.updated_at).toLocaleDateString('ja-JP'),
+            updated: new Date(repo.updated_at).toLocaleDateString(locale),
             pinned: false,
           }));
 
@@ -51,7 +53,7 @@ export const Projects = ({ i18n }: ProjectsProps) => {
     };
 
     loadRepos();
-  }, []);
+  }, [lang]);
 
   if (!i18n) return null;
 
@@ -66,7 +68,7 @@ export const Projects = ({ i18n }: ProjectsProps) => {
             <p>Unable to load repositories from GitHub</p>
             <p style={{ fontSize: '0.9rem', color: 'var(--color-text-secondary)', marginTop: '0.5rem' }}>
               <a href="https://github.com/warasugitewara" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--color-accent)' }}>
-                View on GitHub →
+                View on GitHub &rarr;
               </a>
             </p>
           </div>
@@ -91,7 +93,7 @@ export const Projects = ({ i18n }: ProjectsProps) => {
                     <span className="project-language">{project.language}</span>
                   )}
                   {project.stars > 0 && (
-                    <span className="project-stars">⭐ {project.stars}</span>
+                    <span className="project-stars">&#11088; {project.stars}</span>
                   )}
                 </div>
               </a>

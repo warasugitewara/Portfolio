@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { useI18n } from './hooks/useI18n';
 import { useTheme } from './hooks/useTheme';
@@ -24,7 +23,7 @@ function App() {
         theme={theme}
       >
         <Routes>
-          <Route path="/" element={<HomePage i18n={i18n} />} />
+          <Route path="/" element={<HomePage i18n={i18n} lang={lang} />} />
           <Route path="/infrastructure" element={<InfrastructurePage i18n={i18n} />} />
         </Routes>
       </Layout>

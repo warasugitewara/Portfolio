@@ -4,14 +4,17 @@ import { getDataUrl } from '../utils/path';
 
 interface Principle {
   title: string;
+  title_ja?: string;
   description: string;
+  description_ja?: string;
 }
 
 interface PhilosophyProps {
   i18n: I18n | null;
+  lang: string;
 }
 
-export const Philosophy = ({ i18n }: PhilosophyProps) => {
+export const Philosophy = ({ i18n, lang }: PhilosophyProps) => {
   const [principles, setPrinciples] = useState<Principle[]>([]);
 
   useEffect(() => {
@@ -25,7 +28,6 @@ export const Philosophy = ({ i18n }: PhilosophyProps) => {
         console.error('Failed to load philosophy:', error);
       }
     };
-
     loadPhilosophy();
   }, []);
 
@@ -38,8 +40,12 @@ export const Philosophy = ({ i18n }: PhilosophyProps) => {
         <div className="principles-grid">
           {principles.map((principle) => (
             <div key={principle.title} className="principle-card">
-              <h3 className="principle-title">{principle.title}</h3>
-              <p className="principle-description">{principle.description}</p>
+              <h3 className="principle-title">
+                {lang === 'ja' && principle.title_ja ? principle.title_ja : principle.title}
+              </h3>
+              <p className="principle-description">
+                {lang === 'ja' && principle.description_ja ? principle.description_ja : principle.description}
+              </p>
             </div>
           ))}
         </div>
