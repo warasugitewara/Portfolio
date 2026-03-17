@@ -45,6 +45,12 @@ app.get('/github-contribution-grid-snake.svg', async (c) => {
   }
 })
 
+// Cache data JSON for 5 minutes
+app.use('/data/*', async (c, next) => {
+  await next();
+  c.header('Cache-Control', 'public, max-age=300');
+});
+
 // Static file serving for dist directory
 app.use('/*', serveStatic({ root: './dist' }))
 

@@ -378,6 +378,9 @@ a:hover {
   padding: 2rem;
 }
 
+
+
+
 /* Snake Animation Section */
 .snake {
   padding: 3rem 0;
@@ -531,6 +534,7 @@ a:hover {
   }
 
   .hero {
+    background-attachment: scroll;
     margin: 0 -1rem;
     padding: 3rem 1rem 1.5rem;
   }

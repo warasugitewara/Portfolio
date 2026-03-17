@@ -1,37 +1,17 @@
-import { useEffect, useState } from 'react';
-import type { Profile } from '../types';
-import type { I18n } from '../types';
-import { getDataUrl } from '../utils/path';
+import type { Profile, I18n } from '../types';
 
 interface HeroProps {
   i18n: I18n | null;
+  profile: Profile | null;
 }
 
-export const Hero = ({ i18n }: HeroProps) => {
-  const [profile, setProfile] = useState<Profile | null>(null);
-  const [avatar, setAvatar] = useState<string>('');
-
-  useEffect(() => {
-    const loadProfile = async () => {
-      try {
-        const response = await fetch(getDataUrl('profile.json'));
-        if (!response.ok) throw new Error(`Failed to load profile: ${response.status}`);
-        const data = await response.json();
-        setProfile(data);
-        setAvatar(data.avatar);
-      } catch (error) {
-        console.error('Failed to load profile:', error);
-        setAvatar('https://avatars.githubusercontent.com/u/87893552?v=4');
-      }
-    };
-
-    loadProfile();
-  }, []);
-
+export const Hero = ({ i18n, profile }: HeroProps) => {
   if (!i18n) return null;
 
+  const avatar = profile?.avatar ?? '';
+
   return (
-    <section 
+    <section
       className="hero"
       style={{
         backgroundImage: 'url(/minecraft-city.png)',
@@ -41,7 +21,6 @@ export const Hero = ({ i18n }: HeroProps) => {
         position: 'relative',
       }}
     >
-      {/* Dark overlay for text readability */}
       <div
         style={{
           position: 'absolute',
@@ -53,11 +32,10 @@ export const Hero = ({ i18n }: HeroProps) => {
           zIndex: 1,
         }}
       />
-
       <div className="hero-container" style={{ position: 'relative', zIndex: 2 }}>
         {avatar && (
           <div className="hero-avatar">
-            <img src={avatar} alt="warasugi" loading="lazy" />
+            <img src={avatar} alt="warasugi" loading="eager" />
           </div>
         )}
         <div className="hero-content">

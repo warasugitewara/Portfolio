@@ -13,7 +13,10 @@
   },
   "about": {
     "title": "About",
-    "description": "Information systems student based in Hokkaido. Focused on lightweight, high-performance systems and CLI tools."
+    "description": "Information systems student based in Hokkaido. Focused on lightweight, high-performance systems and CLI tools.",
+    "hobby": "Lately I've been learning by playing with my self-hosted server.",
+    "school": "Education",
+    "credentials": "Certifications"
   },
   "skills": {
     "title": "Skills",

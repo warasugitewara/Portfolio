@@ -1,29 +1,11 @@
 import type { I18n, Profile } from '../types';
-import { useEffect, useState } from 'react';
-import { getDataUrl } from '../utils/path';
 
 interface AboutProps {
   i18n: I18n | null;
+  profile: Profile | null;
 }
 
-export const About = ({ i18n }: AboutProps) => {
-  const [profile, setProfile] = useState<Profile | null>(null);
-
-  useEffect(() => {
-    const loadProfile = async () => {
-      try {
-        const response = await fetch(getDataUrl('profile.json'));
-        if (!response.ok) throw new Error(`Failed to load profile: ${response.status}`);
-        const data = await response.json();
-        setProfile(data);
-      } catch (error) {
-        console.error('Failed to load profile:', error);
-      }
-    };
-
-    loadProfile();
-  }, []);
-
+export const About = ({ i18n, profile }: AboutProps) => {
   if (!i18n || !profile) return null;
 
   return (
@@ -32,17 +14,20 @@ export const About = ({ i18n }: AboutProps) => {
         <h2 className="section-title">{i18n.about.title}</h2>
         <div className="about-content">
           <p>{i18n.about.description}</p>
-          <p style={{ marginTop: '1rem' }}>最近は自作鯖で遊びながら学んでいます。</p>
+          <p style={{ marginTop: '1rem' }}>{i18n.about.hobby}</p>
           <p style={{ marginTop: '1rem' }}>
-            <strong>学歴:</strong> {profile.school}
+            <strong>{i18n.about.school}:</strong> {profile.school}
           </p>
           {profile.credentials && profile.credentials.length > 0 && (
             <p style={{ marginTop: '1rem' }}>
-              <strong>資格:</strong> {profile.credentials.join(', ')}
+              <strong>{i18n.about.credentials}:</strong> {profile.credentials.join(', ')}
             </p>
           )}
           <p style={{ marginTop: '1rem' }}>
-            <strong>GitHub:</strong> <a href={profile.github} target="_blank" rel="noopener noreferrer">@warasugitewara</a>
+            <strong>GitHub:</strong>{' '}
+            <a href={profile.github} target="_blank" rel="noopener noreferrer">
+              @warasugitewara
+            </a>
           </p>
         </div>
       </div>
