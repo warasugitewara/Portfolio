@@ -44,7 +44,7 @@ export const Hero = ({ i18n, profile }: HeroProps) => {
           <h1 className="hero-title">{i18n.hero.title}</h1>
           <p className="hero-subtitle">{i18n.hero.subtitle}</p>
           {profile && (
-            <p className="hero-location">�� {profile.location}</p>
+            <p className="hero-location">{"\uD83D\uDCCD"} {profile.location}</p>
           )}
         </div>
       </div>
