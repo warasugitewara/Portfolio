@@ -35,14 +35,16 @@ export const Hero = ({ i18n, profile }: HeroProps) => {
       <div className="hero-container" style={{ position: 'relative', zIndex: 2 }}>
         {avatar && (
           <div className="hero-avatar">
-            <img src={avatar} alt="warasugi" loading="eager" />
+            <a href="https://github.com/warasugitewara" target="_blank" rel="noopener noreferrer">
+              <img src={avatar} alt="warasugi" loading="eager" />
+            </a>
           </div>
         )}
         <div className="hero-content">
           <h1 className="hero-title">{i18n.hero.title}</h1>
           <p className="hero-subtitle">{i18n.hero.subtitle}</p>
           {profile && (
-            <p className="hero-location">📍 {profile.location}</p>
+            <p className="hero-location">�� {profile.location}</p>
           )}
         </div>
       </div>
