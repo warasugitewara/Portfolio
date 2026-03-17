@@ -16,9 +16,9 @@ export const useI18n = (defaultLang: Language = 'ja') => {
   useEffect(() => {
     const loadI18n = async () => {
       try {
-        const url = \data/i18n-\.json\;
+        const url = `${basePath}data/i18n-${lang}.json`;
         const response = await fetch(url);
-        if (!response.ok) throw new Error(\Failed to load i18n: \);
+        if (!response.ok) throw new Error(`Failed to load i18n: ${response.status}`);
         const data = await response.json();
         setI18n(data);
       } catch (error) {
