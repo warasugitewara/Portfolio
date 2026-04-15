@@ -210,8 +210,8 @@ export const InfrastructurePage = ({ i18n }: InfrastructurePageProps) => {
                   <text x="255" y="402" textAnchor="middle" className="node-text">🎵 music-bot [VMID:101]</text>
                   <text x="255" y="422" textAnchor="middle" className="label-text">Discord 音楽ボット</text>
 
-                  <text x="70" y="462" className="section-label">VM</text>
-                  <rect x="65" y="469" width="380" height="115" className="vm-rect" rx="3"/>
+                  <text x="70" y="462" className="section-label">LXC</text>
+                  <rect x="65" y="469" width="380" height="115" className="container-rect" rx="3"/>
                   <text x="255" y="494" textAnchor="middle" className="node-text">🎮 Minecraft [VMID:300]</text>
                   <text x="75" y="515" className="label-text" style={{ fontSize: '12px' }}>• Mechanical Mastery Modpack</text>
                   <text x="75" y="532" className="label-text" style={{ fontSize: '12px' }}>• Java Edition サーバー</text>
@@ -239,7 +239,7 @@ export const InfrastructurePage = ({ i18n }: InfrastructurePageProps) => {
                   {/* ── Dell ── */}
                   <rect x="985" y="215" width="405" height="670" className="node-inner-rect" rx="4"/>
                   <text x="1187" y="245" textAnchor="middle" className="node-text">🖥️ Dell</text>
-                  <text x="1187" y="263" textAnchor="middle" className="label-text">OptiPlex 7040 Micro / i3-6100 / 8GB</text>
+                  <text x="1187" y="263" textAnchor="middle" className="label-text">OptiPlex 7040 SFF / i3-6100 / 8GB</text>
 
                   <text x="1000" y="291" className="section-label">LXC</text>
                   <rect x="995" y="298" width="385" height="65" className="container-rect" rx="3"/>

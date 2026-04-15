@@ -2,7 +2,7 @@
   "infrastructure": {
     "title": "自作鯖構成",
     "subtitle": "waras-nw — 3ノード Proxmox VE クラスター",
-    "overview": "HP Z240 SFF × 2台と Dell OptiPlex 7040 Micro で構成する 3ノード Proxmox VE クラスター（waras-nw）。ゼロトラストアクセス（Twingate 2拠点冗長）・GPU パススルー（Quadro P600）・Zabbix 監視を備え、開発・ゲーミング・各種サービスを稼働中。インターネットへの直接ポート公開は行わない。",
+    "overview": "HP Z240 SFF × 2台と Dell OptiPlex 7040 SFF で構成する 3ノード Proxmox VE クラスター（waras-nw）。ゼロトラストアクセス（Twingate 2拠点冗長）・GPU パススルー（Quadro P600）・Zabbix 監視を備え、開発・ゲーミング・各種サービスを稼働中。インターネットへの直接ポート公開は行わない。",
 
     "design_philosophy": [
       "ゼロトラスト型ネットワークアクセス — インターネットへのポート公開なし",
@@ -36,18 +36,21 @@
           {
             "type": "LXC",
             "vmid": 100,
+            "os": "Debian 12/13",
             "name": "obsidian-host",
             "purpose": "Obsidian-livesync 用 CouchDB データベース"
           },
           {
             "type": "LXC",
             "vmid": 101,
+            "os": "Debian 12/13",
             "name": "music-bot",
             "purpose": "Discord 音楽ボット"
           },
           {
-            "type": "VM",
+            "type": "LXC",
             "vmid": 300,
+            "os": "Debian 12/13",
             "name": "Minecraft",
             "purpose": "重量級 Modpack サーバー",
             "details": [
@@ -81,6 +84,7 @@
           {
             "type": "LXC",
             "vmid": 105,
+            "os": "Debian 12/13",
             "name": "twingate-connector",
             "purpose": "ゼロトラストリモートアクセスのトンネルエンドポイント（HP-2 側）"
           }
@@ -89,31 +93,39 @@
       {
         "id": "dell",
         "name": "Dell",
-        "hardware": "Dell OptiPlex 7040 Micro — Intel Core i3-6100 (4 threads) + RAM 8GB + SSD 128GB + HDD (Toshiba)",
+        "hardware": "Dell OptiPlex 7040 SFF — Intel Core i3-6100 (4 threads) + RAM 8GB + SSD 128GB + HDD (Toshiba)",
         "role": "管理ノード / ネットワークサービスノード",
         "purpose": "Twingate・ポートフォリオ・Zabbix 監視を担当するクラスター管理ノード。",
         "workloads": [
           {
             "type": "LXC",
             "vmid": 102,
+            "os": "Debian 12/13",
             "name": "twingate",
             "purpose": "ゼロトラストリモートアクセスのトンネルエンドポイント（Dell 側）"
           },
           {
             "type": "LXC",
             "vmid": 103,
+            "os": "Debian 12/13",
             "name": "portfolio",
             "purpose": "Bun + Hono で稼働中のポートフォリオサイト（portfolio.warasugi.com）"
           },
           {
             "type": "LXC",
             "vmid": 104,
+            "os": "Debian 12/13",
             "name": "pote-monitor",
-            "purpose": "Zabbix エージェント / 監視プロキシ"
+            "purpose": "BTC/ETH 価格変動を1時間ごとに Discord Webhook で通知するモニタリングツール",
+            "details": [
+              "github.com/Poteto-Groove/poteto-monitor",
+              "1時間ごとに Discord へ価格通知"
+            ]
           },
           {
-            "type": "VM",
+            "type": "LXC",
             "vmid": 106,
+            "os": "Debian 12/13",
             "name": "ZABBIX",
             "purpose": "Zabbix サーバー — クラスター全体のインフラメトリクス収集・アラート管理"
           }
@@ -168,7 +180,8 @@
           "Proxmox クラスター構築（waras-nw 3ノード）",
           "dev-01 GPU パススルー（Quadro P600）",
           "Sunshine/Moonlight ゲーミング環境",
-          "Zabbix 監視導入（pote-monitor）",
+          "Zabbix 監視導入",
+          "pote-monitor（BTC/ETH Discord 通知ツール）",
           "Minecraft サーバー稼働",
           "Twingate 2拠点冗長化"
         ]
@@ -213,7 +226,7 @@
     ],
 
     "operational_practices": {
-      "monitoring": "Zabbix (pote-monitor) + Proxmox Web UI",
+      "monitoring": "Zabbix サーバー (VMID 106) + pote-monitor (BTC/ETH Discord 通知) + Proxmox Web UI",
       "backups": "手動 + Google Drive クラウドバックアップ",
       "updates": "定期更新 + 手動確認",
       "documentation": "Obsidian Markdown ノート"
