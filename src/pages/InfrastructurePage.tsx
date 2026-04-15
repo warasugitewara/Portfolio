@@ -254,8 +254,7 @@ export const InfrastructurePage = ({ i18n }: InfrastructurePageProps) => {
                   <text x="1187" y="473" textAnchor="middle" className="node-text">📡 pote-monitor [VMID:104]</text>
                   <text x="1187" y="493" textAnchor="middle" className="label-text">Zabbix エージェント / プロキシ</text>
 
-                  <text x="1000" y="533" className="section-label">VM</text>
-                  <rect x="995" y="540" width="385" height="65" className="vm-rect" rx="3"/>
+                  <rect x="995" y="540" width="385" height="65" className="container-rect" rx="3"/>
                   <text x="1187" y="565" textAnchor="middle" className="node-text">📊 ZABBIX [VMID:106]</text>
                   <text x="1187" y="585" textAnchor="middle" className="label-text">監視サーバー (クラスター全体)</text>
 
@@ -290,7 +289,7 @@ export const InfrastructurePage = ({ i18n }: InfrastructurePageProps) => {
                   <text x="60" y="1158" className="legend-text"><tspan className="legend-icon-text">🖧</tspan> waras-nw — Proxmox VE 9.x 3ノードクラスター (HP-1 / HP-2 / Dell)</text>
                   <text x="60" y="1198" className="legend-text"><tspan className="legend-icon-text">🔒</tspan> ゼロトラスト — Twingate を HP-2 (VMID:105) + Dell (VMID:102) で冗長化</text>
                   <text x="60" y="1238" className="legend-text"><tspan className="legend-icon-text">🎮</tspan> GPU — dev-01 に Quadro P600 PCIe パススルー + Sunshine/Moonlight ゲーミング</text>
-                  <text x="60" y="1278" className="legend-text"><tspan className="legend-icon-text">📊</tspan> 監視 — ZABBIX サーバー (VM:106) + pote-monitor エージェント (LXC:104)</text>
+                  <text x="60" y="1278" className="legend-text"><tspan className="legend-icon-text">📊</tspan> 監視 — ZABBIX サーバー (CT:106) + pote-monitor (CT:104)</text>
                   <text x="60" y="1318" className="legend-text"><tspan className="legend-icon-text">🌐</tspan> サービス — obsidian/music-bot (HP-1) / portfolio (Dell) / Minecraft (HP-1)</text>
                   <text x="60" y="1368" className="legend-text"><tspan className="legend-icon-text">✅ Phase 1+2</tspan>  完了（単一ノード→3ノードクラスター / GPU / Zabbix）　<tspan className="legend-icon-text">🚧 Phase 3</tspan>  検討中</text>
                 </svg>
@@ -303,7 +302,7 @@ export const InfrastructurePage = ({ i18n }: InfrastructurePageProps) => {
                   <li style={{ marginBottom: '0.4rem' }}>✓ waras-nw 3ノードクラスター — HP-1 / HP-2 / Dell の分散ワークロード構成</li>
                   <li style={{ marginBottom: '0.4rem' }}>✓ Twingate ゼロトラスト — HP-2 (VMID:105) + Dell (VMID:102) の2拠点冗長化</li>
                   <li style={{ marginBottom: '0.4rem' }}>✓ GPU パススルー — dev-01 に Quadro P600 でゲーミング・開発環境を実現</li>
-                  <li style={{ marginBottom: '0.4rem' }}>✓ ZABBIX 監視 — サーバー(VM:106) + pote-monitor エージェント(LXC:104) でクラスター全体を監視</li>
+                  <li style={{ marginBottom: '0.4rem' }}>✓ ZABBIX 監視 — サーバー(CT:106) + pote-monitor (CT:104) でクラスター全体を監視</li>
                   <li>✓ マルチレイヤーセキュリティ：Ed25519 SSH鍵 + TOTP 2FA + Anubis ボット対策</li>
                 </ul>
               </div>

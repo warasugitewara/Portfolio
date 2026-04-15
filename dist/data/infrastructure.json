@@ -141,7 +141,7 @@
         "SSH は内部ネットワークのみ",
         "Caddy + Anubis によるボット対策（portfolio）"
       ],
-      "dns": "ローカル DNS + ISP DNS + Cloudflare（portfolio.warasugi.com）"
+      "dns": "Cloudflare DNS (1.1.1.1 / 1.0.0.1) — 全 CT/VM 統一"
     },
 
     "security_model": {
