@@ -25,6 +25,7 @@ interface InfrastructureData {
       workloads: Array<{
         type: string;
         name: string;
+        vmid?: number;
         os?: string;
         purpose?: string;
         details?: string[];
@@ -145,13 +146,14 @@ export const InfrastructurePage = ({ i18n }: InfrastructurePageProps) => {
           {expandedSections.diagram && (
             <div style={{ padding: '2rem', marginTop: '1rem', backgroundColor: 'rgba(0,255,136,0.03)', borderRadius: '4px', border: '1px solid rgba(0,255,136,0.2)', overflowX: 'auto' }}>
               <div style={{ minWidth: '100%', backgroundColor: '#0a0e27', padding: '1rem', borderRadius: '4px' }}>
-                <svg viewBox="0 0 1400 1300" style={{ width: '100%', height: 'auto', minHeight: '900px' }}>
+                <svg viewBox="0 0 1440 1500" style={{ width: '100%', height: 'auto', minHeight: '900px' }}>
                   <defs>
                     <style>{`
                       .node-rect { fill: rgba(0,255,136,0.1); stroke: #00ff88; stroke-width: 2; }
                       .node-text { fill: #00ff88; font-family: monospace; font-size: 16px; font-weight: bold; }
                       .label-text { fill: #ccc; font-family: monospace; font-size: 13px; }
                       .container-rect { fill: rgba(100,200,255,0.08); stroke: rgba(100,200,255,0.5); stroke-width: 1; }
+                      .vm-rect { fill: rgba(255,200,100,0.08); stroke: rgba(255,200,100,0.5); stroke-width: 1; }
                       .connector-line { stroke: #00ff88; stroke-width: 2; fill: none; }
                       .arrow { fill: #00ff88; }
                       .section-label { fill: #999; font-family: monospace; font-size: 13px; font-style: italic; }
@@ -159,131 +161,137 @@ export const InfrastructurePage = ({ i18n }: InfrastructurePageProps) => {
                       .legend-title { fill: #00ff88; font-family: monospace; font-size: 18px; font-weight: bold; }
                       .legend-text { fill: #ddd; font-family: monospace; font-size: 15px; }
                       .legend-icon-text { fill: #00ff88; font-family: monospace; font-size: 15px; font-weight: bold; }
+                      .cluster-rect { fill: rgba(0,255,136,0.05); stroke: #00ff88; stroke-width: 3; stroke-dasharray: 8,4; }
+                      .node-inner-rect { fill: rgba(0,255,136,0.08); stroke: rgba(0,255,136,0.6); stroke-width: 2; }
                     `}</style>
                   </defs>
-                  
+
                   {/* Title */}
-                  <text x="700" y="35" textAnchor="middle" className="title-text">ホームラボ インフラストラクチャ — Proxmox VE 9.x</text>
+                  <text x="720" y="40" textAnchor="middle" className="title-text">ホームラボ インフラストラクチャ — waras-nw クラスター (Proxmox VE 9.x)</text>
 
-                  {/* Internet Section */}
-                  <text x="50" y="100" className="section-label">インターネット</text>
-                  <rect x="40" y="110" width="180" height="60" className="node-rect" rx="4"/>
-                  <text x="130" y="150" textAnchor="middle" className="node-text">Internet</text>
+                  {/* Internet */}
+                  <text x="50" y="80" className="section-label">インターネット</text>
+                  <rect x="40" y="90" width="170" height="55" className="node-rect" rx="4"/>
+                  <text x="125" y="125" textAnchor="middle" className="node-text">Internet</text>
 
-                  {/* Twingate Section */}
-                  <text x="300" y="100" className="section-label">ゼロトラスト層</text>
-                  <rect x="280" y="110" width="220" height="60" className="node-rect" rx="4"/>
-                  <text x="390" y="140" textAnchor="middle" className="node-text">🔒 Twingate</text>
-                  <text x="390" y="160" textAnchor="middle" className="label-text">セキュアトンネル</text>
+                  {/* Twingate */}
+                  <text x="265" y="80" className="section-label">ゼロトラスト層</text>
+                  <rect x="260" y="90" width="210" height="55" className="node-rect" rx="4"/>
+                  <text x="365" y="117" textAnchor="middle" className="node-text">🔒 Twingate</text>
+                  <text x="365" y="135" textAnchor="middle" className="label-text">セキュアトンネル</text>
 
-                  {/* Local Network */}
-                  <text x="650" y="100" className="section-label">ローカルネットワーク</text>
-                  <rect x="620" y="110" width="680" height="60" className="node-rect" rx="4"/>
-                  <text x="960" y="150" textAnchor="middle" className="node-text">🏠 Home LAN (192.168.x.x)</text>
+                  {/* LAN */}
+                  <text x="535" y="80" className="section-label">ローカルネットワーク</text>
+                  <rect x="530" y="90" width="870" height="55" className="node-rect" rx="4"/>
+                  <text x="965" y="125" textAnchor="middle" className="node-text">🏠 Home LAN (192.168.x.x)</text>
 
-                  {/* Arrows from Internet */}
-                  <path d="M 220 140 L 280 140" className="connector-line" markerEnd="url(#arrowhead)"/>
-                  <polygon points="280,140 270,135 275,140 270,145" className="arrow"/>
-                  <path d="M 500 140 L 620 140" className="connector-line" markerEnd="url(#arrowhead)"/>
-                  <polygon points="620,140 610,135 615,140 610,145" className="arrow"/>
+                  {/* Arrows */}
+                  <path d="M 210 117 L 258 117" className="connector-line"/>
+                  <polygon points="260,117 252,113 257,117 252,121" className="arrow"/>
+                  <path d="M 470 117 L 528 117" className="connector-line"/>
+                  <polygon points="530,117 522,113 527,117 522,121" className="arrow"/>
 
-                  {/* Dell-1 Node */}
-                  <text x="50" y="250" className="section-label">Dell-1 メインコンピュートノード</text>
-                  <text x="50" y="270" className="label-text">Intel Core i3-6100 + 16GB RAM + SSD 128GB + HDD 512GB</text>
-                  <rect x="40" y="280" width="1320" height="500" className="node-rect" rx="4"/>
-                  <text x="700" y="310" textAnchor="middle" className="node-text">🖥️ Dell-1 (Proxmox VE 9.x)</text>
+                  {/* waras-nw Cluster */}
+                  <rect x="40" y="175" width="1360" height="740" className="cluster-rect" rx="6"/>
+                  <text x="720" y="202" textAnchor="middle" className="node-text">🖧 waras-nw (Proxmox VE 9.x — 3ノードクラスター)</text>
 
-                  {/* VM Section */}
-                  <text x="60" y="350" className="section-label">仮想マシン (VM)</text>
-                  <rect x="55" y="360" width="240" height="110" className="container-rect" rx="3"/>
-                  <text x="175" y="390" textAnchor="middle" className="node-text">dev-01</text>
-                  <text x="175" y="408" textAnchor="middle" className="label-text">Debian 13</text>
-                  <text x="65" y="426" className="label-text" style={{ fontSize: '12px' }}>• SSH開発環境</text>
-                  <text x="65" y="442" className="label-text" style={{ fontSize: '12px' }}>• Neovim + CLI</text>
-                  <text x="65" y="458" className="label-text" style={{ fontSize: '12px' }}>• GitHub連携</text>
+                  {/* ── HP-1 ── */}
+                  <rect x="55" y="215" width="400" height="670" className="node-inner-rect" rx="4"/>
+                  <text x="255" y="245" textAnchor="middle" className="node-text">🖥️ HP-1</text>
+                  <text x="255" y="263" textAnchor="middle" className="label-text">HP Z240 SFF / Xeon E3-1225 / 16GB</text>
 
-                  {/* LXC Containers Section */}
-                  <text x="330" y="350" className="section-label">LXC コンテナ</text>
+                  <text x="70" y="295" className="section-label">LXC</text>
+                  <rect x="65" y="302" width="380" height="65" className="container-rect" rx="3"/>
+                  <text x="255" y="327" textAnchor="middle" className="node-text">📓 obsidian-host [VMID:100]</text>
+                  <text x="255" y="347" textAnchor="middle" className="label-text">livesync CouchDB</text>
 
-                  {/* Music Bot */}
-                  <rect x="305" y="360" width="190" height="110" className="container-rect" rx="3"/>
-                  <text x="400" y="390" textAnchor="middle" className="node-text">🎵 Music Bot</text>
-                  <text x="400" y="408" textAnchor="middle" className="label-text">Discord音楽ボット</text>
+                  <rect x="65" y="377" width="380" height="65" className="container-rect" rx="3"/>
+                  <text x="255" y="402" textAnchor="middle" className="node-text">🎵 music-bot [VMID:101]</text>
+                  <text x="255" y="422" textAnchor="middle" className="label-text">Discord 音楽ボット</text>
 
-                  {/* Twingate Connector */}
-                  <rect x="535" y="360" width="190" height="110" className="container-rect" rx="3"/>
-                  <text x="630" y="390" textAnchor="middle" className="node-text">🔐 Twingate</text>
-                  <text x="630" y="408" textAnchor="middle" className="label-text">トンネルエンドポイント</text>
+                  <text x="70" y="462" className="section-label">VM</text>
+                  <rect x="65" y="469" width="380" height="115" className="vm-rect" rx="3"/>
+                  <text x="255" y="494" textAnchor="middle" className="node-text">🎮 Minecraft [VMID:300]</text>
+                  <text x="75" y="515" className="label-text" style={{ fontSize: '12px' }}>• Mechanical Mastery Modpack</text>
+                  <text x="75" y="532" className="label-text" style={{ fontSize: '12px' }}>• Java Edition サーバー</text>
 
-                  {/* Obsidian */}
-                  <rect x="765" y="360" width="190" height="110" className="container-rect" rx="3"/>
-                  <text x="860" y="390" textAnchor="middle" className="node-text">📓 Obsidian</text>
-                  <text x="860" y="408" textAnchor="middle" className="label-text">livesync DB</text>
+                  {/* ── HP-2 ── */}
+                  <rect x="520" y="215" width="400" height="670" className="node-inner-rect" rx="4"/>
+                  <text x="720" y="245" textAnchor="middle" className="node-text">🖥️ HP-2 (GPU)</text>
+                  <text x="720" y="263" textAnchor="middle" className="label-text">HP Z240 SFF / Xeon E3-1245 v5 / 16GB</text>
+                  <text x="720" y="280" textAnchor="middle" className="label-text">+ NVIDIA Quadro P600</text>
 
-                  {/* Portfolio */}
-                  <rect x="995" y="360" width="190" height="110" className="container-rect" rx="3"/>
-                  <text x="1090" y="390" textAnchor="middle" className="node-text">🌐 Portfolio</text>
-                  <text x="1090" y="408" textAnchor="middle" className="label-text">Bun + Hono</text>
-                  <text x="1090" y="424" textAnchor="middle" className="label-text" style={{ fontSize: '11px' }}>wc.f5.si</text>
+                  <text x="535" y="308" className="section-label">VM</text>
+                  <rect x="530" y="315" width="380" height="225" className="vm-rect" rx="3"/>
+                  <text x="720" y="340" textAnchor="middle" className="node-text">💻 dev-01 [VMID:200]</text>
+                  <text x="720" y="358" textAnchor="middle" className="label-text">Debian + Xfce</text>
+                  <text x="540" y="378" className="label-text" style={{ fontSize: '12px' }}>• WezTerm + SSH 開発環境</text>
+                  <text x="540" y="395" className="label-text" style={{ fontSize: '12px' }}>• Neovim / CLI 中心ワークフロー</text>
+                  <text x="540" y="412" className="label-text" style={{ fontSize: '12px' }}>• NVIDIA Quadro P600 PCIe パススルー</text>
+                  <text x="540" y="429" className="label-text" style={{ fontSize: '12px' }}>• Sunshine/Moonlight ゲーミング</text>
 
-                  {/* Storage Section */}
-                  <text x="60" y="535" className="section-label">ストレージ &amp; バックアップ</text>
-                  <rect x="55" y="545" width="240" height="110" className="container-rect" rx="3"/>
-                  <text x="175" y="575" textAnchor="middle" className="node-text">💾 ストレージ</text>
-                  <text x="65" y="595" className="label-text" style={{ fontSize: '12px' }}>• SSD: 128GB</text>
-                  <text x="65" y="611" className="label-text" style={{ fontSize: '12px' }}>• HDD: 512GB</text>
-                  <text x="65" y="627" className="label-text" style={{ fontSize: '12px' }}>• スナップショット</text>
+                  <text x="535" y="562" className="section-label">LXC</text>
+                  <rect x="530" y="569" width="380" height="65" className="container-rect" rx="3"/>
+                  <text x="720" y="594" textAnchor="middle" className="node-text">🔐 twingate-connector [VMID:105]</text>
+                  <text x="720" y="614" textAnchor="middle" className="label-text">ゼロトラストトンネル</text>
 
-                  {/* Backup Section */}
-                  <rect x="305" y="545" width="240" height="110" className="container-rect" rx="3"/>
-                  <text x="425" y="575" textAnchor="middle" className="node-text">☁️ バックアップ</text>
-                  <text x="315" y="595" className="label-text" style={{ fontSize: '12px' }}>• Google Drive</text>
-                  <text x="315" y="611" className="label-text" style={{ fontSize: '12px' }}>• USBコールド</text>
-                  <text x="315" y="627" className="label-text" style={{ fontSize: '12px' }}>• Proxmoxバックアップ</text>
+                  {/* ── Dell ── */}
+                  <rect x="985" y="215" width="405" height="670" className="node-inner-rect" rx="4"/>
+                  <text x="1187" y="245" textAnchor="middle" className="node-text">🖥️ Dell</text>
+                  <text x="1187" y="263" textAnchor="middle" className="label-text">OptiPlex 7040 Micro / i3-6100 / 8GB</text>
 
-                  {/* Security Section */}
-                  <rect x="595" y="545" width="300" height="110" className="container-rect" rx="3"/>
-                  <text x="745" y="575" textAnchor="middle" className="node-text">🔐 セキュリティ</text>
-                  <text x="605" y="595" className="label-text" style={{ fontSize: '12px' }}>• Ed25519 SSH鍵</text>
-                  <text x="605" y="611" className="label-text" style={{ fontSize: '12px' }}>• パスワード認証無効</text>
-                  <text x="605" y="627" className="label-text" style={{ fontSize: '12px' }}>• TOTP 2FA (Proxmox)</text>
+                  <text x="1000" y="291" className="section-label">LXC</text>
+                  <rect x="995" y="298" width="385" height="65" className="container-rect" rx="3"/>
+                  <text x="1187" y="323" textAnchor="middle" className="node-text">🔐 twingate [VMID:102]</text>
+                  <text x="1187" y="343" textAnchor="middle" className="label-text">ゼロトラストトンネル</text>
 
-                  {/* Monitoring Section */}
-                  <rect x="945" y="545" width="240" height="110" className="container-rect" rx="3"/>
-                  <text x="1065" y="575" textAnchor="middle" className="node-text">📊 運用管理</text>
-                  <text x="955" y="595" className="label-text" style={{ fontSize: '12px' }}>• Proxmox Web UI</text>
-                  <text x="955" y="611" className="label-text" style={{ fontSize: '12px' }}>• 手動監視</text>
-                  <text x="955" y="627" className="label-text" style={{ fontSize: '12px' }}>• クラウドバックアップ</text>
+                  <rect x="995" y="373" width="385" height="65" className="container-rect" rx="3"/>
+                  <text x="1187" y="398" textAnchor="middle" className="node-text">🌐 portfolio [VMID:103]</text>
+                  <text x="1187" y="418" textAnchor="middle" className="label-text">Bun + Hono | warasugi.com</text>
 
-                  {/* Legend Background */}
-                  <rect x="40" y="820" width="1320" height="450" className="node-rect" rx="4" fill="rgba(0,255,136,0.08)"/>
-                  
-                  {/* Legend Title */}
-                  <text x="700" y="860" textAnchor="middle" className="legend-title">📋 凡例とシステム構成</text>
+                  <rect x="995" y="448" width="385" height="65" className="container-rect" rx="3"/>
+                  <text x="1187" y="473" textAnchor="middle" className="node-text">📡 pote-monitor [VMID:104]</text>
+                  <text x="1187" y="493" textAnchor="middle" className="label-text">Zabbix エージェント / プロキシ</text>
 
-                  {/* Legend Row 1 */}
-                  <text x="60" y="910" className="legend-text"><tspan className="legend-icon-text">🖧</tspan> Proxmox VE 9.x ハイパーバイザー</text>
-                  <text x="770" y="910" className="legend-text"><tspan className="legend-icon-text">🖥️</tspan> コンピュートノード</text>
+                  <text x="1000" y="533" className="section-label">VM</text>
+                  <rect x="995" y="540" width="385" height="65" className="vm-rect" rx="3"/>
+                  <text x="1187" y="565" textAnchor="middle" className="node-text">📊 ZABBIX [VMID:106]</text>
+                  <text x="1187" y="585" textAnchor="middle" className="label-text">監視サーバー (クラスター全体)</text>
 
-                  {/* Legend Row 2 */}
-                  <text x="60" y="950" className="legend-text"><tspan className="legend-icon-text">🔒</tspan> ゼロトラストセキュリティ (Twingate)</text>
-                  <text x="770" y="950" className="legend-text"><tspan className="legend-icon-text">🏠</tspan> ホームラン (192.168.x.x)</text>
+                  {/* Bottom Sections */}
+                  <rect x="40" y="950" width="320" height="105" className="node-rect" rx="4"/>
+                  <text x="200" y="980" textAnchor="middle" className="node-text">💾 ストレージ</text>
+                  <text x="55" y="1000" className="label-text" style={{ fontSize: '12px' }}>• HP-1: HDD 1TB</text>
+                  <text x="55" y="1017" className="label-text" style={{ fontSize: '12px' }}>• Dell: SSD + Toshiba HDD</text>
+                  <text x="55" y="1034" className="label-text" style={{ fontSize: '12px' }}>• Proxmox スナップショット</text>
 
-                  {/* Legend Row 3 */}
-                  <text x="60" y="990" className="legend-text"><tspan className="legend-icon-text">💾</tspan> ストレージ (SSD + HDD)</text>
-                  <text x="770" y="990" className="legend-text"><tspan className="legend-icon-text">☁️</tspan> クラウドバックアップ (Google Drive + USB)</text>
+                  <rect x="380" y="950" width="320" height="105" className="node-rect" rx="4"/>
+                  <text x="540" y="980" textAnchor="middle" className="node-text">☁️ バックアップ</text>
+                  <text x="395" y="1000" className="label-text" style={{ fontSize: '12px' }}>• Google Drive</text>
+                  <text x="395" y="1017" className="label-text" style={{ fontSize: '12px' }}>• USB コールドバックアップ</text>
+                  <text x="395" y="1034" className="label-text" style={{ fontSize: '12px' }}>• Proxmox バックアップ (Dell)</text>
 
-                  {/* Legend Row 4 */}
-                  <text x="60" y="1030" className="legend-text"><tspan className="legend-icon-text">🎵</tspan> Discord音楽ボット</text>
-                  <text x="770" y="1030" className="legend-text"><tspan className="legend-icon-text">📓</tspan> データベース (Obsidian livesync)</text>
+                  <rect x="720" y="950" width="320" height="105" className="node-rect" rx="4"/>
+                  <text x="880" y="980" textAnchor="middle" className="node-text">🔐 セキュリティ</text>
+                  <text x="735" y="1000" className="label-text" style={{ fontSize: '12px' }}>• Ed25519 SSH 鍵認証</text>
+                  <text x="735" y="1017" className="label-text" style={{ fontSize: '12px' }}>• パスワード認証無効</text>
+                  <text x="735" y="1034" className="label-text" style={{ fontSize: '12px' }}>• TOTP 2FA (Proxmox)</text>
 
-                  {/* Legend Row 5 */}
-                  <text x="60" y="1070" className="legend-text"><tspan className="legend-icon-text">🌐</tspan> Webサービス (Portfolio: Bun + Hono)</text>
-                  <text x="770" y="1070" className="legend-text"><tspan className="legend-icon-text">📊</tspan> 運用管理インターフェース</text>
+                  <rect x="1060" y="950" width="340" height="105" className="node-rect" rx="4"/>
+                  <text x="1230" y="980" textAnchor="middle" className="node-text">📊 監視・運用</text>
+                  <text x="1075" y="1000" className="label-text" style={{ fontSize: '12px' }}>• ZABBIX サーバー (VMID:106)</text>
+                  <text x="1075" y="1017" className="label-text" style={{ fontSize: '12px' }}>• pote-monitor エージェント</text>
+                  <text x="1075" y="1034" className="label-text" style={{ fontSize: '12px' }}>• Proxmox Web UI</text>
 
-                  {/* Legend Row 6 - Phase Status */}
-                  <text x="60" y="1120" className="legend-text"><tspan className="legend-icon-text">📈 フェーズステータス:</tspan></text>
-                  <text x="80" y="1160" className="legend-text"><tspan className="legend-icon-text">✅ Phase 1</tspan> (運用中)  |  <tspan className="legend-icon-text">🚧 Phase 2</tspan> (進行予定: Z240+クラスタ)  |  <tspan className="legend-icon-text">📋 Phase 3</tspan> (検討中: VLAN・監視)</text>
+                  {/* Legend */}
+                  <rect x="40" y="1080" width="1360" height="390" className="node-rect" rx="4"/>
+                  <text x="720" y="1115" textAnchor="middle" className="legend-title">📋 凡例とシステム構成</text>
+                  <text x="60" y="1158" className="legend-text"><tspan className="legend-icon-text">🖧</tspan> waras-nw — Proxmox VE 9.x 3ノードクラスター (HP-1 / HP-2 / Dell)</text>
+                  <text x="60" y="1198" className="legend-text"><tspan className="legend-icon-text">🔒</tspan> ゼロトラスト — Twingate を HP-2 (VMID:105) + Dell (VMID:102) で冗長化</text>
+                  <text x="60" y="1238" className="legend-text"><tspan className="legend-icon-text">🎮</tspan> GPU — dev-01 に Quadro P600 PCIe パススルー + Sunshine/Moonlight ゲーミング</text>
+                  <text x="60" y="1278" className="legend-text"><tspan className="legend-icon-text">📊</tspan> 監視 — ZABBIX サーバー (VM:106) + pote-monitor エージェント (LXC:104)</text>
+                  <text x="60" y="1318" className="legend-text"><tspan className="legend-icon-text">🌐</tspan> サービス — obsidian/music-bot (HP-1) / portfolio (Dell) / Minecraft (HP-1)</text>
+                  <text x="60" y="1368" className="legend-text"><tspan className="legend-icon-text">✅ Phase 1+2</tspan>  完了（単一ノード→3ノードクラスター / GPU / Zabbix）　<tspan className="legend-icon-text">🚧 Phase 3</tspan>  検討中</text>
                 </svg>
               </div>
 
@@ -291,11 +299,11 @@ export const InfrastructurePage = ({ i18n }: InfrastructurePageProps) => {
               <div style={{ marginTop: '1.5rem', padding: '1rem', backgroundColor: 'rgba(0,255,136,0.05)', borderRadius: '4px', border: '1px solid rgba(0,255,136,0.1)' }}>
                 <h4 style={{ color: '#00ff88', marginBottom: '0.5rem', fontSize: '0.95rem' }}>アーキテクチャのポイント</h4>
                 <ul style={{ fontSize: '0.9rem', color: '#ccc', listStyle: 'none', padding: '0', margin: '0' }}>
-                  <li style={{ marginBottom: '0.4rem' }}>✓ シンプルな単一ノード構成で保守性を確保 - Phase 2で3ノードクラスタへ拡張予定</li>
-                  <li style={{ marginBottom: '0.4rem' }}>✓ Twingate経由で完全なゼロトラストアクセス - インターネットへのポート公開なし</li>
-                  <li style={{ marginBottom: '0.4rem' }}>✓ 複数サービスをLXCコンテナで効率的に運用 - dev-01 VM + 4つのLXCワークロード</li>
-                  <li style={{ marginBottom: '0.4rem' }}>✓ マルチレイヤーセキュリティ：Ed25519 SSH鍵 + TOTP 2FA + ゼロトラストトンネル</li>
-                  <li>✓ 複数メディアへの冗長バックアップ - Google Drive + USB + Proxmoxスナップショット</li>
+                  <li style={{ marginBottom: '0.4rem' }}>✓ waras-nw 3ノードクラスター — HP-1 / HP-2 / Dell の分散ワークロード構成</li>
+                  <li style={{ marginBottom: '0.4rem' }}>✓ Twingate ゼロトラスト — HP-2 (VMID:105) + Dell (VMID:102) の2拠点冗長化</li>
+                  <li style={{ marginBottom: '0.4rem' }}>✓ GPU パススルー — dev-01 に Quadro P600 でゲーミング・開発環境を実現</li>
+                  <li style={{ marginBottom: '0.4rem' }}>✓ ZABBIX 監視 — サーバー(VM:106) + pote-monitor エージェント(LXC:104) でクラスター全体を監視</li>
+                  <li>✓ マルチレイヤーセキュリティ：Ed25519 SSH鍵 + TOTP 2FA + Anubis ボット対策</li>
                 </ul>
               </div>
             </div>
@@ -449,7 +457,7 @@ export const InfrastructurePage = ({ i18n }: InfrastructurePageProps) => {
                         {node.workloads.map((wl, idx) => (
                           <li key={idx} style={{ marginBottom: '0.8rem', paddingLeft: '1rem', position: 'relative', color: '#ccc' }}>
                             <span style={{ position: 'absolute', left: '0', color: '#00ff88' }}>→</span>
-                            <strong>{wl.name}</strong> ({wl.type})
+                            <strong>{wl.name}</strong> ({wl.type}{wl.vmid ? ` VMID:${wl.vmid}` : ''})
                             {wl.os && ` - ${wl.os}`}
                             {wl.purpose && <p style={{ margin: '0.3rem 0 0 0', fontSize: '0.85rem', color: '#aaa' }}>{wl.purpose}</p>}
                             {wl.details && (
@@ -638,8 +646,8 @@ export const InfrastructurePage = ({ i18n }: InfrastructurePageProps) => {
               {Object.entries(infra.infrastructure.future_roadmap).map(([phase, data]: [string, any]) => (
                 <div key={phase} style={{ padding: '1rem', backgroundColor: 'rgba(0,255,136,0.05)', borderRadius: '4px', border: '1px solid rgba(0,255,136,0.2)' }}>
                   <h4 style={{ marginBottom: '0.5rem', color: '#00ff88' }}>
-                    {phase === 'phase_1_current' && 'フェーズ 1: 現在'}
-                    {phase === 'phase_2_planned' && 'フェーズ 2: 進行中'}
+                    {phase === 'phase_1_current' && 'フェーズ 1: 完了'}
+                    {phase === 'phase_2_planned' && 'フェーズ 2: 完了'}
                     {phase === 'phase_3_future' && 'フェーズ 3: 検討中'}
                   </h4>
                   <p style={{ margin: '0 0 0.5rem 0', fontSize: '0.85rem', color: '#aaa' }}>{data.status}</p>

@@ -1,80 +1,135 @@
 {
   "infrastructure": {
     "title": "自作鯖構成",
-    "subtitle": "Proxmox VE によるゼロトラスト型ホームラボ",
-    "overview": "Proxmox VE を基盤とした個人インフラ環境。ゼロトラストアクセスとシンプルな構成を重視。全サービスは Twingate を経由したセキュアなアクセスで、インターネットへの直接ポート公開は行わない。",
+    "subtitle": "waras-nw — 3ノード Proxmox VE クラスター",
+    "overview": "HP Z240 SFF × 2台と Dell OptiPlex 7040 Micro で構成する 3ノード Proxmox VE クラスター（waras-nw）。ゼロトラストアクセス（Twingate 2拠点冗長）・GPU パススルー（Quadro P600）・Zabbix 監視を備え、開発・ゲーミング・各種サービスを稼働中。インターネットへの直接ポート公開は行わない。",
 
     "design_philosophy": [
       "ゼロトラスト型ネットワークアクセス — インターネットへのポート公開なし",
-      "シンプルで保守性の高い構成",
+      "3ノード Proxmox VE クラスターによる分散ワークロード構成",
+      "GPU パススルーによる開発・ゲーミング環境の実現（Quadro P600）",
       "Ed25519 SSH鍵認証 + パスワード認証無効化",
-      "複数メディアへのバックアップ (USB + クラウド)",
-      "ホームラボとして拡張可能なアーキテクチャ"
+      "複数メディアへのバックアップ（USB + クラウド）",
+      "Zabbix によるインフラメトリクス監視"
     ],
 
     "hypervisor": {
       "platform": "Proxmox VE 9.x",
-      "purpose": "KVM/QEMU virtualization with LXC containers",
+      "purpose": "KVM/QEMU 仮想化と LXC コンテナを統合管理。3ノードクラスター waras-nw として稼働。",
       "key_features": [
-        "Web-based virtualization management",
+        "Web ベース仮想化管理 UI",
         "VM / LXC コンテナ統合管理",
         "スナップショットとバックアップ",
-        "TOTP 二要素認証"
+        "TOTP 二要素認証",
+        "3ノードクラスター構成 (waras-nw)"
       ]
     },
 
     "nodes": [
       {
-        "id": "node1",
-        "name": "Dell-1",
-        "hardware": "Intel Core i3-6100 (4 threads) + RAM 16GB + SSD 128GB + HDD 512GB",
-        "role": "メインコンピュートノード",
-        "purpose": "開発・サービス・ホームラボ実験環境の中心",
-
+        "id": "hp1",
+        "name": "HP-1",
+        "hardware": "HP Z240 SFF — Xeon E3-1225 + RAM 16GB + HDD 1TB",
+        "role": "サービスノード",
+        "purpose": "waras-nw クラスターの第1ノード。Obsidian livesync・Discord Bot・Minecraft サーバーを担当。",
+        "workloads": [
+          {
+            "type": "LXC",
+            "vmid": 100,
+            "name": "obsidian-host",
+            "purpose": "Obsidian-livesync 用 CouchDB データベース"
+          },
+          {
+            "type": "LXC",
+            "vmid": 101,
+            "name": "music-bot",
+            "purpose": "Discord 音楽ボット"
+          },
+          {
+            "type": "VM",
+            "vmid": 300,
+            "name": "Minecraft",
+            "purpose": "重量級 Modpack サーバー",
+            "details": [
+              "Mechanical Mastery Modpack",
+              "Java Edition サーバー"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "hp2",
+        "name": "HP-2",
+        "hardware": "HP Z240 SFF — Xeon E3-1245 v5 (8 threads) + RAM 16GB + NVIDIA Quadro P600",
+        "role": "GPU コンピュートノード / 開発ノード",
+        "purpose": "GPU パススルーを活用した開発・ゲーミング環境。Twingate 経由でリモートアクセス可能。現在の開発作業はこのノード上の dev-01 で実施。",
         "workloads": [
           {
             "type": "VM",
+            "vmid": 200,
             "name": "dev-01",
-            "os": "Debian 13",
-            "purpose": "SSHベースの開発環境",
+            "os": "Debian + Xfce",
+            "purpose": "SSH ベース開発環境 + Sunshine/Moonlight ゲーミング",
             "details": [
               "WezTerm + SSH による開発",
-              "Neovim / CLI中心ワークフロー",
-              "GitHub連携"
+              "Neovim / CLI 中心ワークフロー",
+              "NVIDIA Quadro P600 PCIe パススルー",
+              "Sunshine/Moonlight ストリーミングゲーミング",
+              "GitHub 連携"
             ]
           },
           {
             "type": "LXC",
-            "name": "Music Bot",
-            "purpose": "Discord 音楽ボット"
+            "vmid": 105,
+            "name": "twingate-connector",
+            "purpose": "ゼロトラストリモートアクセスのトンネルエンドポイント（HP-2 側）"
+          }
+        ]
+      },
+      {
+        "id": "dell",
+        "name": "Dell",
+        "hardware": "Dell OptiPlex 7040 Micro — Intel Core i3-6100 (4 threads) + RAM 8GB + SSD 128GB + HDD (Toshiba)",
+        "role": "管理ノード / ネットワークサービスノード",
+        "purpose": "Twingate・ポートフォリオ・Zabbix 監視を担当するクラスター管理ノード。",
+        "workloads": [
+          {
+            "type": "LXC",
+            "vmid": 102,
+            "name": "twingate",
+            "purpose": "ゼロトラストリモートアクセスのトンネルエンドポイント（Dell 側）"
           },
           {
             "type": "LXC",
-            "name": "Twingate Connector",
-            "purpose": "ゼロトラストリモートアクセスのためのトンネルエンドポイント"
-          },
-          {
-            "type": "LXC",
-            "name": "Obsidian-host",
-            "purpose": "Obsidian-livesync用のDB"
-          },
-          {
-            "type": "LXC",
+            "vmid": 103,
             "name": "portfolio",
-            "purpose": "Bun+Honoで動作中のポートフォリオサイトhttps://portfolio.wc.f5.si/"
+            "purpose": "Bun + Hono で稼働中のポートフォリオサイト（portfolio.warasugi.com）"
+          },
+          {
+            "type": "LXC",
+            "vmid": 104,
+            "name": "pote-monitor",
+            "purpose": "Zabbix エージェント / 監視プロキシ"
+          },
+          {
+            "type": "VM",
+            "vmid": 106,
+            "name": "ZABBIX",
+            "purpose": "Zabbix サーバー — クラスター全体のインフラメトリクス収集・アラート管理"
           }
         ]
       }
     ],
 
     "network_design": {
-      "topology": "ホームLAN (192.168.x.x) + Twingate overlay network",
+      "topology": "ホーム LAN (192.168.x.x) + Twingate overlay network（HP-2 / Dell 2拠点冗長）",
       "security": [
         "インターネットへのポート公開なし",
         "全リモートアクセスは Twingate 経由",
-        "SSHは内部ネットワークのみ"
+        "SSH は内部ネットワークのみ",
+        "Caddy + Anubis によるボット対策（portfolio）"
       ],
-      "dns": "ローカルDNS + ISP DNS"
+      "dns": "ローカル DNS + ISP DNS + Cloudflare（portfolio.warasugi.com）"
     },
 
     "security_model": {
@@ -84,13 +139,11 @@
         "key_type": "Ed25519",
         "access_method": "Twingate tunnel only"
       },
-
       "backup_strategy": [
         "Google Drive クラウドバックアップ",
-        "USBストレージ コールドバックアップ",
-        "Proxmox VMバックアップ"
+        "USB ストレージ コールドバックアップ",
+        "Proxmox VM バックアップ"
       ],
-
       "authentication": {
         "proxmox": "TOTP 2FA enabled",
         "linux_vms": "SSH key authentication only"
@@ -99,72 +152,71 @@
 
     "future_roadmap": {
       "phase_1_current": {
-        "status": "✅ 運用中",
+        "status": "✅ 完了",
         "components": [
-          "Proxmox 単一ノード",
-          "Twingate remote access",
-          "dev-01 開発VM",
-          "Music bot VM",
-          "Obsidian Web container"
+          "Proxmox 単一ノード（Dell）",
+          "Twingate リモートアクセス",
+          "dev-01 開発 VM",
+          "Music Bot / Obsidian-host LXC",
+          "portfolio サービス公開"
         ]
       },
-
       "phase_2_planned": {
-        "status": "🚧 進行予定",
+        "status": "✅ 完了",
         "components": [
-          "Z240 ノード追加",
-          "Proxmox クラスタ構築 (3ノード構成)",
-          "開発VMのGPUパススルー",
-          "バックアップストレージ分離"
+          "HP Z240 SFF × 2 台追加",
+          "Proxmox クラスター構築（waras-nw 3ノード）",
+          "dev-01 GPU パススルー（Quadro P600）",
+          "Sunshine/Moonlight ゲーミング環境",
+          "Zabbix 監視導入（pote-monitor）",
+          "Minecraft サーバー稼働",
+          "Twingate 2拠点冗長化"
         ]
       },
-
       "phase_3_future": {
-        "status": "📋 検討中",
+        "status": "🚧 検討中",
         "components": [
-          "VLAN ネットワーク分離",
-          "リバースプロキシ (Caddy / nginx)",
-          "Prometheus + Grafana monitoring",
-          "IaC automation"
+          "VLAN によるネットワーク分離",
+          "10G SFP+ メッシュネットワーク",
+          "Prometheus + Grafana 監視強化",
+          "IaC 自動化",
+          "Arctic MX-6 グリス塗り替え（物理保守）"
         ]
       }
     },
 
     "technology_stack": {
-      "virtualization": ["KVM", "QEMU", "LXC"],
-      "networking": ["Twingate", "Linux networking"],
-      "storage": ["Ext4", "バックアップストレージ"],
-      "security": ["Ed25519 SSH keys", "TOTP 2FA"],
+      "virtualization": ["Proxmox VE 9.x", "KVM", "QEMU", "LXC"],
+      "networking": ["Twingate", "Caddy", "Cloudflare", "Linux networking"],
+      "storage": ["Ext4", "SSD", "HDD", "Google Drive"],
+      "security": ["Ed25519 SSH keys", "TOTP 2FA", "Anubis bot protection"],
       "applications": [
+        "Zabbix",
+        "Sunshine / Moonlight",
+        "Minecraft",
         "Neovim",
-        "Node.js",
-        "Discord bot",
-        "Obsidian Web"
+        "Discord Bot",
+        "Obsidian livesync",
+        "Bun + Hono"
       ]
     },
 
     "learning_outcomes": [
-      "Proxmox 仮想化環境構築",
-      "ゼロトラストアクセス設計",
-      "SSH鍵認証セキュリティ",
-      "ホームラボサーバ運用",
-      "Linux VM管理",
-      "コンテナベースサービス運用"
+      "Proxmox VE クラスター構築・運用（3ノード waras-nw）",
+      "KVM GPU パススルー設定（PCIe デバイス割り当て）",
+      "ゼロトラストアクセス設計（Twingate 2拠点冗長）",
+      "SSH 鍵認証セキュリティ",
+      "Zabbix によるインフラ監視",
+      "Caddy + Anubis によるリバースプロキシ設定",
+      "Linux VM / LXC コンテナ管理",
+      "Sunshine/Moonlight リモートゲーミング環境構築"
     ],
 
     "operational_practices": {
-      "monitoring": "Proxmox Web UI",
-      "backups": "手動 + クラウドバックアップ",
+      "monitoring": "Zabbix (pote-monitor) + Proxmox Web UI",
+      "backups": "手動 + Google Drive クラウドバックアップ",
       "updates": "定期更新 + 手動確認",
       "documentation": "Obsidian Markdown ノート"
-    },
-
-    "why_proxmox": [
-      "オープンソース",
-      "KVMベースで低オーバーヘッド",
-      "Web UI + CLI 両対応",
-      "ホームラボ向け",
-      "将来的なクラスタ構築が可能"
-    ]
+    }
   }
 }
