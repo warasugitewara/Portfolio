@@ -170,9 +170,10 @@ export const InfrastructurePage = ({ i18n }: InfrastructurePageProps) => {
                   <text x="720" y="40" textAnchor="middle" className="title-text">ホームラボ インフラストラクチャ — waras-nw クラスター (Proxmox VE 9.x)</text>
 
                   {/* Internet */}
-                  <text x="50" y="80" className="section-label">インターネット</text>
+                  <text x="50" y="80" className="section-label">接続回線</text>
                   <rect x="40" y="90" width="170" height="55" className="node-rect" rx="4"/>
-                  <text x="125" y="125" textAnchor="middle" className="node-text">Internet</text>
+                  <text x="125" y="118" textAnchor="middle" className="node-text">au one net</text>
+                  <text x="125" y="134" textAnchor="middle" className="label-text">1Gbps</text>
 
                   {/* Twingate */}
                   <text x="265" y="80" className="section-label">ゼロトラスト層</text>
