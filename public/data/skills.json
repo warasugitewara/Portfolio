@@ -2,15 +2,15 @@
   "skills": [
     {
       "category": "Languages",
-      "items": ["C", "Rust", "Lua", "Nushell", "TypeScript", "JavaScript"]
+      "items": ["Java", "Kotlin", "TypeScript", "Lua", "C++", "Python"]
     },
     {
       "category": "Infrastructure & Tools",
-      "items": ["Linux/Windows", "Neovim", "WezTerm", "Nix", "Shell scripting"]
+      "items": ["Linux", "Neovim", "WezTerm", "Nushell", "Starship"]
     },
     {
       "category": "Backend & Systems",
-      "items": ["Minecraft Paper Plugin", "CLI tool development", "System design"]
+      "items": ["Minecraft Paper Plugin", "Game development", "CLI tool development"]
     },
     {
       "category": "Certifications",
