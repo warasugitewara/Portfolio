@@ -75,10 +75,10 @@
             "type": "VM",
             "vmid": 200,
             "name": "dev-01",
-            "os": "Fedora 43 KDE Plasma",
+            "os": "Fedora KDE Plasma Desktop 43",
             "purpose": "Sunshine/Moonlight によるリモートデスクトップ環境（NVIDIA Quadro P600 GPU パススルー）",
             "details": [
-              "Fedora 43 KDE Plasma デスクトップ環境",
+              "Fedora KDE Plasma Desktop 43 デスクトップ環境",
               "NVIDIA Quadro P600 PCIe パススルー",
               "Intel 1Gbps NIC PCIe パススルー — Proxmox ネットワークと完全分離",
               "Sunshine/Moonlight フルデスクトップストリーミング",
