@@ -2,14 +2,16 @@
   "infrastructure": {
     "title": "自作鯖構成",
     "subtitle": "waras-nw — 3ノード Proxmox VE クラスター",
-    "overview": "HP Z240 SFF × 2台と Dell OptiPlex 7040 SFF で構成する 3ノード Proxmox VE クラスター（waras-nw）。ゼロトラストアクセス（Twingate 2拠点冗長）・GPU パススルー（Quadro P600）・Zabbix 監視を備え、開発・ゲーミング・各種サービスを稼働中。インターネットへの直接ポート公開は行わない。",
+    "overview": "HP Z240 SFF × 2台と Dell OptiPlex 7040 SFF で構成する 3ノード Proxmox VE クラスター（waras-nw）。ゼロトラストアクセス（Twingate 2拠点冗長）・GPU パススルー（Quadro P600）・Intel NIC PCIe パススルー・Cloudflare Tunnel 公開・Zabbix 監視を備え、開発・リモートデスクトップ・各種サービスを稼働中。インターネットへの直接ポート公開は行わない。",
     "design_philosophy": [
       "ゼロトラスト型ネットワークアクセス — インターネットへのポート公開なし",
       "3ノード Proxmox VE クラスターによる分散ワークロード構成",
-      "GPU パススルーによる開発・ゲーミング環境の実現（Quadro P600）",
+      "GPU パススルーによる開発・リモートデスクトップ環境の実現（Quadro P600）",
       "Ed25519 SSH鍵認証 + パスワード認証無効化",
       "複数メディアへのバックアップ（USB + クラウド）",
-      "Zabbix によるインフラメトリクス監視"
+      "Zabbix によるインフラメトリクス監視",
+      "Intel NIC PCIe パススルーによるネットワーク分離（Proxmox と dev-01 完全独立）",
+      "Cloudflare Tunnel 経由の安全なサービス公開（portfolio.warasugi.com）"
     ],
     "hypervisor": {
       "platform": "Proxmox VE 9.x",
@@ -69,7 +71,7 @@
         "name": "HP-2",
         "hardware": "HP Z240 SFF — Xeon E3-1245 v5 (8 threads) + RAM 16GB + NVIDIA Quadro P600",
         "role": "GPU コンピュートノード / 開発ノード",
-        "purpose": "GPU パススルーを活用したリモートデスクトップ・開発・ゲーミング環境。Twingate 経由でリモートアクセス可能。dev-01 は Fedora 43 KDE Plasma で Sunshine/Moonlight フルデスクトップ稼働中。",
+        "purpose": "GPU パススルーを活用したリモートデスクトップ・開発環境。Twingate 経由でリモートアクセス可能。dev-01 は Fedora KDE Plasma Desktop 43 で Sunshine/Moonlight フルデスクトップ稼働中。",
         "workloads": [
           {
             "type": "VM",
@@ -144,7 +146,8 @@
         "インターネットへのポート公開なし",
         "全リモートアクセスは Twingate 経由",
         "SSH は内部ネットワークのみ",
-        "Caddy + Anubis によるボット対策（portfolio）"
+        "Caddy + Anubis によるボット対策（portfolio）",
+        "Cloudflare Tunnel 経由の安全なサービス公開（portfolio.warasugi.com）"
       ],
       "dns": "Cloudflare DNS (1.1.1.1 / 1.0.0.1) — 全 CT/VM 統一"
     },
@@ -182,11 +185,13 @@
           "HP Z240 SFF × 2 台追加",
           "Proxmox クラスター構築（waras-nw 3ノード）",
           "dev-01 GPU パススルー（Quadro P600）",
-          "Sunshine/Moonlight ゲーミング環境",
+          "Sunshine/Moonlight リモートデスクトップ環境",
           "Zabbix 監視導入",
           "pote-monitor（BTC/ETH Discord 通知ツール）",
           "Minecraft サーバー稼働",
-          "Twingate 2拠点冗長化"
+          "Twingate 2拠点冗長化",
+          "Intel 1Gbps NIC PCIe パススルー（ネットワーク完全分離）",
+          "Cloudflare Tunnel 公開（portfolio.warasugi.com）"
         ]
       },
       "phase_3_future": {
@@ -211,7 +216,9 @@
         "Twingate",
         "Caddy",
         "Cloudflare",
-        "Linux networking"
+        "Linux networking",
+        "Cloudflare Tunnel",
+        "DDNS"
       ],
       "storage": [
         "Ext4",
@@ -242,7 +249,7 @@
       "Zabbix によるインフラ監視",
       "Caddy + Anubis によるリバースプロキシ設定",
       "Linux VM / LXC コンテナ管理",
-      "Sunshine/Moonlight リモートゲーミング環境構築"
+      "Sunshine/Moonlight リモートデスクトップ環境構築"
     ],
     "operational_practices": {
       "monitoring": "Zabbix サーバー (VMID 106) + pote-monitor (BTC/ETH Discord 通知) + Proxmox Web UI",

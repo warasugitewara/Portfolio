@@ -216,6 +216,11 @@ export const InfrastructurePage = ({ i18n }: InfrastructurePageProps) => {
                   <text x="75" y="515" className="label-text" style={{ fontSize: '12px' }}>• Mechanical Mastery Modpack</text>
                   <text x="75" y="532" className="label-text" style={{ fontSize: '12px' }}>• Java Edition サーバー</text>
 
+                   <text x="70" y="591" className="section-label">LXC</text>
+                   <rect x="65" y="598" width="380" height="65" className="container-rect" rx="3"/>
+                   <text x="255" y="623" textAnchor="middle" className="node-text">🔐 twingate-connector [VMID:105]</text>
+                   <text x="255" y="643" textAnchor="middle" className="label-text">ゼロトラストトンネル</text>
+
                   {/* ── HP-2 ── */}
                   <rect x="520" y="215" width="400" height="670" className="node-inner-rect" rx="4"/>
                   <text x="720" y="245" textAnchor="middle" className="node-text">🖥️ HP-2 (GPU)</text>
@@ -225,16 +230,12 @@ export const InfrastructurePage = ({ i18n }: InfrastructurePageProps) => {
                   <text x="535" y="308" className="section-label">VM</text>
                   <rect x="530" y="315" width="380" height="225" className="vm-rect" rx="3"/>
                   <text x="720" y="340" textAnchor="middle" className="node-text">💻 dev-01 [VMID:200]</text>
-                  <text x="720" y="358" textAnchor="middle" className="label-text">Debian + Xfce</text>
-                  <text x="540" y="378" className="label-text" style={{ fontSize: '12px' }}>• WezTerm + SSH 開発環境</text>
-                  <text x="540" y="395" className="label-text" style={{ fontSize: '12px' }}>• Neovim / CLI 中心ワークフロー</text>
-                  <text x="540" y="412" className="label-text" style={{ fontSize: '12px' }}>• NVIDIA Quadro P600 PCIe パススルー</text>
-                  <text x="540" y="429" className="label-text" style={{ fontSize: '12px' }}>• Sunshine/Moonlight ゲーミング</text>
+                  <text x="720" y="358" textAnchor="middle" className="label-text">Fedora KDE Plasma Desktop 43</text>
+                  <text x="540" y="378" className="label-text" style={{ fontSize: '12px' }}>• NVIDIA Quadro P600 PCIe パススルー</text>
+                  <text x="540" y="395" className="label-text" style={{ fontSize: '12px' }}>• Intel 1Gbps NIC PCIe パススルー</text>
+                  <text x="540" y="412" className="label-text" style={{ fontSize: '12px' }}>• Sunshine/Moonlight リモートデスクトップ</text>
+                  <text x="540" y="429" className="label-text" style={{ fontSize: '12px' }}>• WezTerm + Neovim 開発環境</text>
 
-                  <text x="535" y="562" className="section-label">LXC</text>
-                  <rect x="530" y="569" width="380" height="65" className="container-rect" rx="3"/>
-                  <text x="720" y="594" textAnchor="middle" className="node-text">🔐 twingate-connector [VMID:105]</text>
-                  <text x="720" y="614" textAnchor="middle" className="label-text">ゼロトラストトンネル</text>
 
                   {/* ── Dell ── */}
                   <rect x="985" y="215" width="405" height="670" className="node-inner-rect" rx="4"/>
@@ -248,15 +249,19 @@ export const InfrastructurePage = ({ i18n }: InfrastructurePageProps) => {
 
                   <rect x="995" y="373" width="385" height="65" className="container-rect" rx="3"/>
                   <text x="1187" y="398" textAnchor="middle" className="node-text">🌐 portfolio [VMID:103]</text>
-                  <text x="1187" y="418" textAnchor="middle" className="label-text">Bun + Hono | warasugi.com</text>
+                  <text x="1187" y="418" textAnchor="middle" className="label-text">Bun + Hono | Cloudflare Tunnel</text>
 
                   <rect x="995" y="448" width="385" height="65" className="container-rect" rx="3"/>
                   <text x="1187" y="473" textAnchor="middle" className="node-text">📡 pote-monitor [VMID:104]</text>
-                  <text x="1187" y="493" textAnchor="middle" className="label-text">Zabbix エージェント / プロキシ</text>
+                  <text x="1187" y="493" textAnchor="middle" className="label-text">BTC/ETH Discord 通知</text>
 
                   <rect x="995" y="540" width="385" height="65" className="container-rect" rx="3"/>
                   <text x="1187" y="565" textAnchor="middle" className="node-text">📊 ZABBIX [VMID:106]</text>
                   <text x="1187" y="585" textAnchor="middle" className="label-text">監視サーバー (クラスター全体)</text>
+
+                   <rect x="995" y="615" width="385" height="65" className="container-rect" rx="3"/>
+                   <text x="1187" y="640" textAnchor="middle" className="node-text">🌐 ddns [VMID:107]</text>
+                   <text x="1187" y="660" textAnchor="middle" className="label-text">DDNS 自動更新</text>
 
                   {/* Bottom Sections */}
                   <rect x="40" y="950" width="320" height="105" className="node-rect" rx="4"/>
@@ -287,11 +292,11 @@ export const InfrastructurePage = ({ i18n }: InfrastructurePageProps) => {
                   <rect x="40" y="1080" width="1360" height="390" className="node-rect" rx="4"/>
                   <text x="720" y="1115" textAnchor="middle" className="legend-title">📋 凡例とシステム構成</text>
                   <text x="60" y="1158" className="legend-text"><tspan className="legend-icon-text">🖧</tspan> waras-nw — Proxmox VE 9.x 3ノードクラスター (HP-1 / HP-2 / Dell)</text>
-                  <text x="60" y="1198" className="legend-text"><tspan className="legend-icon-text">🔒</tspan> ゼロトラスト — Twingate を HP-2 (VMID:105) + Dell (VMID:102) で冗長化</text>
-                  <text x="60" y="1238" className="legend-text"><tspan className="legend-icon-text">🎮</tspan> GPU — dev-01 に Quadro P600 PCIe パススルー + Sunshine/Moonlight ゲーミング</text>
+                  <text x="60" y="1198" className="legend-text"><tspan className="legend-icon-text">🔒</tspan> ゼロトラスト — Twingate を HP-1 (VMID:105) + Dell (VMID:102) で冗長化</text>
+                  <text x="60" y="1238" className="legend-text"><tspan className="legend-icon-text">🎮</tspan> GPU/NIC — dev-01 に Quadro P600 + Intel 1Gbps NIC PCIe パススルー + Sunshine/Moonlight リモートデスクトップ</text>
                   <text x="60" y="1278" className="legend-text"><tspan className="legend-icon-text">📊</tspan> 監視 — ZABBIX サーバー (CT:106) + pote-monitor (CT:104)</text>
                   <text x="60" y="1318" className="legend-text"><tspan className="legend-icon-text">🌐</tspan> サービス — obsidian/music-bot (HP-1) / portfolio (Dell) / Minecraft (HP-1)</text>
-                  <text x="60" y="1368" className="legend-text"><tspan className="legend-icon-text">✅ Phase 1+2</tspan>  完了（単一ノード→3ノードクラスター / GPU / Zabbix）　<tspan className="legend-icon-text">🚧 Phase 3</tspan>  検討中</text>
+                  <text x="60" y="1368" className="legend-text"><tspan className="legend-icon-text">✅ Phase 1+2</tspan>  完了（単一ノード→3ノードクラスター / GPU / Zabbix / CF Tunnel）　<tspan className="legend-icon-text">🚧 Phase 3</tspan>  検討中</text>
                 </svg>
               </div>
 
@@ -300,9 +305,10 @@ export const InfrastructurePage = ({ i18n }: InfrastructurePageProps) => {
                 <h4 style={{ color: '#00ff88', marginBottom: '0.5rem', fontSize: '0.95rem' }}>アーキテクチャのポイント</h4>
                 <ul style={{ fontSize: '0.9rem', color: '#ccc', listStyle: 'none', padding: '0', margin: '0' }}>
                   <li style={{ marginBottom: '0.4rem' }}>✓ waras-nw 3ノードクラスター — HP-1 / HP-2 / Dell の分散ワークロード構成</li>
-                  <li style={{ marginBottom: '0.4rem' }}>✓ Twingate ゼロトラスト — HP-2 (VMID:105) + Dell (VMID:102) の2拠点冗長化</li>
-                  <li style={{ marginBottom: '0.4rem' }}>✓ GPU パススルー — dev-01 に Quadro P600 でゲーミング・開発環境を実現</li>
+                  <li style={{ marginBottom: '0.4rem' }}>✓ Twingate ゼロトラスト — HP-1 (VMID:105) + Dell (VMID:102) の2拠点冗長化</li>
+                  <li style={{ marginBottom: '0.4rem' }}>✓ GPU/NIC パススルー — dev-01 に Quadro P600 + Intel 1Gbps NIC PCIe パススルーでリモートデスクトップ・開発環境を実現</li>
                   <li style={{ marginBottom: '0.4rem' }}>✓ ZABBIX 監視 — サーバー(CT:106) + pote-monitor (CT:104) でクラスター全体を監視</li>
+                   <li style={{ marginBottom: '0.4rem' }}>✓ Cloudflare Tunnel — portfolio.warasugi.com を Cloudflare Tunnel 経由でゼロトラスト公開</li>
                   <li>✓ マルチレイヤーセキュリティ：Ed25519 SSH鍵 + TOTP 2FA + Anubis ボット対策</li>
                 </ul>
               </div>
