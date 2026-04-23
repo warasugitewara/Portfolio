@@ -77,7 +77,7 @@ export const InfrastructurePage = ({ i18n }: InfrastructurePageProps) => {
     techStack: false,
     roadmap: false,
     learning: false,
-    networkTopology: false,
+    networkTopology: true,
     operations: false,
   });
   const [expandedNode, setExpandedNode] = useState<string | null>(null);
@@ -337,81 +337,148 @@ export const InfrastructurePage = ({ i18n }: InfrastructurePageProps) => {
           </button>
           {expandedSections.networkTopology && (
             <div style={{ padding: '1rem', marginTop: '1rem', backgroundColor: 'rgba(0,255,136,0.03)', borderRadius: '4px', border: '1px solid rgba(0,255,136,0.2)', overflowX: 'auto' }}>
-              <svg viewBox="0 0 900 465" style={{ width: '100%', height: 'auto' }}>
+              <svg viewBox="0 0 900 590" style={{ width: '100%', height: 'auto', minHeight: '380px' }}>
                 <defs>
                   <style>{`
-                    .ft{fill:#0d1117;stroke:#00ff88;stroke-width:1.5}
-                    .ft-cf{fill:#0d1117;stroke:#4dd0ff;stroke-width:1.5}
+                    .ft{fill:#111827;stroke:#00ff88;stroke-width:2}
+                    .ft-cf{fill:#0c1a2e;stroke:#4dd0ff;stroke-width:2}
                     .tl{fill:#00ff88;font-family:monospace;font-size:13px;font-weight:bold}
                     .cl{fill:#4dd0ff;font-family:monospace;font-size:13px;font-weight:bold}
-                    .sl{fill:#aaa;font-family:monospace;font-size:10px}
-                    .al{stroke:#00ff88;stroke-width:1.5;fill:none;marker-end:url(#arw)}
-                    .acl{stroke:#4dd0ff;stroke-width:1.5;fill:none;marker-end:url(#arwc)}
-                    .wl{stroke:#ffaa00;stroke-width:1.5;stroke-dasharray:5,3;fill:none;marker-end:url(#arwy)}
-                    .wt{fill:#ffaa00;font-family:monospace;font-size:10px}
-                    .lan{fill:rgba(0,255,136,0.03);stroke:#00ff88;stroke-width:1.5}
-                    .nb{fill:#0a0e27;stroke:rgba(0,255,136,0.35);stroke-width:1}
+                    .sl{fill:#d1d5db;font-family:monospace;font-size:10px}
+                    .sl-cf{fill:#93c5fd;font-family:monospace;font-size:10px}
+                    .al-main{stroke:#4dd0ff;stroke-width:3;fill:none;marker-end:url(#arwc)}
+                    .al-mgmt{stroke:#00ff88;stroke-width:2;fill:none;marker-end:url(#arw)}
+                    .al-exc{stroke:#f59e0b;stroke-width:1.5;stroke-dasharray:6,3;fill:none;marker-end:url(#arwy)}
+                    .wt{fill:#f59e0b;font-family:monospace;font-size:9px;font-weight:bold}
+                    .lan{fill:rgba(0,20,10,0.6);stroke:#00ff88;stroke-width:1.5}
+                    .nb{fill:#0f1929;stroke:rgba(0,255,136,0.5);stroke-width:1.5}
+                    .nb-dell{fill:#0a1520;stroke:rgba(77,208,255,0.6);stroke-width:1.5}
                     .nt{fill:#00ff88;font-family:monospace;font-size:11px;font-weight:bold}
-                    .ni{fill:#777;font-family:monospace;font-size:9px}
-                    .nc{fill:#4dd0ff;font-family:monospace;font-size:9px}
-                    .fn{fill:#444;font-family:monospace;font-size:9px}
+                    .nh{fill:#9ca3af;font-family:monospace;font-size:9px}
+                    .ni{fill:#d1d5db;font-family:monospace;font-size:9px}
+                    .nc{fill:#60d9f8;font-family:monospace;font-size:9px;font-weight:bold}
+                    .fn{fill:#9ca3af;font-family:monospace;font-size:9px}
+                    .rt{fill:#4ade80;font-family:monospace;font-size:9px;font-weight:bold}
+                    .rt-cf{fill:#60d9f8;font-family:monospace;font-size:9px;font-weight:bold}
+                    .rt-exc{fill:#f59e0b;font-family:monospace;font-size:9px;font-weight:bold}
+                    .leg-box{fill:rgba(0,15,8,0.7);stroke:rgba(0,255,136,0.3);stroke-width:1}
+                    .lt{fill:#e2e8f0;font-family:monospace;font-size:10px}
+                    .st{fill:#9ca3af;font-family:monospace;font-size:9px}
+                    .badge{fill:rgba(0,255,136,0.18);stroke:#00ff88;stroke-width:1}
+                    .badge-cf{fill:rgba(77,208,255,0.18);stroke:#4dd0ff;stroke-width:1}
+                    .bt{fill:#86efac;font-family:monospace;font-size:8px;font-weight:bold}
+                    .bt-cf{fill:#7dd3fc;font-family:monospace;font-size:8px;font-weight:bold}
+                    .divider{stroke:rgba(0,255,136,0.2);stroke-width:1}
                   `}</style>
-                  <marker id="arw" markerWidth="7" markerHeight="5" refX="5" refY="2.5" orient="auto">
-                    <polygon points="0 0, 7 2.5, 0 5" fill="#00ff88" />
-                  </marker>
-                  <marker id="arwc" markerWidth="7" markerHeight="5" refX="5" refY="2.5" orient="auto">
-                    <polygon points="0 0, 7 2.5, 0 5" fill="#4dd0ff" />
-                  </marker>
-                  <marker id="arwy" markerWidth="7" markerHeight="5" refX="5" refY="2.5" orient="auto">
-                    <polygon points="0 0, 7 2.5, 0 5" fill="#ffaa00" />
-                  </marker>
+                  <marker id="arw" markerWidth="7" markerHeight="5" refX="5" refY="2.5" orient="auto"><polygon points="0 0,7 2.5,0 5" fill="#00ff88"/></marker>
+                  <marker id="arwc" markerWidth="7" markerHeight="5" refX="5" refY="2.5" orient="auto"><polygon points="0 0,7 2.5,0 5" fill="#4dd0ff"/></marker>
+                  <marker id="arwy" markerWidth="7" markerHeight="5" refX="5" refY="2.5" orient="auto"><polygon points="0 0,7 2.5,0 5" fill="#f59e0b"/></marker>
                 </defs>
-                <rect x="325" y="15" width="250" height="55" rx="4" className="ft" />
-                <text x="450" y="37" textAnchor="middle" className="tl">🌐 Internet</text>
-                <text x="450" y="56" textAnchor="middle" className="sl">公衆インターネット</text>
-                <line x1="375" y1="70" x2="170" y2="140" className="al" />
-                <line x1="525" y1="70" x2="730" y2="140" className="acl" />
-                <rect x="30" y="140" width="270" height="85" rx="4" className="ft" />
-                <text x="165" y="163" textAnchor="middle" className="tl">🔐 Twingate</text>
-                <text x="165" y="180" textAnchor="middle" className="sl">ゼロトラスト VPN</text>
-                <text x="165" y="196" textAnchor="middle" className="sl">SSH / Proxmox WebUI / 全サービス</text>
-                <text x="165" y="212" textAnchor="middle" className="sl">内部管理アクセスのみ</text>
-                <rect x="600" y="140" width="270" height="85" rx="4" className="ft-cf" />
-                <text x="735" y="163" textAnchor="middle" className="cl">☁️ Cloudflare</text>
-                <text x="735" y="180" textAnchor="middle" className="sl">Tunnel + DDoS保護 + WAF</text>
-                <text x="735" y="196" textAnchor="middle" className="sl">portfolio.warasugi.com</text>
-                <text x="735" y="212" textAnchor="middle" className="sl">受信接続ゼロ (outbound tunnel)</text>
-                <line x1="165" y1="225" x2="165" y2="288" className="al" />
-                <line x1="735" y1="225" x2="735" y2="288" className="acl" />
-                <text x="60" y="262" className="sl">全ノード管理</text>
-                <text x="738" y="262" className="sl">Dell portfolio</text>
-                <line x1="450" y1="70" x2="165" y2="288" className="wl" />
-                <text x="368" y="173" className="wt">⚠️ Minecraft</text>
-                <text x="368" y="186" className="wt">CT:103 直接公開</text>
-                <rect x="15" y="290" width="870" height="145" rx="4" className="lan" />
-                <text x="450" y="308" textAnchor="middle" className="fn">── 192.168.0.x 物理LAN ──</text>
-                <rect x="30" y="313" width="260" height="110" rx="3" className="nb" />
-                <text x="160" y="330" textAnchor="middle" className="nt">🖥️ HP-1 (ProLiant)</text>
-                <text x="160" y="345" textAnchor="middle" className="ni">• twingate-connector [CT:105]</text>
-                <text x="160" y="358" textAnchor="middle" className="ni">• minecraft-server [CT:103]</text>
-                <text x="160" y="371" textAnchor="middle" className="ni">• dev-01 Fedora KDE [VM:200]</text>
-                <text x="160" y="384" textAnchor="middle" className="ni">• Intel 1Gbps NIC PCIeパススルー</text>
-                <text x="160" y="397" textAnchor="middle" className="ni">• Zabbix Agent</text>
-                <rect x="320" y="313" width="260" height="110" rx="3" className="nb" />
-                <text x="450" y="330" textAnchor="middle" className="nt">🖥️ HP-2 (ProLiant)</text>
-                <text x="450" y="345" textAnchor="middle" className="ni">• pote-monitor [CT:104]</text>
-                <text x="450" y="358" textAnchor="middle" className="ni">• MySQL DB [CT:101]</text>
-                <text x="450" y="371" textAnchor="middle" className="ni">• discord-bot [CT:100]</text>
-                <text x="450" y="384" textAnchor="middle" className="ni">• Zabbix Agent</text>
-                <rect x="610" y="313" width="260" height="110" rx="3" className="nb" />
-                <text x="740" y="330" textAnchor="middle" className="nt">🖥️ Dell (OptiPlex)</text>
-                <text x="740" y="345" textAnchor="middle" className="nc">• portfolio [CT] ← CF Tunnel</text>
-                <text x="740" y="358" textAnchor="middle" className="ni">• Zabbix Server [CT:106]</text>
-                <text x="740" y="371" textAnchor="middle" className="ni">• ddns [CT:107]</text>
-                <text x="740" y="384" textAnchor="middle" className="ni">• twingate-server [VM:102]</text>
-                <text x="740" y="397" textAnchor="middle" className="ni">• Zabbix Agent</text>
-                <text x="15" y="448" className="fn">🔒 公開ポート最小化: Cloudflare Tunnel (受信接続ゼロ) + Minecraft のみ例外的直接公開</text>
-                <text x="15" y="461" className="fn">🔐 全内部管理は Twingate ゼロトラスト VPN 経由 — SSH・Proxmox WebUI・サービス監視はすべて VPN 内</text>
+
+                {/* ── Internet ── */}
+                <rect x="325" y="15" width="250" height="52" rx="5" className="ft"/>
+                <text x="450" y="36" textAnchor="middle" className="tl">🌐 Internet</text>
+                <text x="450" y="52" textAnchor="middle" className="sl">公衆インターネット / au one net 1Gbps</text>
+
+                {/* ── Route labels ── */}
+                <text x="165" y="11" textAnchor="middle" className="rt">② 管理ルート (Twingate VPN)</text>
+                <text x="745" y="11" textAnchor="middle" className="rt-cf">① 公開ルート (Cloudflare Tunnel)</text>
+
+                {/* ── Lines from Internet ── */}
+                <path d="M 380 67 L 165 132" className="al-mgmt"/>
+                <path d="M 520 67 L 745 132" className="al-main"/>
+                <path d="M 450 67 L 155 267" className="al-exc"/>
+                <text x="308" y="150" className="rt-exc">③ 例外: Minecraft 直接公開</text>
+
+                {/* ── Twingate box ── */}
+                <rect x="30" y="132" width="270" height="113" rx="5" className="ft"/>
+                <text x="165" y="152" textAnchor="middle" className="tl">🔐 Twingate</text>
+                <line x1="30" y1="160" x2="300" y2="160" className="divider"/>
+                <text x="165" y="174" textAnchor="middle" className="sl">ゼロトラスト VPN (Zero Trust)</text>
+                <text x="165" y="189" textAnchor="middle" className="sl">SSH / Proxmox WebUI / 全内部サービス</text>
+                <text x="165" y="204" textAnchor="middle" className="sl">内部発信のみ — inbound 接続なし</text>
+                <text x="165" y="219" textAnchor="middle" className="sl">冗長化: CT:105 (HP-1) + CT:102 (Dell)</text>
+                <text x="165" y="234" textAnchor="middle" className="sl">外部ポート開放ゼロ</text>
+
+                {/* ── Cloudflare box ── */}
+                <rect x="600" y="132" width="290" height="113" rx="5" className="ft-cf"/>
+                <text x="745" y="152" textAnchor="middle" className="cl">☁️ Cloudflare</text>
+                <line x1="600" y1="160" x2="890" y2="160" style={{stroke:'rgba(77,208,255,0.3)',strokeWidth:1}}/>
+                <text x="745" y="174" textAnchor="middle" className="sl-cf">DNS: portfolio.warasugi.com → Cloudflare</text>
+                <text x="745" y="189" textAnchor="middle" className="sl">Tunnel / DDoS保護 / WAF / CDN</text>
+                <text x="745" y="204" textAnchor="middle" className="sl">受信接続ゼロ (outbound tunnel only)</text>
+                <text x="745" y="219" textAnchor="middle" className="sl">L7: DNS → CF → Tunnel → CT:103</text>
+                <text x="745" y="234" textAnchor="middle" className="sl">外部ポート開放ゼロ</text>
+
+                {/* ── Arrows to LAN ── */}
+                <path d="M 165 245 L 165 267" className="al-mgmt"/>
+                <text x="30" y="260" className="rt">全ノード管理</text>
+                <path d="M 745 245 L 745 267" className="al-main"/>
+                <text x="750" y="260" className="rt-cf">portfolio (CT:103)</text>
+
+                {/* ── LAN box ── */}
+                <rect x="15" y="267" width="870" height="172" rx="5" className="lan"/>
+                <text x="450" y="282" textAnchor="middle" className="fn">── 192.168.0.x 物理LAN (Proxmox vmbr0) ──</text>
+                <text x="450" y="294" textAnchor="middle" className="fn">※ 将来: L2スイッチ + VLAN分離 + SFP+ 10G DAC メッシュ計画中</text>
+
+                {/* HP-1 */}
+                <rect x="25" y="300" width="268" height="130" rx="4" className="nb"/>
+                <text x="159" y="317" textAnchor="middle" className="nt">🖥️ HP-1 (Z240 SFF)</text>
+                <line x1="25" y1="323" x2="293" y2="323" className="divider"/>
+                <text x="159" y="335" textAnchor="middle" className="nh">Xeon E3-1225 v5 / 16GB / HDD 1TB</text>
+                <text x="34" y="349" className="ni">• obsidian-host [CT:100]  CouchDB livesync</text>
+                <text x="34" y="362" className="ni">• music-bot [CT:101]  Discord bot</text>
+                <text x="34" y="375" className="ni">• minecraft [CT:300]  ⚠ 直接公開</text>
+                <text x="34" y="388" className="ni">• twingate-connector [CT:105]</text>
+                <text x="34" y="401" className="ni">• Zabbix Agent</text>
+                <rect x="25" y="408" width="268" height="14" rx="2" className="badge"/>
+                <text x="159" y="418" textAnchor="middle" className="bt">⚠ CT:300 のみ直接ポート公開 (例外)</text>
+
+                {/* HP-2 */}
+                <rect x="316" y="300" width="268" height="130" rx="4" className="nb"/>
+                <text x="450" y="317" textAnchor="middle" className="nt">🖥️ HP-2 (Z240 SFF / GPU)</text>
+                <line x1="316" y1="323" x2="584" y2="323" className="divider"/>
+                <text x="450" y="335" textAnchor="middle" className="nh">Xeon E3-1245 v5 / 16GB / NVIDIA P600</text>
+                <text x="325" y="349" className="ni">• dev-01 [VM:200]  Fedora KDE Plasma 43</text>
+                <text x="325" y="362" className="ni">• Quadro P600 PCIe passthrough</text>
+                <text x="325" y="375" className="ni">• Intel 1Gbps NIC PCIe passthrough</text>
+                <text x="325" y="388" className="ni">• Sunshine/Moonlight リモートデスクトップ</text>
+                <text x="325" y="401" className="ni">• Zabbix Agent</text>
+                <rect x="316" y="408" width="268" height="14" rx="2" className="badge"/>
+                <text x="450" y="418" textAnchor="middle" className="bt">NIC PCIeパススルーでトラフィック完全分離</text>
+
+                {/* Dell */}
+                <rect x="607" y="300" width="268" height="130" rx="4" className="nb-dell"/>
+                <text x="741" y="317" textAnchor="middle" className="nt">🖥️ Dell (OptiPlex 7040)</text>
+                <line x1="607" y1="323" x2="875" y2="323" style={{stroke:'rgba(77,208,255,0.3)',strokeWidth:1}}/>
+                <text x="741" y="335" textAnchor="middle" className="nh">i3-6100 / 8GB / SSD + Toshiba HDD</text>
+                <text x="616" y="349" className="nc">• portfolio [CT:103]  ← Cloudflare Tunnel</text>
+                <text x="616" y="362" className="ni">• twingate [CT:102]  ゼロトラスト</text>
+                <text x="616" y="375" className="ni">• pote-monitor [CT:104]  BTC/ETH Discord</text>
+                <text x="616" y="388" className="ni">• Zabbix Server [CT:106]  クラスター監視</text>
+                <text x="616" y="401" className="ni">• ddns [CT:107]  DDNS自動更新</text>
+                <rect x="607" y="408" width="268" height="14" rx="2" className="badge-cf"/>
+                <text x="741" y="418" textAnchor="middle" className="bt-cf">← CF Tunnel endpoint (受信接続ゼロ)</text>
+
+                {/* ── Security annotations ── */}
+                <text x="15" y="454" className="st">🔒 公開ポート最小化: Cloudflare Tunnel (受信なし) + Minecraft CT:300 のみ例外的に直接公開</text>
+                <text x="15" y="467" className="st">🔐 SSH / Proxmox WebUI / 全内部サービス → Twingate ゼロトラスト VPN 経由のみアクセス可能</text>
+
+                {/* ── Legend ── */}
+                <rect x="15" y="477" width="870" height="108" rx="5" className="leg-box"/>
+                <text x="450" y="494" textAnchor="middle" className="tl">凡例 / Legend</text>
+                <line x1="30" y1="506" x2="90" y2="506" style={{stroke:'#4dd0ff',strokeWidth:3}}/>
+                <text x="97" y="510" className="lt">① 公開ルート — Internet → Cloudflare Tunnel → portfolio.warasugi.com (L7)</text>
+                <line x1="30" y1="524" x2="90" y2="524" style={{stroke:'#00ff88',strokeWidth:2}}/>
+                <text x="97" y="528" className="lt">② 管理ルート — Twingate VPN → SSH / Proxmox WebUI / 全内部サービス</text>
+                <line x1="30" y1="542" x2="90" y2="542" style={{stroke:'#f59e0b',strokeWidth:1.5,strokeDasharray:'6,3'}}/>
+                <text x="97" y="546" className="lt">③ 例外 (直接公開) — Minecraft CT:300 のみ / ポートフォワード</text>
+                <rect x="30" y="554" width="12" height="12" rx="2" className="badge-cf"/>
+                <text x="48" y="564" className="lt">Cloudflare管理ノード (Dell)   </text>
+                <rect x="240" y="554" width="12" height="12" rx="2" className="badge"/>
+                <text x="258" y="564" className="lt">標準ノード (HP-1 / HP-2)   </text>
+                <text x="450" y="564" className="st">⚡ 将来: HP-1↔HP-2↔Z240SFF 10G SFP+ DAC メッシュ + Ceph + VLAN分離</text>
+                <text x="450" y="578" textAnchor="middle" className="st">waras-nw — Proxmox VE 9.x 3ノードクラスター | ゼロトラスト + Cloudflare でセキュア運用</text>
               </svg>
             </div>
           )}
