@@ -69,19 +69,20 @@
         "name": "HP-2",
         "hardware": "HP Z240 SFF — Xeon E3-1245 v5 (8 threads) + RAM 16GB + NVIDIA Quadro P600",
         "role": "GPU コンピュートノード / 開発ノード",
-        "purpose": "GPU パススルーを活用した開発・ゲーミング環境。Twingate 経由でリモートアクセス可能。現在の開発作業はこのノード上の dev-01 で実施。",
+        "purpose": "GPU パススルーを活用したリモートデスクトップ・開発・ゲーミング環境。Twingate 経由でリモートアクセス可能。dev-01 は Fedora 43 KDE Plasma で Sunshine/Moonlight フルデスクトップ稼働中。",
         "workloads": [
           {
             "type": "VM",
             "vmid": 200,
             "name": "dev-01",
-            "os": "Debian + Xfce",
-            "purpose": "SSH ベース開発環境 + Sunshine/Moonlight ゲーミング",
+            "os": "Fedora 43 KDE Plasma",
+            "purpose": "Sunshine/Moonlight によるリモートデスクトップ環境（NVIDIA Quadro P600 GPU パススルー）",
             "details": [
+              "Fedora 43 KDE Plasma デスクトップ環境",
+              "NVIDIA Quadro P600 PCIe パススルー",
+              "Sunshine/Moonlight フルデスクトップストリーミング",
               "WezTerm + SSH による開発",
               "Neovim / CLI 中心ワークフロー",
-              "NVIDIA Quadro P600 PCIe パススルー",
-              "Sunshine/Moonlight ストリーミングゲーミング",
               "GitHub 連携"
             ]
           }
