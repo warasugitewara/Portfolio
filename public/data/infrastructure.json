@@ -80,6 +80,7 @@
             "details": [
               "Fedora 43 KDE Plasma デスクトップ環境",
               "NVIDIA Quadro P600 PCIe パススルー",
+              "Intel 1Gbps NIC PCIe パススルー — Proxmox ネットワークと完全分離",
               "Sunshine/Moonlight フルデスクトップストリーミング",
               "WezTerm + SSH による開発",
               "Neovim / CLI 中心ワークフロー",
