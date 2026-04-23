@@ -2,7 +2,7 @@
 
 私のポートフォリオサイトです。
 
-🌐 **公開サイト**: https://portfolio.wc.f5.si
+🌐 **公開サイト**: https://portfolio.warasugi.com
 🔗 **GitHub**: https://github.com/warasugitewara
 
 ---
@@ -30,6 +30,7 @@
 | i18n | カスタムフック（`localStorage` で言語保持） |
 | サーバー | Bun + Hono（静的配信 + SPA フォールバック） |
 | リバースプロキシ | Caddy（Anubis 経由のボット対策付き） |
+| トンネル | Cloudflare Tunnel（TLS 終端・外部公開） |
 | デプロイ | 自宅鯖セルフホスティング（systemd サービス） |
 
 ## 本番環境の構成
@@ -37,7 +38,9 @@
 サイトは自宅サーバーの Proxmox VE 仮想環境上でセルフホスティングされています。
 
 - **サービス**: `portfolio.service`（systemd）— `bun run start` で Hono サーバーを起動（port 3000）
-- **リバースプロキシ**: Caddy が `portfolio.wc.f5.si` を受け、静的ファイルは直接 port 3000 へ、それ以外は Anubis（port 3001）経由で配信
+- **リバースプロキシ**: Caddy がリクエストを受け、静的ファイルは直接 port 3000 へ、それ以外は Anubis（port 3001）経由で配信
+  - `portfolio.warasugi.com`: Cloudflare Tunnel 経由（CF 側で TLS 終端、Caddy は HTTP のみ受信）
+  - `portfolio.wc.f5.si`: 直接接続用（Caddy が auto-HTTPS）
 - **Snake SVG 更新**: cron（6 時間ごと）で `update-snake.sh` を実行し、GitHub contribution snake SVG を最新化
 - **CI/CD**: GitHub Actions で snake SVG 生成（`snake.yml`）と GitHub Pages デプロイ（`deploy.yml`）も並行稼働
 
@@ -71,6 +74,7 @@ bun run start
 
 ## 変更履歴
 
+- **2026-04-23**: Cloudflare Tunnel 対応 — `portfolio.warasugi.com` をメインドメインに移行、Caddy に `http://` ブロック追加
 - **2026-03-02**: GitHub Pages → 自宅鯖の仮想環境上にてセルフホスティング移行、Hono 導入
 
 ## ライセンス
