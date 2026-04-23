@@ -77,6 +77,8 @@ export const InfrastructurePage = ({ i18n }: InfrastructurePageProps) => {
     techStack: false,
     roadmap: false,
     learning: false,
+    networkTopology: false,
+    operations: false,
   });
   const [expandedNode, setExpandedNode] = useState<string | null>(null);
 
@@ -316,6 +318,104 @@ export const InfrastructurePage = ({ i18n }: InfrastructurePageProps) => {
           )}
         </div>
 
+                {/* Network Topology */}
+        <div style={{ marginBottom: '2rem' }}>
+          <button
+            onClick={() => toggleSection('networkTopology')}
+            style={{
+              width: '100%', padding: '1rem',
+              backgroundColor: 'rgba(0,255,136,0.1)',
+              border: '1px solid #00ff88', borderRadius: '4px',
+              color: '#00ff88', fontSize: '1.1rem', fontWeight: 'bold',
+              cursor: 'pointer', display: 'flex',
+              justifyContent: 'space-between', alignItems: 'center',
+              fontFamily: 'monospace',
+            }}
+          >
+            🌐 ネットワーク通信経路
+            <span>{expandedSections.networkTopology ? '▼' : '▶'}</span>
+          </button>
+          {expandedSections.networkTopology && (
+            <div style={{ padding: '1rem', marginTop: '1rem', backgroundColor: 'rgba(0,255,136,0.03)', borderRadius: '4px', border: '1px solid rgba(0,255,136,0.2)', overflowX: 'auto' }}>
+              <svg viewBox="0 0 900 465" style={{ width: '100%', height: 'auto' }}>
+                <defs>
+                  <style>{`
+                    .ft{fill:#0d1117;stroke:#00ff88;stroke-width:1.5}
+                    .ft-cf{fill:#0d1117;stroke:#4dd0ff;stroke-width:1.5}
+                    .tl{fill:#00ff88;font-family:monospace;font-size:13px;font-weight:bold}
+                    .cl{fill:#4dd0ff;font-family:monospace;font-size:13px;font-weight:bold}
+                    .sl{fill:#aaa;font-family:monospace;font-size:10px}
+                    .al{stroke:#00ff88;stroke-width:1.5;fill:none;marker-end:url(#arw)}
+                    .acl{stroke:#4dd0ff;stroke-width:1.5;fill:none;marker-end:url(#arwc)}
+                    .wl{stroke:#ffaa00;stroke-width:1.5;stroke-dasharray:5,3;fill:none;marker-end:url(#arwy)}
+                    .wt{fill:#ffaa00;font-family:monospace;font-size:10px}
+                    .lan{fill:rgba(0,255,136,0.03);stroke:#00ff88;stroke-width:1.5}
+                    .nb{fill:#0a0e27;stroke:rgba(0,255,136,0.35);stroke-width:1}
+                    .nt{fill:#00ff88;font-family:monospace;font-size:11px;font-weight:bold}
+                    .ni{fill:#777;font-family:monospace;font-size:9px}
+                    .nc{fill:#4dd0ff;font-family:monospace;font-size:9px}
+                    .fn{fill:#444;font-family:monospace;font-size:9px}
+                  `}</style>
+                  <marker id="arw" markerWidth="7" markerHeight="5" refX="5" refY="2.5" orient="auto">
+                    <polygon points="0 0, 7 2.5, 0 5" fill="#00ff88" />
+                  </marker>
+                  <marker id="arwc" markerWidth="7" markerHeight="5" refX="5" refY="2.5" orient="auto">
+                    <polygon points="0 0, 7 2.5, 0 5" fill="#4dd0ff" />
+                  </marker>
+                  <marker id="arwy" markerWidth="7" markerHeight="5" refX="5" refY="2.5" orient="auto">
+                    <polygon points="0 0, 7 2.5, 0 5" fill="#ffaa00" />
+                  </marker>
+                </defs>
+                <rect x="325" y="15" width="250" height="55" rx="4" className="ft" />
+                <text x="450" y="37" textAnchor="middle" className="tl">🌐 Internet</text>
+                <text x="450" y="56" textAnchor="middle" className="sl">公衆インターネット</text>
+                <line x1="375" y1="70" x2="170" y2="140" className="al" />
+                <line x1="525" y1="70" x2="730" y2="140" className="acl" />
+                <rect x="30" y="140" width="270" height="85" rx="4" className="ft" />
+                <text x="165" y="163" textAnchor="middle" className="tl">🔐 Twingate</text>
+                <text x="165" y="180" textAnchor="middle" className="sl">ゼロトラスト VPN</text>
+                <text x="165" y="196" textAnchor="middle" className="sl">SSH / Proxmox WebUI / 全サービス</text>
+                <text x="165" y="212" textAnchor="middle" className="sl">内部管理アクセスのみ</text>
+                <rect x="600" y="140" width="270" height="85" rx="4" className="ft-cf" />
+                <text x="735" y="163" textAnchor="middle" className="cl">☁️ Cloudflare</text>
+                <text x="735" y="180" textAnchor="middle" className="sl">Tunnel + DDoS保護 + WAF</text>
+                <text x="735" y="196" textAnchor="middle" className="sl">portfolio.warasugi.com</text>
+                <text x="735" y="212" textAnchor="middle" className="sl">受信接続ゼロ (outbound tunnel)</text>
+                <line x1="165" y1="225" x2="165" y2="288" className="al" />
+                <line x1="735" y1="225" x2="735" y2="288" className="acl" />
+                <text x="60" y="262" className="sl">全ノード管理</text>
+                <text x="738" y="262" className="sl">Dell portfolio</text>
+                <line x1="450" y1="70" x2="165" y2="288" className="wl" />
+                <text x="368" y="173" className="wt">⚠️ Minecraft</text>
+                <text x="368" y="186" className="wt">CT:103 直接公開</text>
+                <rect x="15" y="290" width="870" height="145" rx="4" className="lan" />
+                <text x="450" y="308" textAnchor="middle" className="fn">── 192.168.0.x 物理LAN ──</text>
+                <rect x="30" y="313" width="260" height="110" rx="3" className="nb" />
+                <text x="160" y="330" textAnchor="middle" className="nt">🖥️ HP-1 (ProLiant)</text>
+                <text x="160" y="345" textAnchor="middle" className="ni">• twingate-connector [CT:105]</text>
+                <text x="160" y="358" textAnchor="middle" className="ni">• minecraft-server [CT:103]</text>
+                <text x="160" y="371" textAnchor="middle" className="ni">• dev-01 Fedora KDE [VM:200]</text>
+                <text x="160" y="384" textAnchor="middle" className="ni">• Intel 1Gbps NIC PCIeパススルー</text>
+                <text x="160" y="397" textAnchor="middle" className="ni">• Zabbix Agent</text>
+                <rect x="320" y="313" width="260" height="110" rx="3" className="nb" />
+                <text x="450" y="330" textAnchor="middle" className="nt">🖥️ HP-2 (ProLiant)</text>
+                <text x="450" y="345" textAnchor="middle" className="ni">• pote-monitor [CT:104]</text>
+                <text x="450" y="358" textAnchor="middle" className="ni">• MySQL DB [CT:101]</text>
+                <text x="450" y="371" textAnchor="middle" className="ni">• discord-bot [CT:100]</text>
+                <text x="450" y="384" textAnchor="middle" className="ni">• Zabbix Agent</text>
+                <rect x="610" y="313" width="260" height="110" rx="3" className="nb" />
+                <text x="740" y="330" textAnchor="middle" className="nt">🖥️ Dell (OptiPlex)</text>
+                <text x="740" y="345" textAnchor="middle" className="nc">• portfolio [CT] ← CF Tunnel</text>
+                <text x="740" y="358" textAnchor="middle" className="ni">• Zabbix Server [CT:106]</text>
+                <text x="740" y="371" textAnchor="middle" className="ni">• ddns [CT:107]</text>
+                <text x="740" y="384" textAnchor="middle" className="ni">• twingate-server [VM:102]</text>
+                <text x="740" y="397" textAnchor="middle" className="ni">• Zabbix Agent</text>
+                <text x="15" y="448" className="fn">🔒 公開ポート最小化: Cloudflare Tunnel (受信接続ゼロ) + Minecraft のみ例外的直接公開</text>
+                <text x="15" y="461" className="fn">🔐 全内部管理は Twingate ゼロトラスト VPN 経由 — SSH・Proxmox WebUI・サービス監視はすべて VPN 内</text>
+              </svg>
+            </div>
+          )}
+        </div>
         {/* Design Philosophy */}
         <div style={{ marginBottom: '2rem' }}>
           <button
@@ -577,6 +677,53 @@ export const InfrastructurePage = ({ i18n }: InfrastructurePageProps) => {
           )}
         </div>
 
+                {/* Operations */}
+        <div style={{ marginBottom: '2rem' }}>
+          <button
+            onClick={() => toggleSection('operations')}
+            style={{
+              width: '100%', padding: '1rem',
+              backgroundColor: 'rgba(0,255,136,0.1)',
+              border: '1px solid #00ff88', borderRadius: '4px',
+              color: '#00ff88', fontSize: '1.1rem', fontWeight: 'bold',
+              cursor: 'pointer', display: 'flex',
+              justifyContent: 'space-between', alignItems: 'center',
+              fontFamily: 'monospace',
+            }}
+          >
+            ⚙️ 運用・監視
+            <span>{expandedSections.operations ? '▼' : '▶'}</span>
+          </button>
+          {expandedSections.operations && infra.infrastructure.operations && (
+            <div style={{ marginTop: '1rem', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1rem' }}>
+              <div style={{ padding: '1rem', backgroundColor: 'rgba(0,255,136,0.05)', borderRadius: '4px', border: '1px solid rgba(0,255,136,0.2)' }}>
+                <h4 style={{ marginBottom: '0.5rem', color: '#00ff88' }}>📊 監視</h4>
+                <ul style={{ listStyle: 'none', padding: '0', margin: '0', fontSize: '0.9rem' }}>
+                  <li style={{ marginBottom: '0.3rem' }}>ツール: <strong>{infra.infrastructure.operations.monitoring.tool}</strong></li>
+                  <li style={{ marginBottom: '0.3rem' }}>サーバー: <strong>{infra.infrastructure.operations.monitoring.server}</strong></li>
+                  <li style={{ marginBottom: '0.5rem' }}>{infra.infrastructure.operations.monitoring.coverage}</li>
+                  <li>{infra.infrastructure.operations.monitoring.alerting}</li>
+                </ul>
+              </div>
+              <div style={{ padding: '1rem', backgroundColor: 'rgba(0,255,136,0.05)', borderRadius: '4px', border: '1px solid rgba(0,255,136,0.2)' }}>
+                <h4 style={{ marginBottom: '0.5rem', color: '#00ff88' }}>🔐 アクセス管理</h4>
+                <ul style={{ listStyle: 'none', padding: '0', margin: '0', fontSize: '0.9rem' }}>
+                  <li style={{ marginBottom: '0.3rem' }}>内部: {infra.infrastructure.operations.access_management.internal}</li>
+                  <li style={{ marginBottom: '0.3rem' }}>リモート: {infra.infrastructure.operations.access_management.remote_desktop}</li>
+                  <li>認証: <strong>{infra.infrastructure.operations.access_management.authentication}</strong></li>
+                </ul>
+              </div>
+              <div style={{ padding: '1rem', backgroundColor: 'rgba(0,255,136,0.05)', borderRadius: '4px', border: '1px solid rgba(0,255,136,0.2)' }}>
+                <h4 style={{ marginBottom: '0.5rem', color: '#00ff88' }}>🔄 可用性</h4>
+                <ul style={{ listStyle: 'none', padding: '0', margin: '0', fontSize: '0.9rem' }}>
+                  <li style={{ marginBottom: '0.3rem' }}>{infra.infrastructure.operations.reliability.uptime_target}</li>
+                  <li style={{ marginBottom: '0.3rem' }}>{infra.infrastructure.operations.reliability.restart_policy}</li>
+                  <li>{infra.infrastructure.operations.reliability.backup}</li>
+                </ul>
+              </div>
+            </div>
+          )}
+        </div>
         {/* Technology Stack */}
         <div style={{ marginBottom: '2rem' }}>
           <button
@@ -654,7 +801,8 @@ export const InfrastructurePage = ({ i18n }: InfrastructurePageProps) => {
                   <h4 style={{ marginBottom: '0.5rem', color: '#00ff88' }}>
                     {phase === 'phase_1_current' && 'フェーズ 1: 完了'}
                     {phase === 'phase_2_planned' && 'フェーズ 2: 完了'}
-                    {phase === 'phase_3_future' && 'フェーズ 3: 検討中'}
+                    {phase === 'phase_3_future' && 'フェーズ 3: 計画中'}
+                    {phase === 'phase_4_longterm' && 'フェーズ 4: 長期構潔'}
                   </h4>
                   <p style={{ margin: '0 0 0.5rem 0', fontSize: '0.85rem', color: '#aaa' }}>{data.status}</p>
                   <ul style={{ listStyle: 'none', padding: '0', margin: '0', fontSize: '0.9rem' }}>

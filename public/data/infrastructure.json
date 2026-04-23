@@ -141,13 +141,14 @@
       }
     ],
     "network_design": {
-      "topology": "ホーム LAN (192.168.x.x) + Twingate overlay network（HP-1 / Dell 2拠点冗長）",
+      "topology": "単一フラット物理LAN（192.168.0.x）に全ノードを接続。公開トラフィックは Cloudflare Tunnel 経由のみ。内部管理は Twingate ゼロトラスト VPN で完全分離。",
       "security": [
-        "インターネットへのポート公開なし",
-        "全リモートアクセスは Twingate 経由",
-        "SSH は内部ネットワークのみ",
-        "Caddy + Anubis によるボット対策（portfolio）",
-        "Cloudflare Tunnel 経由の安全なサービス公開（portfolio.warasugi.com）"
+        "Cloudflare Tunnel — ポートフォワード不要・受信接続ゼロ。CF Edge が TLS 終端、Anycast で DDoS 軽減",
+        "Twingate ゼロトラスト VPN — SSH・Proxmox WebUI・全内部サービスへのアクセスを Twingate 経由に限定",
+        "公開ポート最小化 — インターネット側の開放ポートは Minecraft TCP/UDP のみ（例外的直接公開）",
+        "Anubis Bot Protection — portfolio への自動スクレイパー・DDoS をリバースプロキシ層でフィルタ",
+        "Ed25519 SSH鍵 + パスワード認証無効 — 全サーバーで鍵認証のみ許可",
+        "TOTP 2FA — Proxmox WebUI への2段階認証必須"
       ],
       "dns": "Cloudflare DNS (1.1.1.1 / 1.0.0.1) — 全 CT/VM 統一"
     },
@@ -166,7 +167,8 @@
       "authentication": {
         "proxmox": "TOTP 2FA enabled",
         "linux_vms": "SSH key authentication only"
-      }
+      },
+      "philosophy": "ゼロトラストアーキテクチャを採用。「信頼しない・常に検証する」原則に基づき、内部ネットワークへの直接アクセスを排除。Cloudflare Tunnel で公開サービスを保護し、Twingate で管理トラフィックを分離することで、インターネット側の攻撃面を最小化する設計。"
     },
     "future_roadmap": {
       "phase_1_current": {
@@ -195,13 +197,20 @@
         ]
       },
       "phase_3_future": {
-        "status": "🚧 検討中",
+        "status": "計画中（部屋工事完了後 〜 中期）",
         "components": [
-          "VLAN によるネットワーク分離",
-          "10G SFP+ メッシュネットワーク",
-          "Prometheus + Grafana 監視強化",
-          "IaC 自動化",
-          "Arctic MX-6 グリス塗り替え（物理保守）"
+          "パナソニック製 L2 管理スイッチ導入 — VLAN 設計による管理・サービス・Ceph 専用回線の完全分離",
+          "TP-Link アンマネージドスイッチ併用 — L2 スイッチのポート数不足を補う構成でコスト最適化",
+          "SFP+ カード + DAC ケーブル — HP-1・HP-2・Z240 SFF の3ノード間をトライアングル 10G メッシュで接続",
+          "Ceph 分散ストレージ構築 — 10G 専用バックプレーン上でノード間のストレージ冗長化・ライブマイグレーション対応",
+          "Z240 SFF 追加 — 3 ノード Proxmox HA クラスタへの拡張、クォーラム確保",
+          "IP 体系移行 — 現在の 192.168.0.x フラット構成から VLAN ベースのセグメント分離へ移行"
+        ]
+      },
+      "phase_4_longterm": {
+        "status": "長期構想（1年以上先）",
+        "components": [
+          "Mac mini — OpenClaw や LocalLLM サーバーとして活用、推論ワークロードの分散処理基盤"
         ]
       }
     },
@@ -256,6 +265,24 @@
       "backups": "手動 + Google Drive クラウドバックアップ",
       "updates": "定期更新 + 手動確認",
       "documentation": "Obsidian Markdown ノート"
+    },
+    "operations": {
+      "monitoring": {
+        "tool": "Zabbix",
+        "server": "VMID:106 LXC（Dell ノード）",
+        "coverage": "全ノード・全 CT/VM を監視対象。CPU・メモリ・ディスク使用率・プロセス死活・ネットワーク帯域をリアルタイム計測",
+        "alerting": "pote-monitor (CT:104) が Zabbix アラートを Discord 通知に変換。BTC/ETH 価格アラートも統合"
+      },
+      "access_management": {
+        "internal": "Twingate VPN 経由でのみ Proxmox WebUI・SSH にアクセス可能",
+        "remote_desktop": "Sunshine/Moonlight (HP-1 dev-01) で低遅延リモートデスクトップを実現。Intel 1Gbps NIC PCIe パススルーで Proxmox トラフィックと完全分離",
+        "authentication": "Ed25519 SSH鍵認証 + Proxmox TOTP 2FA"
+      },
+      "reliability": {
+        "uptime_target": "ホームラボとして合理的な稼働率を維持",
+        "restart_policy": "Proxmox の自動起動設定で CT/VM はホスト再起動後に自動復旧",
+        "backup": "Proxmox Backup Server による定期スナップショット（計画中）"
+      }
     }
   }
 }
