@@ -12,7 +12,7 @@
 - **マルチページ構成**: React Router による複数ページ対応
 - **自作鯖構成情報**: Proxmox VE ベースのホームラボについての詳細ページ
 - **CLI 風デザイン**: 起動アニメーションとモノスペース中心の UI
-- **軽量構成**: React + TypeScript + Vite の最小構成
+- **高速ビルド**: React + TypeScript + Vite+（Rolldown/Oxc により ~272ms ビルド）
 - **日英対応**: 日本語 / 英語をヘッダーから切り替え可能
 - **テーマ切り替え**: ダーク / ライト両対応
 - **GitHub 連携**: リポジトリ情報を API から取得して表示
@@ -23,7 +23,7 @@
 | レイヤー | 技術 |
 |---|---|
 | フレームワーク | React 19 + TypeScript (strict) |
-| ビルドツール | Vite 7 |
+| ビルドツール | Vite+ 0.1.19 (Vite 8 + Rolldown + Oxlint) |
 | ルーティング | React Router DOM v7 |
 | スタイル | CSS カスタムプロパティ（CSS-in-JS なし） |
 | データ | `public/data/*.json` + GitHub API |
@@ -74,6 +74,7 @@ bun run start
 
 ## 変更履歴
 
+- **2026-04-24**: Vite+ 移行 — Vite 8 + Rolldown + Oxlint に移行。ビルド時間 ~2.6s → 272ms（約 9.5x 高速化）
 - **2026-04-23**: Cloudflare Tunnel 対応 — `portfolio.warasugi.com` をメインドメインに移行、Caddy に `http://` ブロック追加
 - **2026-03-02**: GitHub Pages → 自宅鯖の仮想環境上にてセルフホスティング移行、Hono 導入
 
