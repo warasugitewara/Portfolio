@@ -407,7 +407,7 @@ export const InfrastructurePage = ({ i18n }: InfrastructurePageProps) => {
                 <text x="745" y="174" textAnchor="middle" className="sl-cf">DNS: portfolio.warasugi.com → Cloudflare</text>
                 <text x="745" y="189" textAnchor="middle" className="sl">Tunnel / DDoS保護 / WAF / CDN</text>
                 <text x="745" y="204" textAnchor="middle" className="sl">受信接続ゼロ (outbound tunnel only)</text>
-                <text x="745" y="219" textAnchor="middle" className="sl">L7: DNS → CF → Tunnel → CT:103</text>
+                <text x="745" y="219" textAnchor="middle" className="sl">portfolio.warasugi.com → DNS → CF → Tunnel → CT:portfolio (Hono)</text>
                 <text x="745" y="234" textAnchor="middle" className="sl">外部ポート開放ゼロ</text>
 
                 {/* ── Arrows to LAN ── */}
