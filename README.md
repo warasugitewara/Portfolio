@@ -43,7 +43,6 @@
 - **Snake SVG 更新**: cron（6 時間ごと）で `update-snake.sh` を実行し、GitHub contribution snake SVG を最新化
 - **CI/CD**: GitHub Actions で snake SVG 生成（`snake.yml`）と GitHub Pages デプロイ（`deploy.yml`）も並行稼働
 
-> **注**: `/opt/portfolio` にあるホスト上のファイルが正式な最新版です。GitHub リポジトリへの反映はホストから push します。
 
 ## セットアップ
 
@@ -69,7 +68,6 @@ bun run start
 - GitHub API の取得に失敗した場合、プロジェクト一覧が空になることがあります。
 - 言語・テーマ設定は `localStorage` に保存されます。
 - 静的な文言・プロフィール・インフラ情報は `public/data/` の JSON を編集すると更新できます。
-- `public/diagrams/` には Mermaid ファイルが置かれていますが、現在ページ内では表示されていません（今後の拡張予定）。
 
 ## 変更履歴
 
