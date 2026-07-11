@@ -1,0 +1,744 @@
+/* ============================================================================
+   Infrastructure page — theme-aware styles (CLI / terminal aesthetic)
+   All colors derive from the global tokens defined in main.css:
+     --color-bg, --color-surface, --color-text, --color-text-secondary,
+     --color-neon-green, --color-neon-cyan, --color-accent
+   Local vars below are derived from those tokens and overridden for light
+   mode so both diagrams and cards stay legible in both themes.
+   ============================================================================ */
+
+.infra-page {
+  /* accents */
+  --infra-accent: var(--color-neon-green);
+  --infra-cyan: var(--color-neon-cyan);
+  --infra-warn: #f59e0b; /* amber — VM / exception routes (dark default) */
+  --infra-vm-color: #f59e0b;
+
+  /* surfaces & borders derived from the green accent */
+  --infra-diagram-surface: var(--color-surface);
+  --infra-surface-tint: color-mix(in srgb, var(--color-neon-green) 6%, transparent);
+  --infra-header-bg: color-mix(in srgb, var(--color-neon-green) 12%, transparent);
+  --infra-header-bg-hover: color-mix(in srgb, var(--color-neon-green) 20%, transparent);
+  --infra-border: color-mix(in srgb, var(--color-neon-green) 45%, transparent);
+  --infra-border-soft: color-mix(in srgb, var(--color-neon-green) 22%, transparent);
+
+  padding: 2rem 0;
+  font-family: 'JetBrains Mono', 'SF Mono', 'Courier New', monospace;
+}
+
+[data-theme='light'] .infra-page {
+  /* darker amber so it stays readable on a light diagram surface */
+  --infra-warn: #b45309;
+  --infra-vm-color: #b45309;
+}
+
+/* ── Heading / overview ─────────────────────────────────────────────── */
+.infra-title {
+  font-size: 2.5rem;
+  margin-bottom: 0.5rem;
+  color: var(--infra-accent);
+}
+
+.infra-subtitle {
+  font-size: 1.2rem;
+  color: var(--color-text-secondary);
+  margin-bottom: 2rem;
+}
+
+.infra-overview {
+  margin-bottom: 3rem;
+  padding: 1.5rem;
+  background-color: var(--infra-surface-tint);
+  border-left: 4px solid var(--infra-accent);
+  border-radius: 4px;
+}
+
+.infra-overview p {
+  line-height: 1.8;
+  margin: 0;
+}
+
+/* ── Collapsible section (shared component) ─────────────────────────── */
+.collapsible {
+  margin-bottom: 2rem;
+}
+
+.collapsible__trigger {
+  width: 100%;
+  padding: 1rem;
+  background-color: var(--infra-header-bg);
+  border: 1px solid var(--infra-border);
+  border-radius: 4px;
+  color: var(--infra-accent);
+  font-family: inherit;
+  font-size: 1.1rem;
+  font-weight: bold;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  text-align: left;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.collapsible__trigger:hover {
+  background-color: var(--infra-header-bg-hover);
+}
+
+.collapsible__trigger:focus-visible {
+  outline: 2px solid var(--infra-accent);
+  outline-offset: 2px;
+}
+
+.collapsible__chevron {
+  flex-shrink: 0;
+  font-size: 0.9em;
+}
+
+.collapsible__body {
+  margin-top: 1rem;
+}
+
+/* ── Generic content primitives ─────────────────────────────────────── */
+.infra-panel {
+  padding: 1rem;
+  background-color: var(--infra-surface-tint);
+  border-radius: 4px;
+}
+
+.infra-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.infra-list__item {
+  margin-bottom: 0.6rem;
+  padding-left: 1.5rem;
+  position: relative;
+}
+
+.infra-list__item--sm {
+  font-size: 0.9rem;
+  margin-bottom: 0.3rem;
+}
+
+.infra-bullet {
+  position: absolute;
+  left: 0;
+  color: var(--infra-accent);
+}
+
+.infra-muted {
+  color: var(--color-text-secondary);
+}
+
+.infra-subhead {
+  color: var(--color-text-secondary);
+  margin-bottom: 0.5rem;
+}
+
+.infra-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.infra-grid--narrow {
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+}
+
+.infra-card {
+  padding: 1rem;
+  background-color: var(--infra-surface-tint);
+  border: 1px solid var(--infra-border-soft);
+  border-radius: 4px;
+}
+
+.infra-card__title {
+  color: var(--infra-accent);
+  margin-bottom: 0.5rem;
+}
+
+.infra-card p,
+.infra-card li {
+  font-size: 0.9rem;
+}
+
+.infra-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.infra-chip {
+  display: inline-block;
+  padding: 0.3rem 0.6rem;
+  background-color: var(--infra-accent);
+  color: var(--color-bg);
+  border-radius: 3px;
+  font-size: 0.85rem;
+  font-weight: bold;
+}
+
+.infra-hypervisor__platform {
+  margin-bottom: 0.5rem;
+  color: var(--infra-accent);
+  font-size: 1.1rem;
+}
+
+.infra-hypervisor__purpose {
+  margin-bottom: 1rem;
+}
+
+/* ── Nodes (nested collapsible variant) ─────────────────────────────── */
+.infra-node {
+  border: 1px solid var(--infra-border);
+  border-radius: 4px;
+  background-color: var(--infra-surface-tint);
+  margin-bottom: 1rem;
+}
+
+.infra-node .collapsible__trigger {
+  background-color: transparent;
+  border: none;
+  font-weight: normal;
+  align-items: flex-start;
+}
+
+.infra-node .collapsible__trigger:hover {
+  background-color: transparent;
+}
+
+.infra-node .collapsible__body {
+  margin-top: 0;
+  padding: 1rem;
+  border-top: 1px solid var(--infra-border-soft);
+}
+
+.infra-node__head {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.infra-node__name {
+  color: var(--infra-accent);
+  font-size: 1.05rem;
+  font-weight: 600;
+}
+
+.infra-node__hw {
+  font-size: 0.9rem;
+  color: var(--color-text-secondary);
+}
+
+.infra-node__wl {
+  margin-bottom: 0.8rem;
+  padding-left: 1rem;
+  position: relative;
+  color: var(--color-text-secondary);
+}
+
+.infra-node__wl-purpose {
+  margin: 0.3rem 0 0;
+  font-size: 0.85rem;
+  color: var(--color-text-secondary);
+}
+
+.infra-node__wl-details {
+  list-style: none;
+  padding: 0.3rem 0 0 1rem;
+  margin: 0;
+  font-size: 0.85rem;
+}
+
+/* ── Diagram containers ─────────────────────────────────────────────── */
+.infra-diagram-wrap {
+  padding: 1rem;
+  background-color: var(--infra-surface-tint);
+  border-radius: 4px;
+  border: 1px solid var(--infra-border-soft);
+  overflow-x: auto;
+}
+
+.infra-diagram-canvas {
+  min-width: 100%;
+  background-color: var(--infra-diagram-surface);
+  padding: 1rem;
+  border-radius: 4px;
+}
+
+.infra-svg {
+  width: 100%;
+  height: auto;
+  color: var(--color-text);
+}
+
+.infra-notes {
+  margin-top: 1.5rem;
+  padding: 1rem;
+  background-color: var(--infra-surface-tint);
+  border-radius: 4px;
+  border: 1px solid var(--infra-border-soft);
+}
+
+.infra-notes__title {
+  color: var(--infra-accent);
+  margin-bottom: 0.5rem;
+  font-size: 0.95rem;
+}
+
+.infra-notes__list {
+  font-size: 0.9rem;
+  color: var(--color-text);
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.infra-notes__list li {
+  margin-bottom: 0.4rem;
+}
+
+.infra-notes__list li:last-child {
+  margin-bottom: 0;
+}
+
+/* ── Architecture diagram (SVG classes) ─────────────────────────────── */
+.dgm-title {
+  fill: var(--infra-accent);
+  font-family: inherit;
+  font-size: 20px;
+  font-weight: bold;
+}
+.dgm-node-text {
+  fill: var(--infra-accent);
+  font-family: inherit;
+  font-size: 16px;
+  font-weight: bold;
+}
+.dgm-label {
+  fill: var(--color-text-secondary);
+  font-family: inherit;
+  font-size: 13px;
+}
+.dgm-label--sm {
+  font-size: 12px;
+}
+.dgm-section-label {
+  fill: var(--color-text-secondary);
+  font-family: inherit;
+  font-size: 13px;
+  font-style: italic;
+}
+.dgm-node-rect {
+  fill: color-mix(in srgb, var(--infra-accent) 10%, transparent);
+  stroke: var(--infra-accent);
+  stroke-width: 2;
+}
+.dgm-cluster-rect {
+  fill: color-mix(in srgb, var(--infra-accent) 5%, transparent);
+  stroke: var(--infra-accent);
+  stroke-width: 3;
+  stroke-dasharray: 8, 4;
+}
+.dgm-node-inner-rect {
+  fill: color-mix(in srgb, var(--infra-accent) 8%, transparent);
+  stroke: color-mix(in srgb, var(--infra-accent) 60%, transparent);
+  stroke-width: 2;
+}
+.dgm-container-rect {
+  fill: color-mix(in srgb, var(--infra-cyan) 10%, transparent);
+  stroke: color-mix(in srgb, var(--infra-cyan) 55%, transparent);
+  stroke-width: 1;
+}
+.dgm-vm-rect {
+  fill: color-mix(in srgb, var(--infra-vm-color) 12%, transparent);
+  stroke: color-mix(in srgb, var(--infra-vm-color) 55%, transparent);
+  stroke-width: 1;
+}
+.dgm-connector {
+  stroke: var(--infra-accent);
+  stroke-width: 2;
+  fill: none;
+}
+.dgm-arrow {
+  fill: var(--infra-accent);
+}
+.dgm-legend-title {
+  fill: var(--infra-accent);
+  font-family: inherit;
+  font-size: 18px;
+  font-weight: bold;
+}
+.dgm-legend-text {
+  fill: var(--color-text);
+  font-family: inherit;
+  font-size: 15px;
+}
+.dgm-legend-icon {
+  fill: var(--infra-accent);
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: bold;
+}
+
+/* OPNsense network-core highlight + segment chips */
+.dgm-core-rect {
+  fill: color-mix(in srgb, var(--infra-accent) 20%, transparent);
+  stroke: var(--infra-accent);
+  stroke-width: 2.5;
+}
+.dgm-seg-rect {
+  fill: color-mix(in srgb, var(--infra-cyan) 12%, transparent);
+  stroke: color-mix(in srgb, var(--infra-cyan) 55%, transparent);
+  stroke-width: 1.5;
+}
+
+/* Per-workload rows inside each node column */
+.dgm-row-rect {
+  fill: color-mix(in srgb, var(--infra-cyan) 8%, transparent);
+  stroke: color-mix(in srgb, var(--infra-cyan) 40%, transparent);
+  stroke-width: 1;
+}
+.dgm-row-rect--core {
+  fill: color-mix(in srgb, var(--infra-accent) 16%, transparent);
+  stroke: var(--infra-accent);
+  stroke-width: 2;
+}
+.dgm-row-rect--cf {
+  fill: color-mix(in srgb, var(--infra-cyan) 16%, transparent);
+  stroke: var(--infra-cyan);
+  stroke-width: 1.5;
+}
+.dgm-row-rect--warn {
+  fill: color-mix(in srgb, var(--infra-warn) 14%, transparent);
+  stroke: var(--infra-warn);
+  stroke-width: 1.5;
+}
+.dgm-row-name {
+  fill: var(--color-text);
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+}
+.dgm-row-id {
+  fill: var(--color-text-secondary);
+  font-family: inherit;
+  font-size: 10px;
+}
+.dgm-row-note {
+  fill: var(--color-text-secondary);
+  font-family: inherit;
+  font-size: 10px;
+}
+
+/* ── Network-path diagram (SVG classes) ─────────────────────────────── */
+.net-ft {
+  fill: color-mix(in srgb, var(--infra-accent) 8%, var(--infra-diagram-surface));
+  stroke: var(--infra-accent);
+  stroke-width: 2;
+}
+.net-ft-cf {
+  fill: color-mix(in srgb, var(--infra-cyan) 8%, var(--infra-diagram-surface));
+  stroke: var(--infra-cyan);
+  stroke-width: 2;
+}
+.net-tl {
+  fill: var(--infra-accent);
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: bold;
+}
+.net-cl {
+  fill: var(--infra-cyan);
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: bold;
+}
+.net-sl {
+  fill: var(--color-text-secondary);
+  font-family: inherit;
+  font-size: 10px;
+}
+.net-sl-cf {
+  fill: var(--infra-cyan);
+  font-family: inherit;
+  font-size: 10px;
+}
+.net-al-main {
+  stroke: var(--infra-cyan);
+  stroke-width: 3;
+  fill: none;
+  marker-end: url(#net-arrow-cf);
+}
+.net-al-mgmt {
+  stroke: var(--infra-accent);
+  stroke-width: 2;
+  fill: none;
+  marker-end: url(#net-arrow);
+}
+.net-al-exc {
+  stroke: var(--infra-warn);
+  stroke-width: 1.5;
+  stroke-dasharray: 6, 3;
+  fill: none;
+  marker-end: url(#net-arrow-warn);
+}
+.net-lan {
+  fill: color-mix(in srgb, var(--infra-accent) 5%, transparent);
+  stroke: var(--infra-accent);
+  stroke-width: 1.5;
+}
+.net-nb {
+  fill: color-mix(in srgb, var(--infra-accent) 6%, var(--infra-diagram-surface));
+  stroke: color-mix(in srgb, var(--infra-accent) 50%, transparent);
+  stroke-width: 1.5;
+}
+.net-nb-dell {
+  fill: color-mix(in srgb, var(--infra-cyan) 6%, var(--infra-diagram-surface));
+  stroke: color-mix(in srgb, var(--infra-cyan) 60%, transparent);
+  stroke-width: 1.5;
+}
+.net-nt {
+  fill: var(--infra-accent);
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: bold;
+}
+.net-nh {
+  fill: var(--color-text-secondary);
+  font-family: inherit;
+  font-size: 9px;
+}
+.net-ni {
+  fill: var(--color-text);
+  font-family: inherit;
+  font-size: 9px;
+}
+.net-nc {
+  fill: var(--infra-cyan);
+  font-family: inherit;
+  font-size: 9px;
+  font-weight: bold;
+}
+.net-fn {
+  fill: var(--color-text-secondary);
+  font-family: inherit;
+  font-size: 9px;
+}
+.net-rt {
+  fill: var(--infra-accent);
+  font-family: inherit;
+  font-size: 9px;
+  font-weight: bold;
+}
+.net-rt-cf {
+  fill: var(--infra-cyan);
+  font-family: inherit;
+  font-size: 9px;
+  font-weight: bold;
+}
+.net-rt-exc {
+  fill: var(--infra-warn);
+  font-family: inherit;
+  font-size: 9px;
+  font-weight: bold;
+}
+.net-leg-box {
+  fill: color-mix(in srgb, var(--infra-accent) 5%, transparent);
+  stroke: var(--infra-border-soft);
+  stroke-width: 1;
+}
+.net-lt {
+  fill: var(--color-text);
+  font-family: inherit;
+  font-size: 10px;
+}
+.net-st {
+  fill: var(--color-text-secondary);
+  font-family: inherit;
+  font-size: 9px;
+}
+.net-badge {
+  fill: color-mix(in srgb, var(--infra-accent) 18%, transparent);
+  stroke: var(--infra-accent);
+  stroke-width: 1;
+}
+.net-badge-cf {
+  fill: color-mix(in srgb, var(--infra-cyan) 18%, transparent);
+  stroke: var(--infra-cyan);
+  stroke-width: 1;
+}
+.net-bt {
+  fill: var(--infra-accent);
+  font-family: inherit;
+  font-size: 8px;
+  font-weight: bold;
+}
+.net-bt-cf {
+  fill: var(--infra-cyan);
+  font-family: inherit;
+  font-size: 8px;
+  font-weight: bold;
+}
+.net-divider {
+  stroke: var(--infra-border-soft);
+  stroke-width: 1;
+}
+.net-divider-cf {
+  stroke: color-mix(in srgb, var(--infra-cyan) 30%, transparent);
+  stroke-width: 1;
+}
+.net-arrow-fill {
+  fill: var(--infra-accent);
+}
+.net-arrow-fill-cf {
+  fill: var(--infra-cyan);
+}
+.net-arrow-fill-warn {
+  fill: var(--infra-warn);
+}
+.net-leg-line-main {
+  stroke: var(--infra-cyan);
+  stroke-width: 3;
+}
+.net-leg-line-mgmt {
+  stroke: var(--infra-accent);
+  stroke-width: 2;
+}
+.net-leg-line-exc {
+  stroke: var(--infra-warn);
+  stroke-width: 1.5;
+  stroke-dasharray: 6, 3;
+}
+
+/* Network-path diagram v2: exception gateway, OPNsense core, segments */
+.net-ft-warn {
+  fill: color-mix(in srgb, var(--infra-warn) 8%, var(--infra-diagram-surface));
+  stroke: var(--infra-warn);
+  stroke-width: 2;
+}
+.net-core-rect {
+  fill: color-mix(in srgb, var(--infra-accent) 14%, var(--infra-diagram-surface));
+  stroke: var(--infra-accent);
+  stroke-width: 2.5;
+}
+.net-seg-rect {
+  fill: color-mix(in srgb, var(--infra-accent) 6%, var(--infra-diagram-surface));
+  stroke: color-mix(in srgb, var(--infra-accent) 55%, transparent);
+  stroke-width: 1.5;
+}
+.net-seg-rect--iso {
+  fill: color-mix(in srgb, var(--infra-cyan) 6%, var(--infra-diagram-surface));
+  stroke: color-mix(in srgb, var(--infra-cyan) 60%, transparent);
+  stroke-width: 1.5;
+  stroke-dasharray: 6, 3;
+}
+.net-seg-head {
+  fill: var(--infra-accent);
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: bold;
+}
+.net-seg-head--iso {
+  fill: var(--infra-cyan);
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: bold;
+}
+.net-seg-row {
+  fill: var(--color-text);
+  font-family: inherit;
+  font-size: 10px;
+}
+.net-warn-tl {
+  fill: var(--infra-warn);
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: bold;
+}
+.net-warn-txt {
+  fill: var(--infra-warn);
+  font-family: inherit;
+  font-size: 10px;
+  font-weight: bold;
+}
+
+/* ── Diagram containers: horizontal scroll + swipe hint on mobile ─────── */
+.infra-diagram-wrap {
+  position: relative;
+  -webkit-overflow-scrolling: touch;
+}
+
+.infra-diagram-hint {
+  display: none;
+  margin: 0.5rem 0 0;
+  text-align: center;
+  font-size: 0.78rem;
+  color: var(--color-text-secondary);
+  letter-spacing: 0.08em;
+}
+
+/* ── Responsive ──────────────────────────────────────────────────────── */
+@media (max-width: 640px) {
+  .infra-page {
+    padding: 1.25rem 0;
+  }
+
+  .infra-subtitle {
+    font-size: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .infra-overview {
+    margin-bottom: 2rem;
+    padding: 1rem;
+  }
+
+  /* Keep diagrams legible: don't shrink below a readable width; let the
+     wrapper scroll horizontally instead. */
+  .infra-diagram-wrap {
+    padding: 0.75rem;
+  }
+
+  .infra-diagram-canvas {
+    min-width: 760px;
+    padding: 0.75rem;
+  }
+
+  .infra-diagram-hint {
+    display: block;
+  }
+
+  .infra-grid,
+  .infra-grid--narrow {
+    grid-template-columns: 1fr;
+  }
+
+  .collapsible {
+    margin-bottom: 1.25rem;
+  }
+
+  .collapsible__trigger {
+    font-size: 1rem;
+    padding: 0.85rem;
+  }
+
+  .infra-node__name {
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .infra-title {
+    font-size: 2rem;
+  }
+
+  .infra-diagram-canvas {
+    min-width: 680px;
+  }
+}

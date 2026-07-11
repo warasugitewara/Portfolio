@@ -1,11 +1,10 @@
-import { useEffect, useState } from 'react';
-import { useI18n } from '../hooks/useI18n';
-import { useTheme } from '../hooks/useTheme';
+import { useEffect } from "react";
+import type { I18n, Language } from "../types";
 
 interface HeaderProps {
-  lang: string;
-  i18n: any;
-  onLanguageSwitch: (lang: string) => void;
+  lang: Language;
+  i18n: I18n;
+  onLanguageSwitch: (lang: Language) => void;
   onThemeToggle: () => void;
   theme: string;
 }
@@ -14,7 +13,7 @@ export const Header = ({ lang, i18n, onLanguageSwitch, onThemeToggle, theme }: H
   return (
     <header className="header">
       <div className="header-wrapper">
-        <a href="/" style={{ textDecoration: 'none', color: 'inherit' }}>
+        <a href="/" style={{ textDecoration: "none", color: "inherit" }}>
           <h1 className="header-title">warasugi</h1>
         </a>
         <nav className="header-nav">
@@ -35,24 +34,24 @@ export const Header = ({ lang, i18n, onLanguageSwitch, onThemeToggle, theme }: H
           </a>
           <div className="lang-switcher">
             <button
-              className={`lang-btn ${lang === 'ja' ? 'active' : ''}`}
-              onClick={() => onLanguageSwitch('ja')}
+              className={`lang-btn ${lang === "ja" ? "active" : ""}`}
+              onClick={() => onLanguageSwitch("ja")}
             >
               日本語
             </button>
             <button
-              className={`lang-btn ${lang === 'en' ? 'active' : ''}`}
-              onClick={() => onLanguageSwitch('en')}
+              className={`lang-btn ${lang === "en" ? "active" : ""}`}
+              onClick={() => onLanguageSwitch("en")}
             >
               English
             </button>
             <button
               className="theme-btn"
               onClick={onThemeToggle}
-              title={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
-              aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
+              title={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
+              aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
             >
-              {theme === 'dark' ? '☀️' : '🌙'}
+              {theme === "dark" ? "☀️" : "🌙"}
             </button>
           </div>
         </nav>
@@ -62,7 +61,7 @@ export const Header = ({ lang, i18n, onLanguageSwitch, onThemeToggle, theme }: H
 };
 
 interface FooterProps {
-  i18n: any;
+  i18n: I18n;
 }
 
 export const Footer = ({ i18n }: FooterProps) => {
@@ -75,30 +74,35 @@ export const Footer = ({ i18n }: FooterProps) => {
 
 interface LayoutProps {
   children: React.ReactNode;
-  lang: string;
-  i18n: any;
-  onLanguageSwitch: (lang: string) => void;
+  lang: Language;
+  i18n: I18n;
+  onLanguageSwitch: (lang: Language) => void;
   onThemeToggle: () => void;
   theme: string;
 }
 
-export const Layout = ({ children, lang, i18n, onLanguageSwitch, onThemeToggle, theme }: LayoutProps) => {
+export const Layout = ({
+  children,
+  lang,
+  i18n,
+  onLanguageSwitch,
+  onThemeToggle,
+  theme,
+}: LayoutProps) => {
   useEffect(() => {
     document.documentElement.lang = lang;
   }, [lang]);
 
   return (
     <div className="app">
-      <Header 
-        lang={lang} 
-        i18n={i18n} 
-        onLanguageSwitch={onLanguageSwitch} 
+      <Header
+        lang={lang}
+        i18n={i18n}
+        onLanguageSwitch={onLanguageSwitch}
         onThemeToggle={onThemeToggle}
         theme={theme}
       />
-      <main className="main">
-        {children}
-      </main>
+      <main className="main">{children}</main>
       <Footer i18n={i18n} />
     </div>
   );

@@ -1,24 +1,24 @@
-import { useState, useEffect } from 'react';
-import { BootAnimation } from '../components/BootAnimation';
-import { Hero } from '../components/Hero';
-import { About } from '../components/About';
-import { Snake } from '../components/Snake';
-import { Skills } from '../components/Skills';
-import { Philosophy } from '../components/Philosophy';
-import { Projects } from '../components/Projects';
-import { Contact } from '../components/Contact';
-import type { Profile } from '../types';
-import { getDataUrl } from '../utils/path';
+import { useState, useEffect } from "react";
+import { BootAnimation } from "../components/BootAnimation";
+import { Hero } from "../components/Hero";
+import { About } from "../components/About";
+import { Snake } from "../components/Snake";
+import { Skills } from "../components/Skills";
+import { Philosophy } from "../components/Philosophy";
+import { Projects } from "../components/Projects";
+import { Contact } from "../components/Contact";
+import type { I18n, Language, Profile } from "../types";
+import { getDataUrl } from "../utils/path";
 
 interface HomePageProps {
-  i18n: any;
-  lang: string;
+  i18n: I18n;
+  lang: Language;
 }
 
 export const HomePage = ({ i18n, lang }: HomePageProps) => {
   const [showBoot, setShowBoot] = useState(() => {
-    if (typeof window !== 'undefined') {
-      const shown = localStorage.getItem('bootAnimationShown');
+    if (typeof window !== "undefined") {
+      const shown = localStorage.getItem("bootAnimationShown");
       return !shown;
     }
     return true;
@@ -28,22 +28,22 @@ export const HomePage = ({ i18n, lang }: HomePageProps) => {
 
   useEffect(() => {
     if (showBoot === false) {
-      localStorage.setItem('bootAnimationShown', 'true');
+      localStorage.setItem("bootAnimationShown", "true");
     }
   }, [showBoot]);
 
   useEffect(() => {
     const loadProfile = async () => {
       try {
-        const response = await fetch(getDataUrl('profile.json'));
+        const response = await fetch(getDataUrl("profile.json"));
         if (!response.ok) throw new Error(`Failed to load profile: ${response.status}`);
         const data = await response.json();
         setProfile(data);
       } catch (error) {
-        console.error('Failed to load profile:', error);
+        console.error("Failed to load profile:", error);
       }
     };
-    loadProfile();
+    void loadProfile();
   }, []);
 
   if (!i18n) return null;

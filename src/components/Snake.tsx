@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import type { I18n } from '../types';
+import { useState, useEffect } from "react";
+import type { I18n } from "../types";
 
 interface SnakeProps {
   i18n: I18n | null;
@@ -12,7 +12,8 @@ export const Snake = ({ i18n }: SnakeProps) => {
     // Check if snake SVG is accessible from GitHub
     const checkSnake = async () => {
       try {
-        const darkUrl = 'https://raw.githubusercontent.com/warasugitewara/warasugitewara/main/dist/github-contribution-grid-snake-dark.svg';
+        const darkUrl =
+          "https://raw.githubusercontent.com/warasugitewara/warasugitewara/main/dist/github-contribution-grid-snake-dark.svg";
         const response = await fetch(darkUrl);
         setHasSnake(response.ok);
       } catch {
@@ -20,16 +21,16 @@ export const Snake = ({ i18n }: SnakeProps) => {
       }
     };
 
-    checkSnake();
+    void checkSnake();
 
     // Listen for theme changes to re-check
     const observer = new MutationObserver(() => {
-      checkSnake();
+      void checkSnake();
     });
 
     observer.observe(document.documentElement, {
       attributes: true,
-      attributeFilter: ['data-theme'],
+      attributeFilter: ["data-theme"],
     });
 
     return () => observer.disconnect();
@@ -37,7 +38,8 @@ export const Snake = ({ i18n }: SnakeProps) => {
 
   if (!i18n) return null;
 
-  const snakeDarkUrl = 'https://raw.githubusercontent.com/warasugitewara/warasugitewara/main/dist/github-contribution-grid-snake-dark.svg';
+  const snakeDarkUrl =
+    "https://raw.githubusercontent.com/warasugitewara/warasugitewara/main/dist/github-contribution-grid-snake-dark.svg";
 
   return (
     <section className="section snake">
@@ -45,15 +47,17 @@ export const Snake = ({ i18n }: SnakeProps) => {
         <h2 className="section-title">Contributions</h2>
         <div className="snake-container">
           {hasSnake ? (
-            <img
-              alt="github contribution grid snake animation"
-              src={snakeDarkUrl}
-              loading="lazy"
-            />
+            <img alt="github contribution grid snake animation" src={snakeDarkUrl} loading="lazy" />
           ) : (
             <div className="snake-placeholder">
               <p>🐍 GitHub contribution animation generating...</p>
-              <p style={{ fontSize: '0.85rem', color: 'var(--color-text-secondary)', marginTop: '0.5rem' }}>
+              <p
+                style={{
+                  fontSize: "0.85rem",
+                  color: "var(--color-text-secondary)",
+                  marginTop: "0.5rem",
+                }}
+              >
                 Fetching snake animation from GitHub...
               </p>
             </div>

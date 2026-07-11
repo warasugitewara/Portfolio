@@ -1,14 +1,13 @@
-import { useState } from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import { useI18n } from './hooks/useI18n';
-import { useTheme } from './hooks/useTheme';
-import { Layout } from './components/Layout';
-import { HomePage } from './pages/HomePage';
-import { InfrastructurePage } from './pages/InfrastructurePage';
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { useI18n } from "./hooks/useI18n";
+import { useTheme } from "./hooks/useTheme";
+import { Layout } from "./components/Layout";
+import { HomePage } from "./pages/HomePage";
+import { InfrastructurePage } from "./pages/InfrastructurePage";
 
 function App() {
-  const { lang, i18n, switchLanguage } = useI18n('ja');
-  const { theme, toggleTheme } = useTheme('dark');
+  const { lang, i18n, switchLanguage } = useI18n("ja");
+  const { theme, toggleTheme } = useTheme("dark");
 
   if (!i18n) {
     return <div className="loading">Loading...</div>;

@@ -1,16 +1,16 @@
 {
   "infrastructure": {
     "title": "自作鯖構成",
-    "subtitle": "waras-nw — 3ノード Proxmox VE クラスター",
-    "overview": "HP Z240 SFF × 2台と Dell OptiPlex 7040 SFF で構成する 3ノード Proxmox VE クラスター（waras-nw）。ゼロトラストアクセス（Twingate 2拠点冗長）・GPU パススルー（Quadro P600）・Intel NIC PCIe パススルー・Cloudflare Tunnel 公開・Zabbix 監視を備え、開発・リモートデスクトップ・各種サービスを稼働中。インターネットへの直接ポート公開は行わない。",
+    "subtitle": "waras-nw — 3ノード Proxmox VE クラスター（OPNsense ルーティング）",
+    "overview": "HP Z240 SFF × 2台と Dell OptiPlex 7040 SFF で構成する 3ノード Proxmox VE クラスター（waras-nw）。OPNsense をメインファイアウォール/ルータとしてネットワークを 192.168.0.x（メイン）と 192.168.1.x（隔離セグメント）に分離し、AdGuard Home（DNS フィルタ）と Twingate（ゼロトラスト）を各セグメントに冗長配置。ポートフォリオは Cloudflare Tunnel 経由で公開し、Minecraft も東京の Velocity プロキシ経由で公開するため、自宅からのインターネット直接ポート開放はゼロ。Discord ボット群・VOICEVOX 音声合成・Minecraft（東京 Velocity 経由）・ZenNotes 同期・各種セルフホストサービスを稼働し、Zabbix で全体を監視している。",
     "design_philosophy": [
-      "ゼロトラスト型ネットワークアクセス — インターネットへのポート公開なし",
+      "OPNsense をメイン FW/ルータとし、192.168.0.x / 192.168.1.x のネットワークセグメント分離",
+      "AdGuard Home による DNS フィルタリング（セグメント別に冗長化）",
+      "Twingate ゼロトラストアクセス（2セグメント冗長）— インターネットへのポート開放はゼロ",
       "3ノード Proxmox VE クラスターによる分散ワークロード構成",
-      "GPU パススルーによる開発・リモートデスクトップ環境の実現（Quadro P600）",
       "Ed25519 SSH鍵認証 + パスワード認証無効化",
       "複数メディアへのバックアップ（USB + クラウド）",
       "Zabbix によるインフラメトリクス監視",
-      "Intel NIC PCIe パススルーによるネットワーク分離（Proxmox と dev-01 完全独立）",
       "Cloudflare Tunnel 経由の安全なサービス公開（portfolio.warasugi.com）"
     ],
     "hypervisor": {
@@ -28,66 +28,112 @@
       {
         "id": "hp1",
         "name": "HP-1",
-        "hardware": "HP Z240 SFF — Xeon E3-1225 + RAM 16GB + HDD 1TB",
-        "role": "サービスノード",
-        "purpose": "waras-nw クラスターの第1ノード。Twingate・Obsidian livesync・Discord Bot・Minecraft サーバーを担当。",
+        "hardware": "HP Z240 SFF — Xeon E3-1225 + RAM 16GB + HDD",
+        "role": "メディア・Discord ボットノード",
+        "purpose": "waras-nw クラスターの第1ノード。Discord ボット群と VOICEVOX 音声合成エンジン、個人ホームページを担当。",
         "workloads": [
           {
             "type": "LXC",
-            "vmid": 100,
-            "os": "Debian 12/13",
-            "name": "obsidian-host",
-            "purpose": "Obsidian-livesync 用 CouchDB データベース"
-          },
-          {
-            "type": "LXC",
             "vmid": 101,
-            "os": "Debian 12/13",
-            "name": "music-bot",
+            "os": "Debian",
+            "name": "Music-Bot",
             "purpose": "Discord 音楽ボット"
           },
           {
             "type": "LXC",
-            "vmid": 300,
-            "os": "Debian 12/13",
-            "name": "Minecraft",
-            "purpose": "重量級 Modpack サーバー",
-            "details": [
-              "Mechanical Mastery Modpack",
-              "Java Edition サーバー"
-            ]
+            "vmid": 108,
+            "os": "Debian",
+            "name": "homepage",
+            "purpose": "Homepage — セルフホスト型アプリケーションダッシュボード（gethomepage.dev）"
           },
           {
             "type": "LXC",
-            "vmid": 105,
-            "os": "Debian 12/13",
-            "name": "twingate-connector",
-            "purpose": "ゼロトラストリモートアクセスのトンネルエンドポイント（HP-1 側）"
+            "vmid": 304,
+            "os": "Debian",
+            "name": "Yomiage-Bot",
+            "purpose": "Discord 読み上げボット（VOICEVOX 連携）"
+          },
+          {
+            "type": "VM",
+            "vmid": 600,
+            "os": "Linux (VM)",
+            "name": "Voicevox-Engine",
+            "purpose": "VOICEVOX 音声合成エンジン（読み上げ / AI Podcast 用 TTS）"
           }
         ]
       },
       {
         "id": "hp2",
         "name": "HP-2",
-        "hardware": "HP Z240 SFF — Xeon E3-1245 v5 (8 threads) + RAM 16GB + NVIDIA Quadro P600",
-        "role": "GPU コンピュートノード / 開発ノード",
-        "purpose": "GPU パススルーを活用したリモートデスクトップ・開発環境。Twingate 経由でリモートアクセス可能。dev-01 は Fedora KDE Plasma Desktop 43 で Sunshine/Moonlight フルデスクトップ稼働中。",
+        "hardware": "HP Z240 SFF — Xeon E3-1245 v5 (8 threads) + RAM 16GB",
+        "role": "ネットワーク中核 / サービスノード",
+        "purpose": "OPNsense をメイン FW/ルータとして稼働させるネットワークの中核ノード。AdGuard・Twingate（1.x 側）や Minecraft、ZenNotes 同期など主要サービスを集約。",
         "workloads": [
           {
             "type": "VM",
-            "vmid": 200,
-            "name": "dev-01",
-            "os": "Fedora KDE Plasma Desktop 43",
-            "purpose": "Sunshine/Moonlight によるリモートデスクトップ環境（NVIDIA Quadro P600 GPU パススルー）",
+            "vmid": 500,
+            "os": "OPNsense (FreeBSD)",
+            "name": "OPNsense",
+            "purpose": "メインファイアウォール / ルータ。192.168.0.x と 192.168.1.x のセグメント分離を担当。",
             "details": [
-              "Fedora KDE Plasma Desktop 43 デスクトップ環境",
-              "NVIDIA Quadro P600 PCIe パススルー",
-              "Intel 1Gbps NIC PCIe パススルー — Proxmox ネットワークと完全分離",
-              "Sunshine/Moonlight フルデスクトップストリーミング",
-              "WezTerm + SSH による開発",
-              "Neovim / CLI 中心ワークフロー",
-              "GitHub 連携"
+              "1.x セグメントを OPNsense で分離・隔離",
+              "ファイアウォール / ルーティング / NAT",
+              "AdGuard Home と連携した DNS 制御"
             ]
+          },
+          {
+            "type": "LXC",
+            "vmid": 100,
+            "os": "Debian",
+            "name": "Zennotes",
+            "purpose": "ZenNotes — Markdown ノート同期基盤（旧 obsidian-livesync の後継）"
+          },
+          {
+            "type": "LXC",
+            "vmid": 105,
+            "os": "Debian",
+            "name": "twingate-1.x",
+            "purpose": "Twingate コネクタ（1.x 隔離セグメント側）ゼロトラストトンネル"
+          },
+          {
+            "type": "LXC",
+            "vmid": 106,
+            "os": "Debian",
+            "name": "adguard-1.x",
+            "purpose": "AdGuard Home DNS（1.x セグメント）— 広告 / トラッカーフィルタ"
+          },
+          {
+            "type": "LXC",
+            "vmid": 107,
+            "os": "Debian",
+            "name": "adguard-0.x",
+            "purpose": "AdGuard Home DNS（0.x セグメント）— 冗長化"
+          },
+          {
+            "type": "LXC",
+            "vmid": 300,
+            "os": "Debian",
+            "name": "Minecraft",
+            "purpose": "重量級 Modpack サーバー",
+            "details": [
+              "Mechanical Mastery Modpack",
+              "Java Edition サーバー",
+              "公開は東京の Velocity プロキシ経由（自宅側は外部ポート開放ゼロ）"
+            ]
+          },
+          {
+            "type": "LXC",
+            "vmid": 700,
+            "os": "Debian",
+            "name": "Headroom-Proxy",
+            "purpose": "Headroom — AI エージェント向けコンテキスト圧縮レイヤ（LLM トークン削減プロキシ / MCP）"
+          },
+          {
+            "type": "LXC",
+            "vmid": 1000,
+            "os": "Debian",
+            "name": "secrets1",
+            "purpose": "非公開プロジェクト（詳細非公開）"
           }
         ]
       },
@@ -95,27 +141,27 @@
         "id": "dell",
         "name": "Dell",
         "hardware": "Dell OptiPlex 7040 SFF — Intel Core i3-6100 (4 threads) + RAM 8GB + SSD 128GB + HDD (Toshiba)",
-        "role": "管理ノード / ネットワークサービスノード",
-        "purpose": "Twingate・ポートフォリオ・Zabbix 監視を担当するクラスター管理ノード。",
+        "role": "Web公開 / 監視ノード",
+        "purpose": "ポートフォリオ公開・監視・0.x 側ゼロトラストアクセスを担当するノード。Minecraft プロキシや各種セルフホストサービスも稼働。",
         "workloads": [
           {
             "type": "LXC",
             "vmid": 102,
-            "os": "Debian 12/13",
-            "name": "twingate",
-            "purpose": "ゼロトラストリモートアクセスのトンネルエンドポイント（Dell 側）"
+            "os": "Debian",
+            "name": "twingate-0.x",
+            "purpose": "Twingate コネクタ（0.x セグメント側）ゼロトラストトンネル"
           },
           {
             "type": "LXC",
             "vmid": 103,
-            "os": "Debian 12/13",
+            "os": "Debian",
             "name": "portfolio",
-            "purpose": "Bun + Hono で稼働中のポートフォリオサイト（portfolio.warasugi.com）"
+            "purpose": "Bun + Hono で稼働中のポートフォリオサイト（portfolio.warasugi.com / Cloudflare Tunnel 公開）"
           },
           {
             "type": "LXC",
             "vmid": 104,
-            "os": "Debian 12/13",
+            "os": "Debian",
             "name": "pote-monitor",
             "purpose": "BTC/ETH 価格変動を1時間ごとに Discord Webhook で通知するモニタリングツール",
             "details": [
@@ -125,32 +171,41 @@
           },
           {
             "type": "LXC",
-            "vmid": 106,
-            "os": "Debian 12/13",
-            "name": "ZABBIX",
-            "purpose": "Zabbix サーバー — クラスター全体のインフラメトリクス収集・アラート管理"
+            "vmid": 301,
+            "os": "Debian",
+            "name": "Velocity",
+            "purpose": "Minecraft サーバー（HP-2 CT:300）の Velocity プロキシ。外部公開は東京の Velocity 経由で、自宅は受信接続ゼロ。"
           },
           {
             "type": "LXC",
-            "vmid": 107,
-            "os": "Debian 13",
-            "name": "ddns",
-            "purpose": "DDNS クライアント — 動的 IP を DNS に自動反映"
+            "vmid": 302,
+            "os": "Debian",
+            "name": "MeTube",
+            "purpose": "セルフホスト動画ダウンローダ（yt-dlp Web UI）"
+          },
+          {
+            "type": "LXC",
+            "vmid": 400,
+            "os": "Debian",
+            "name": "Zabbix-Server",
+            "purpose": "Zabbix サーバー — クラスター全体のインフラメトリクス収集・アラート管理"
           }
         ]
       }
     ],
     "network_design": {
-      "topology": "単一フラット物理LAN（192.168.0.x）に全ノードを接続。公開トラフィックは Cloudflare Tunnel 経由のみ。内部管理は Twingate ゼロトラスト VPN で完全分離。",
+      "topology": "OPNsense（HP-2 VM:500）をメインファイアウォール/ルータとして、LAN を 192.168.0.x（メイン）と 192.168.1.x（OPNsense で分離した隔離セグメント）に分割。各セグメントに Twingate コネクタと AdGuard Home を冗長配置する。公開トラフィックは Cloudflare Tunnel 経由のみで、内部管理は Twingate ゼロトラスト VPN で分離。",
       "security": [
+        "OPNsense メイン FW/ルータ — 192.168.0.x / 192.168.1.x のセグメント分離とファイアウォール制御",
+        "AdGuard Home — 各セグメントに冗長配置し DNS フィルタリング（広告 / トラッカー / マルウェア）",
         "Cloudflare Tunnel — ポートフォワード不要・受信接続ゼロ。CF Edge が TLS 終端、Anycast で DDoS 軽減",
-        "Twingate ゼロトラスト VPN — SSH・Proxmox WebUI・全内部サービスへのアクセスを Twingate 経由に限定",
-        "公開ポート最小化 — インターネット側の開放ポートは Minecraft TCP/UDP のみ（例外的直接公開）",
+        "Twingate ゼロトラスト VPN — SSH・Proxmox WebUI・全内部サービスへのアクセスを Twingate 経由に限定（2セグメント冗長）",
+        "外部ポート開放ゼロ — 受信接続なし。Minecraft も東京の Velocity プロキシ経由で公開し、自宅は直接開放しない",
         "Anubis Bot Protection — portfolio への自動スクレイパー・DDoS をリバースプロキシ層でフィルタ",
         "Ed25519 SSH鍵 + パスワード認証無効 — 全サーバーで鍵認証のみ許可",
         "TOTP 2FA — Proxmox WebUI への2段階認証必須"
       ],
-      "dns": "Cloudflare DNS (1.1.1.1 / 1.0.0.1) — 全 CT/VM 統一"
+      "dns": "AdGuard Home（各セグメントに冗長配置）でフィルタリング。上流は Cloudflare DNS (1.1.1.1 / 1.0.0.1)。"
     },
     "security_model": {
       "ssh": {
@@ -168,7 +223,7 @@
         "proxmox": "TOTP 2FA enabled",
         "linux_vms": "SSH key authentication only"
       },
-      "philosophy": "ゼロトラストアーキテクチャを採用。「信頼しない・常に検証する」原則に基づき、内部ネットワークへの直接アクセスを排除。Cloudflare Tunnel で公開サービスを保護し、Twingate で管理トラフィックを分離することで、インターネット側の攻撃面を最小化する設計。"
+      "philosophy": "OPNsense によるセグメント分離とゼロトラストを組み合わせた多層防御。「信頼しない・常に検証する」原則に基づき、1.x を隔離セグメントとして分離しつつ、Cloudflare Tunnel で公開サービスを保護し、Twingate で管理トラフィックを分離。インターネット側の攻撃面を最小化する設計。"
     },
     "future_roadmap": {
       "phase_1_current": {
@@ -176,8 +231,7 @@
         "components": [
           "Proxmox 単一ノード（Dell）",
           "Twingate リモートアクセス",
-          "dev-01 開発 VM",
-          "Music Bot / Obsidian-host LXC",
+          "Music Bot / ノート同期 LXC",
           "portfolio サービス公開"
         ]
       },
@@ -186,13 +240,14 @@
         "components": [
           "HP Z240 SFF × 2 台追加",
           "Proxmox クラスター構築（waras-nw 3ノード）",
-          "dev-01 GPU パススルー（Quadro P600）",
-          "Sunshine/Moonlight リモートデスクトップ環境",
+          "OPNsense をメイン FW/ルータとして導入",
+          "192.168.0.x / 192.168.1.x のネットワークセグメント分離",
+          "AdGuard Home をセグメント別に冗長化（DNS フィルタ）",
+          "Twingate 2セグメント冗長化",
           "Zabbix 監視導入",
-          "pote-monitor（BTC/ETH Discord 通知ツール）",
-          "Minecraft サーバー稼働",
-          "Twingate 2拠点冗長化",
-          "Intel 1Gbps NIC PCIe パススルー（ネットワーク完全分離）",
+          "Minecraft サーバー + Velocity プロキシ",
+          "VOICEVOX 音声合成 / 読み上げボット",
+          "ZenNotes（Markdown ノート同期）へ移行",
           "Cloudflare Tunnel 公開（portfolio.warasugi.com）"
         ]
       },
@@ -201,10 +256,10 @@
         "components": [
           "パナソニック製 L2 管理スイッチ導入 — VLAN 設計による管理・サービス・Ceph 専用回線の完全分離",
           "TP-Link アンマネージドスイッチ併用 — L2 スイッチのポート数不足を補う構成でコスト最適化",
-          "SFP+ カード + DAC ケーブル — HP-1・HP-2・Z240 SFF の3ノード間をトライアングル 10G メッシュで接続",
+          "SFP+ カード + DAC ケーブル — 3ノード間をトライアングル 10G メッシュで接続",
           "Ceph 分散ストレージ構築 — 10G 専用バックプレーン上でノード間のストレージ冗長化・ライブマイグレーション対応",
-          "Z240 SFF 追加 — 3 ノード Proxmox HA クラスタへの拡張、クォーラム確保",
-          "IP 体系移行 — 現在の 192.168.0.x フラット構成から VLAN ベースのセグメント分離へ移行"
+          "Z240 SFF 追加 — Proxmox HA クラスタへの拡張、クォーラム確保",
+          "IP 体系移行 — OPNsense の VLAN ベースセグメントへ本格移行"
         ]
       },
       "phase_4_longterm": {
@@ -222,12 +277,12 @@
         "LXC"
       ],
       "networking": [
+        "OPNsense",
+        "AdGuard Home",
         "Twingate",
-        "Caddy",
-        "Cloudflare",
-        "Linux networking",
         "Cloudflare Tunnel",
-        "DDNS"
+        "Caddy",
+        "Linux networking"
       ],
       "storage": [
         "Ext4",
@@ -236,46 +291,51 @@
         "Google Drive"
       ],
       "security": [
+        "OPNsense Firewall",
+        "AdGuard Home",
         "Ed25519 SSH keys",
         "TOTP 2FA",
         "Anubis bot protection"
       ],
       "applications": [
         "Zabbix",
-        "Sunshine / Moonlight",
         "Minecraft",
-        "Neovim",
+        "Velocity",
+        "VOICEVOX",
         "Discord Bot",
-        "Obsidian livesync",
+        "ZenNotes",
+        "Homepage",
+        "Headroom",
+        "MeTube",
         "Bun + Hono"
       ]
     },
     "learning_outcomes": [
+      "OPNsense によるファイアウォール / ルーティング・ネットワークセグメント分離",
+      "AdGuard Home による DNS フィルタリングと冗長化",
+      "Twingate ゼロトラストアクセス設計（2セグメント冗長）",
       "Proxmox VE クラスター構築・運用（3ノード waras-nw）",
-      "KVM GPU パススルー設定（PCIe デバイス割り当て）",
-      "ゼロトラストアクセス設計（Twingate 2拠点冗長）",
-      "SSH 鍵認証セキュリティ",
+      "Ed25519 SSH 鍵認証セキュリティ",
       "Zabbix によるインフラ監視",
-      "Caddy + Anubis によるリバースプロキシ設定",
-      "Linux VM / LXC コンテナ管理",
-      "Sunshine/Moonlight リモートデスクトップ環境構築"
+      "Caddy + Anubis + Cloudflare Tunnel によるリバースプロキシ / 公開設計",
+      "Linux VM / LXC コンテナ管理"
     ],
     "operational_practices": {
-      "monitoring": "Zabbix サーバー (VMID 106) + pote-monitor (BTC/ETH Discord 通知) + Proxmox Web UI",
+      "monitoring": "Zabbix サーバー (VMID 400) + pote-monitor (BTC/ETH Discord 通知) + Proxmox Web UI",
       "backups": "手動 + Google Drive クラウドバックアップ",
       "updates": "定期更新 + 手動確認",
-      "documentation": "Obsidian Markdown ノート"
+      "documentation": "ZenNotes（Markdown ノート）"
     },
     "operations": {
       "monitoring": {
         "tool": "Zabbix",
-        "server": "VMID:106 LXC（Dell ノード）",
+        "server": "VMID:400 LXC（Dell ノード）",
         "coverage": "全ノード・全 CT/VM を監視対象。CPU・メモリ・ディスク使用率・プロセス死活・ネットワーク帯域をリアルタイム計測",
-        "alerting": "pote-monitor (CT:104) が Zabbix アラートを Discord 通知に変換。BTC/ETH 価格アラートも統合"
+        "alerting": "pote-monitor (CT:104) が価格アラートを Discord 通知に統合。Zabbix アラートと併用"
       },
       "access_management": {
         "internal": "Twingate VPN 経由でのみ Proxmox WebUI・SSH にアクセス可能",
-        "remote_desktop": "Sunshine/Moonlight (HP-1 dev-01) で低遅延リモートデスクトップを実現。Intel 1Gbps NIC PCIe パススルーで Proxmox トラフィックと完全分離",
+        "remote_desktop": "リモートアクセスは Twingate ゼロトラスト経由（0.x / 1.x の2セグメント冗長）",
         "authentication": "Ed25519 SSH鍵認証 + Proxmox TOTP 2FA"
       },
       "reliability": {

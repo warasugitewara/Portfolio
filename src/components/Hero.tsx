@@ -1,4 +1,4 @@
-import type { Profile, I18n } from '../types';
+import type { Profile, I18n } from "../types";
 
 interface HeroProps {
   i18n: I18n | null;
@@ -8,31 +8,11 @@ interface HeroProps {
 export const Hero = ({ i18n, profile }: HeroProps) => {
   if (!i18n) return null;
 
-  const avatar = profile?.avatar ?? '';
+  const avatar = profile?.avatar ?? "";
 
   return (
-    <section
-      className="hero"
-      style={{
-        backgroundImage: 'url(/minecraft-city.png)',
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundAttachment: 'fixed',
-        position: 'relative',
-      }}
-    >
-      <div
-        style={{
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          backgroundColor: 'rgba(10, 14, 39, 0.75)',
-          zIndex: 1,
-        }}
-      />
-      <div className="hero-container" style={{ position: 'relative', zIndex: 2 }}>
+    <section className="hero">
+      <div className="hero-container">
         {avatar && (
           <div className="hero-avatar">
             <a href="https://github.com/warasugitewara" target="_blank" rel="noopener noreferrer">
@@ -44,7 +24,9 @@ export const Hero = ({ i18n, profile }: HeroProps) => {
           <h1 className="hero-title">{i18n.hero.title}</h1>
           <p className="hero-subtitle">{i18n.hero.subtitle}</p>
           {profile && (
-            <p className="hero-location">{"\uD83D\uDCCD"} {profile.location}</p>
+            <p className="hero-location">
+              {"\uD83D\uDCCD"} {profile.location}
+            </p>
           )}
         </div>
       </div>

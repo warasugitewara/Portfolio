@@ -1,6 +1,6 @@
 import { Hono } from 'hono'
 import { serveStatic } from 'hono/bun'
-import { readFile } from 'fs/promises'
+import { readFile } from 'node:fs/promises'
 
 const app = new Hono()
 

@@ -2,15 +2,31 @@
   "skills": [
     {
       "category": "Languages",
-      "items": ["Java", "Kotlin", "TypeScript", "Lua", "C++", "Python"]
+      "items": ["Java", "Kotlin", "TypeScript", "Python", "C++", "Lua"]
+    },
+    {
+      "category": "Minecraft / Paper Plugin",
+      "items": ["Paper / Bukkit API", "Javalin WebUI", "SQLite", "OpenAPI"]
+    },
+    {
+      "category": "Discord Bot",
+      "items": ["Python", "VOICEVOX", "NVIDIA NIM", "Gemini API"]
+    },
+    {
+      "category": "App & Web",
+      "items": ["Android (Kotlin)", "React", "Vite", "Hono"]
+    },
+    {
+      "category": "AI & Automation",
+      "items": ["MCP (Model Context Protocol)", "LLM 連携", "自動化スクリプト"]
     },
     {
       "category": "Infrastructure & Tools",
-      "items": ["Linux", "Neovim", "WezTerm", "Nushell", "Starship"]
+      "items": ["Proxmox VE", "Linux", "Docker", "Cloudflare", "Neovim", "WezTerm", "Nushell"]
     },
     {
-      "category": "Backend & Systems",
-      "items": ["Minecraft Paper Plugin", "Game development", "CLI tool development"]
+      "category": "Hardware",
+      "items": ["Arduino", "電子工作"]
     },
     {
       "category": "Certifications",

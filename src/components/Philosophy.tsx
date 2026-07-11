@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react';
-import type { I18n } from '../types';
-import { getDataUrl } from '../utils/path';
+import { useEffect, useState } from "react";
+import type { I18n, Language } from "../types";
+import { getDataUrl } from "../utils/path";
 
 interface Principle {
   title: string;
@@ -11,7 +11,7 @@ interface Principle {
 
 interface PhilosophyProps {
   i18n: I18n | null;
-  lang: string;
+  lang: Language;
 }
 
 export const Philosophy = ({ i18n, lang }: PhilosophyProps) => {
@@ -20,15 +20,15 @@ export const Philosophy = ({ i18n, lang }: PhilosophyProps) => {
   useEffect(() => {
     const loadPhilosophy = async () => {
       try {
-        const response = await fetch(getDataUrl('philosophy.json'));
+        const response = await fetch(getDataUrl("philosophy.json"));
         if (!response.ok) throw new Error(`Failed to load philosophy: ${response.status}`);
         const data = await response.json();
         setPrinciples(data.philosophy.principles);
       } catch (error) {
-        console.error('Failed to load philosophy:', error);
+        console.error("Failed to load philosophy:", error);
       }
     };
-    loadPhilosophy();
+    void loadPhilosophy();
   }, []);
 
   if (!i18n) return null;
@@ -41,10 +41,12 @@ export const Philosophy = ({ i18n, lang }: PhilosophyProps) => {
           {principles.map((principle) => (
             <div key={principle.title} className="principle-card">
               <h3 className="principle-title">
-                {lang === 'ja' && principle.title_ja ? principle.title_ja : principle.title}
+                {lang === "ja" && principle.title_ja ? principle.title_ja : principle.title}
               </h3>
               <p className="principle-description">
-                {lang === 'ja' && principle.description_ja ? principle.description_ja : principle.description}
+                {lang === "ja" && principle.description_ja
+                  ? principle.description_ja
+                  : principle.description}
               </p>
             </div>
           ))}

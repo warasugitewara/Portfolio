@@ -1,9 +1,9 @@
-import { useEffect, useState } from 'react';
-import type { I18n, GitHubRepo } from '../types';
+import { useEffect, useState } from "react";
+import type { I18n, GitHubRepo, Language } from "../types";
 
 interface ProjectsProps {
   i18n: I18n | null;
-  lang: string;
+  lang: Language;
 }
 
 interface GitHubRepoRaw {
@@ -25,19 +25,19 @@ export const Projects = ({ i18n, lang }: ProjectsProps) => {
       try {
         setLoading(true);
         const response = await fetch(
-          'https://api.github.com/users/warasugitewara/repos?sort=updated&per_page=12&type=owner'
+          "https://api.github.com/users/warasugitewara/repos?sort=updated&per_page=12&type=owner",
         );
         const data: GitHubRepoRaw[] = await response.json();
-        const locale = lang === 'ja' ? 'ja-JP' : 'en-US';
+        const locale = lang === "ja" ? "ja-JP" : "en-US";
 
         const repos: GitHubRepo[] = data
           .filter((repo) => !repo.fork && repo.description)
           .slice(0, 10)
           .map((repo) => ({
             name: repo.name,
-            description: repo.description || '',
+            description: repo.description || "",
             url: repo.html_url,
-            language: repo.language || '',
+            language: repo.language || "",
             stars: repo.stargazers_count,
             updated: new Date(repo.updated_at).toLocaleDateString(locale),
             pinned: false,
@@ -45,14 +45,14 @@ export const Projects = ({ i18n, lang }: ProjectsProps) => {
 
         setRepos(repos);
       } catch (error) {
-        console.error('Failed to fetch GitHub repos:', error);
+        console.error("Failed to fetch GitHub repos:", error);
         setRepos([]);
       } finally {
         setLoading(false);
       }
     };
 
-    loadRepos();
+    void loadRepos();
   }, [lang]);
 
   if (!i18n) return null;
@@ -66,8 +66,19 @@ export const Projects = ({ i18n, lang }: ProjectsProps) => {
         ) : repos.length === 0 ? (
           <div className="projects-empty">
             <p>Unable to load repositories from GitHub</p>
-            <p style={{ fontSize: '0.9rem', color: 'var(--color-text-secondary)', marginTop: '0.5rem' }}>
-              <a href="https://github.com/warasugitewara" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--color-accent)' }}>
+            <p
+              style={{
+                fontSize: "0.9rem",
+                color: "var(--color-text-secondary)",
+                marginTop: "0.5rem",
+              }}
+            >
+              <a
+                href="https://github.com/warasugitewara"
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ color: "var(--color-accent)" }}
+              >
                 View on GitHub &#8594;
               </a>
             </p>
@@ -89,9 +100,7 @@ export const Projects = ({ i18n, lang }: ProjectsProps) => {
                   )}
                 </div>
                 <div className="project-meta">
-                  {project.language && (
-                    <span className="project-language">{project.language}</span>
-                  )}
+                  {project.language && <span className="project-language">{project.language}</span>}
                   {project.stars > 0 && (
                     <span className="project-stars">&#11088; {project.stars}</span>
                   )}
