@@ -1,88 +1,88 @@
-# warasugi - ポートフォリオ
+# warasugi — Portfolio
 
-私のポートフォリオサイトです。
+![React](https://img.shields.io/badge/React-19-149ECA?logo=react&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-6.0-3178C6?logo=typescript&logoColor=white)
+![Vite+](https://img.shields.io/badge/Vite%2B-Vite%208%20%C2%B7%20Rolldown%20%C2%B7%20Oxc-646CFF?logo=vite&logoColor=white)
+![Bun](https://img.shields.io/badge/Bun-Hono-000000?logo=bun&logoColor=white)
+![Self-hosted](https://img.shields.io/badge/Deploy-Self--hosted%20(Proxmox)-E57000?logo=proxmox&logoColor=white)
+![License](https://img.shields.io/badge/License-MIT-green)
+
+CLI / ターミナル風デザインの個人ポートフォリオ。React 19 + TypeScript を **Vite+（Rolldown / Oxc）** でビルドし、自宅サーバー上の **Bun + Hono** で配信しています。
 
 🌐 **公開サイト**: https://portfolio.warasugi.com
 🔗 **GitHub**: https://github.com/warasugitewara
 
 ---
 
-## 特徴
+## ✨ 特徴
 
-- **マルチページ構成**: React Router による複数ページ対応
-- **自作鯖構成情報**: Proxmox VE ベースのホームラボについての詳細ページ
-- **CLI 風デザイン**: 起動アニメーションとモノスペース中心の UI
-- **高速ビルド**: React + TypeScript + Vite+（Rolldown/Oxc により ~272ms ビルド）
-- **日英対応**: 日本語 / 英語をヘッダーから切り替え可能
-- **テーマ切り替え**: ダーク / ライト両対応
-- **GitHub 連携**: リポジトリ情報を API から取得して表示
-- **レスポンシブ**: スマホから PC まで破綻しにくいレイアウト
+- **CLI 風デザイン** — 起動アニメーションとモノスペース中心の UI
+- **ダーク / ライト テーマ** ＆ **日本語 / 英語**（`localStorage` で保持）
+- **モバイルファースト** — スマホ〜PC まで破綻しないレスポンシブ
+- **データ駆動** — 静的コンテンツは `public/data/*.json`、リポジトリ一覧は GitHub API から動的取得
+- **自作鯖（ホームラボ）ページ** — Proxmox VE 3ノードクラスター（OPNsense 中核）の構成を図付きで解説
+- **高速ビルド** — Rolldown / Oxc によりサブ秒でビルド完了
 
-## 技術スタック
+## 🛠 技術スタック
 
 | レイヤー | 技術 |
 |---|---|
-| フレームワーク | React 19 + TypeScript (strict) |
-| ビルドツール | Vite+ 0.1.19 (Vite 8 + Rolldown + Oxlint) |
+| フレームワーク | React 19 + TypeScript 6.0（strict） |
+| ビルドツール | Vite+（Vite 8 + Rolldown + Oxc） |
+| Lint | oxlint（`vite.config.ts` にインライン設定） |
 | ルーティング | React Router DOM v7 |
-| スタイル | CSS カスタムプロパティ（CSS-in-JS なし） |
+| スタイル | CSS カスタムプロパティ（フレームワーク / CSS-in-JS なし） |
 | データ | `public/data/*.json` + GitHub API |
 | i18n | カスタムフック（`localStorage` で言語保持） |
-| サーバー | Bun + Hono（静的配信 + SPA フォールバック） |
+| ランタイム | Bun |
+| サーバー | Hono（静的配信 + SPA フォールバック） |
 | リバースプロキシ | Caddy（Anubis 経由のボット対策付き） |
-| トンネル | Cloudflare Tunnel（TLS 終端・外部公開） |
-| デプロイ | 自宅鯖セルフホスティング（systemd サービス） |
+| 公開 | Cloudflare Tunnel（TLS 終端） |
+| ホスティング | 自宅 Proxmox VE（systemd `portfolio.service`） |
 
-## 本番環境の構成
+## ⚡ コマンド
 
-サイトは自宅サーバーの Proxmox VE 仮想環境上でセルフホスティングされています。
+| コマンド | 説明 |
+|---|---|
+| `npm run dev` | 開発サーバー（Vite+, port 3000） |
+| `npm run build` | 型チェック＋本番ビルド（`tsc -b && vp build` → `dist/`） |
+| `npm run preview` | ビルド成果物のローカルプレビュー |
+| `npm run type-check` | 型チェックのみ（`tsc -b --noEmit`） |
+| `npm run lint` | Lint（`vp lint .`） |
+| `npm run start` | 本番配信（Bun + Hono, `server.ts`） |
+
+```bash
+npm install      # 依存関係のインストール
+npm run dev      # 開発開始
+```
+
+## 🏗 アーキテクチャ
+
+- **フロントエンド** — React 19 SPA（`BrowserRouter`）。ルートは `/`（Home）と `/infrastructure`（自作鯖構成）。i18n・テーマの状態は `App.tsx` のフックが持ち、各ページへ props で流す（グローバルストアなし）。共有型は `src/types/index.ts` に集約。
+- **バックエンド（本番配信）** — `server.ts` の Bun ランタイム Hono サーバー（port 3000）が `dist/` を静的配信し、SPA フォールバックを担当。
+- **データ** — `public/data/*.json` を `fetch`（`getDataUrl()` 経由）。リポジトリ一覧のみ `api.github.com` から直接取得。
+
+## 🚀 デプロイ
+
+**本番は自宅サーバーのみ**（GitHub Pages は不使用）。
 
 - **サービス**: `portfolio.service`（systemd）— `bun run start` で Hono サーバーを起動（port 3000）
 - **リバースプロキシ**: Caddy がリクエストを受け、静的ファイルは直接 port 3000 へ、それ以外は Anubis（port 3001）経由で配信
-  - `portfolio.warasugi.com`: Cloudflare Tunnel 経由（CF 側で TLS 終端、Caddy は HTTP のみ受信）
-- **Snake SVG 更新**: cron（6 時間ごと）で `update-snake.sh` を実行し、GitHub contribution snake SVG を最新化
-- **CI/CD**: GitHub Actions で contribution snake SVG を生成（`snake.yml`）
+  - `portfolio.warasugi.com` は Cloudflare Tunnel 経由（CF 側で TLS 終端、Caddy は HTTP のみ受信）
+- **反映手順**: `git pull` → `npm ci` → `npm run build` → `systemctl restart portfolio.service`
+- **Snake SVG**: `.github/workflows/snake.yml` が contribution snake を生成。本番では cron（6 時間ごと）の `update-snake.sh` が最新化。
 
+## 📝 コンテンツ更新
 
-## セットアップ
+静的な文言・プロフィール・スキル・インフラ情報は `public/data/` の JSON を編集して更新します。UI 文言は `i18n-{ja,en}.json` に **両言語** で追加してください。
 
-```bash
-# 依存関係をインストール
-npm install
+## 🗒 変更履歴
 
-# 開発サーバー起動（port 3000）
-npm run dev
+- **2026-07**: 全面刷新 — TypeScript 6.0 化・CLI 風デザイン洗練・モバイル対応・自宅鯖構成を実態（OPNsense 中核 / 隔離 Kasm WS）へ更新・GitHub Pages 廃止
+- **2026-04-24**: Vite+ 移行 — Vite 8 + Rolldown + Oxlint（ビルド ~2.6s → サブ秒）
+- **2026-04-23**: Cloudflare Tunnel 対応 — `portfolio.warasugi.com` をメインドメインに移行
+- **2026-03-02**: GitHub Pages → 自宅鯖セルフホスティング移行、Hono 導入
 
-# 本番ビルド（tsc + vite build → dist/）
-npm run build
-
-# ビルド結果をローカル確認
-npm run preview
-
-# 本番サーバー起動（Bun + Hono）
-bun run start
-```
-
-## 運用メモ
-
-- GitHub API の取得に失敗した場合、プロジェクト一覧が空になることがあります。
-- 言語・テーマ設定は `localStorage` に保存されます。
-- 静的な文言・プロフィール・インフラ情報は `public/data/` の JSON を編集すると更新できます。
-
-## 変更履歴
-
-- **2026-04-24**: Vite+ 移行 — Vite 8 + Rolldown + Oxlint に移行。ビルド時間 ~2.6s → 272ms（約 9.5x 高速化）
-- **2026-04-23**: Cloudflare Tunnel 対応 — `portfolio.warasugi.com` をメインドメインに移行、Caddy に `http://` ブロック追加
-- **2026-03-02**: GitHub Pages → 自宅鯖の仮想環境上にてセルフホスティング移行、Hono 導入
-
-## ライセンス
+## 📄 ライセンス
 
 MIT
-
----
-
-## 著者 [貢献順]
-- claude haiku 4.5
-- warasugi
-- GPT-5.3-Codex
-- claude Opus 4.6
