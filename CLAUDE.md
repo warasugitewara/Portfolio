@@ -41,9 +41,7 @@ React 19 SPA を、**開発時は `vp dev`、本番時は Bun + Hono (`server.ts
 
 ## デプロイ運用（非自明）
 
-**デプロイ先が 2 系統ある:**
-1. **自宅サーバー（正式・最新）**: Proxmox VE 上の `/opt/portfolio` に配置し、systemd `portfolio.service` として稼働。Caddy がリバースプロキシ、Cloudflare Tunnel 経由で **`portfolio.warasugi.com`**（メインドメイン）を配信。GitHub へは**このホストから push する**運用なので、リモートが常に最新とは限らない。
-2. **GitHub Pages**: `.github/workflows/deploy.yml` が main push で `npm ci` → `npm run build` → Pages デプロイ。
-
+**本番は自宅サーバーのみ**（GitHub Pages は不使用）:
+- **自宅サーバー**: Proxmox VE 上の `/opt/portfolio` に配置し、systemd `portfolio.service` として稼働。Caddy がリバースプロキシ、Cloudflare Tunnel 経由で **`portfolio.warasugi.com`**（メインドメイン）を配信。GitHub へは**このホストから push する**運用なので、リモートが常に最新とは限らない。本番反映は `git pull` → `npm ci` → `npm run build` → `systemctl restart portfolio.service`。
 - **snake SVG**: `.github/workflows/snake.yml` が 24h ごと + main push で contribution snake を生成し `dist/` と `public/` にコミット。本番では 6 時間ごとに `update-snake.sh` が最新化。
-- `.github/copilot-instructions.md` にも旧構成の記述があるが、ドメイン等は README / 本ファイルが優先（旧 `portfolio.wc.f5.si` → 現 `portfolio.warasugi.com`）。
+- `.github/copilot-instructions.md` にも旧構成の記述があるが、ドメイン等は README / 本ファイルが優先。

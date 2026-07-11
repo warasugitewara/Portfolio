@@ -153,10 +153,10 @@ export const InfrastructurePage = ({ i18n }: InfrastructurePageProps) => {
           <div className="infra-diagram-wrap">
             <div className="infra-diagram-canvas">
               <svg
-                viewBox="0 0 1200 1100"
+                viewBox="0 0 1200 1150"
                 className="infra-svg"
                 role="img"
-                aria-label="waras-nw 3ノード Proxmox VE クラスター構成図"
+                aria-label="waras-nw 3ノード Proxmox VE クラスター構成図（＋隔離 Kasm ワークステーション）"
               >
                 <text x="600" y="34" textAnchor="middle" className="dgm-title">
                   ホームラボ インフラ — waras-nw 3ノード Proxmox VE クラスター
@@ -327,7 +327,7 @@ export const InfrastructurePage = ({ i18n }: InfrastructurePageProps) => {
                 </text>
 
                 {/* ── Legend ── */}
-                <rect x="15" y="833" width="1170" height="250" rx="4" className="dgm-node-rect" />
+                <rect x="15" y="833" width="1170" height="300" rx="4" className="dgm-node-rect" />
                 <text x="600" y="865" textAnchor="middle" className="dgm-legend-title">
                   📋 凡例 / システム構成
                 </text>
@@ -354,6 +354,14 @@ export const InfrastructurePage = ({ i18n }: InfrastructurePageProps) => {
                 <text x="35" y="1050" className="dgm-legend-text">
                   <tspan className="dgm-legend-icon">📊</tspan> 監視 — Zabbix (Dell CT400) +
                   pote-monitor (CT104)
+                </text>
+                <text x="35" y="1080" className="dgm-legend-text">
+                  <tspan className="dgm-legend-icon">🧪</tspan> 隔離WS — Kasm-WS (i7-3770 / 16GB /
+                  SSD 256GB · Ubuntu Server) クラスター外・完全隔離
+                </text>
+                <text x="35" y="1110" className="dgm-legend-text">
+                  <tspan className="dgm-legend-icon">⚡</tspan> 用途 — ブラウザ演算代行 /
+                  サンドボックス。必要時のみ OPNsense から WoL 起動（省電力）
                 </text>
               </svg>
             </div>

@@ -2,7 +2,7 @@
   "infrastructure": {
     "title": "自作鯖構成",
     "subtitle": "waras-nw — 3ノード Proxmox VE クラスター（OPNsense ルーティング）",
-    "overview": "HP Z240 SFF × 2台と Dell OptiPlex 7040 SFF で構成する 3ノード Proxmox VE クラスター（waras-nw）。OPNsense をメインファイアウォール/ルータとしてネットワークを 192.168.0.x（メイン）と 192.168.1.x（隔離セグメント）に分離し、AdGuard Home（DNS フィルタ）と Twingate（ゼロトラスト）を各セグメントに冗長配置。ポートフォリオは Cloudflare Tunnel 経由で公開し、Minecraft も東京の Velocity プロキシ経由で公開するため、自宅からのインターネット直接ポート開放はゼロ。Discord ボット群・VOICEVOX 音声合成・Minecraft（東京 Velocity 経由）・ZenNotes 同期・各種セルフホストサービスを稼働し、Zabbix で全体を監視している。",
+    "overview": "HP Z240 SFF × 2台と Dell OptiPlex 7040 SFF で構成する 3ノード Proxmox VE クラスター（waras-nw）。OPNsense をメインファイアウォール/ルータとしてネットワークを 192.168.0.x（メイン）と 192.168.1.x（隔離セグメント）に分離し、AdGuard Home（DNS フィルタ）と Twingate（ゼロトラスト）を各セグメントに冗長配置。ポートフォリオは Cloudflare Tunnel 経由で公開し、Minecraft も東京の Velocity プロキシ経由で公開するため、自宅からのインターネット直接ポート開放はゼロ。Discord ボット群・VOICEVOX 音声合成・Minecraft（東京 Velocity 経由）・ZenNotes 同期・各種セルフホストサービスを稼働し、Zabbix で全体を監視している。加えて、クラスターとは完全に隔離した単体機（Kasm Workstation / Ubuntu Server）を、必要時のみ OPNsense から WoL 起動してブラウザ演算代行・サンドボックス用途に利用している。",
     "design_philosophy": [
       "OPNsense をメイン FW/ルータとし、192.168.0.x / 192.168.1.x のネットワークセグメント分離",
       "AdGuard Home による DNS フィルタリング（セグメント別に冗長化）",
@@ -191,6 +191,26 @@
             "purpose": "Zabbix サーバー — クラスター全体のインフラメトリクス収集・アラート管理"
           }
         ]
+      },
+      {
+        "id": "kasm",
+        "name": "Kasm-WS",
+        "hardware": "Intel Core i7-3770 + RAM 16GB DDR3 + SATA SSD 256GB",
+        "role": "スタンドアロン隔離ワークステーション（クラスター外）",
+        "purpose": "Proxmox クラスター waras-nw とは完全に隔離した単体機。Ubuntu Server 上で Kasm Workstation を稼働し、低スペック端末のブラウザ演算代行と第三者ソフトのサンドボックスを提供。電気代の都合で常時稼働はせず、必要時のみ OPNsense から Wake-on-LAN で起動する。",
+        "workloads": [
+          {
+            "type": "Bare-metal",
+            "os": "Ubuntu Server",
+            "name": "Kasm Workstation",
+            "purpose": "ブラウザ演算代行 / 第三者ソフトのサンドボックス（コンテナ化ワークスペース）",
+            "details": [
+              "Proxmox クラスターとネットワーク完全隔離",
+              "低スペック端末向けのリモートブラウザ / デスクトップ",
+              "必要時のみ OPNsense から WoL 起動（省電力運用）"
+            ]
+          }
+        ]
       }
     ],
     "network_design": {
@@ -307,6 +327,7 @@
         "Homepage",
         "Headroom",
         "MeTube",
+        "Kasm Workstation",
         "Bun + Hono"
       ]
     },
@@ -318,7 +339,8 @@
       "Ed25519 SSH 鍵認証セキュリティ",
       "Zabbix によるインフラ監視",
       "Caddy + Anubis + Cloudflare Tunnel によるリバースプロキシ / 公開設計",
-      "Linux VM / LXC コンテナ管理"
+      "Linux VM / LXC コンテナ管理",
+      "Kasm によるブラウザ演算代行・サンドボックス環境（クラスターから完全隔離・WoL 省電力運用）"
     ],
     "operational_practices": {
       "monitoring": "Zabbix サーバー (VMID 400) + pote-monitor (BTC/ETH Discord 通知) + Proxmox Web UI",
