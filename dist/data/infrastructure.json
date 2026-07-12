@@ -2,7 +2,7 @@
   "infrastructure": {
     "title": "自作鯖構成",
     "subtitle": "waras-nw — 3ノード Proxmox VE クラスター（OPNsense ルーティング）",
-    "overview": "HP Z240 SFF × 2台と Dell OptiPlex 7040 SFF で構成する 3ノード Proxmox VE クラスター（waras-nw）。OPNsense をメインファイアウォール/ルータとしてネットワークを 192.168.0.x（メイン）と 192.168.1.x（隔離セグメント）に分離し、AdGuard Home（DNS フィルタ）と Twingate（ゼロトラスト）を各セグメントに冗長配置。ポートフォリオは Cloudflare Tunnel 経由で公開し、Minecraft も東京の Velocity プロキシ経由で公開するため、自宅からのインターネット直接ポート開放はゼロ。Discord ボット群・VOICEVOX 音声合成・ZenNotes 同期・各種セルフホストサービスを稼働し、Zabbix で全体を監視している。加えて、クラスター外の単体機（旧 Kasm WS ハードを転用）をベアメタル Minecraft 専用サーバーとして稼働させ、ワールドデータは DriveBackupV2 経由で HP-2 上の専用バックアップ CT に1週間分を自動保管している（深夜4時転送・40MB/s 帯域制限で帯域圧迫を防止）。取り出し用の FileBrowser も同 CT で稼働し、既存サービス同様 Cloudflare Tunnel 経由でアクセスする。",
+    "overview": "HP Z240 SFF × 2台と Dell OptiPlex 7040 SFF で構成する 3ノード Proxmox VE クラスター（waras-nw）。OPNsense をメインファイアウォール/ルータとしてネットワークを 192.168.0.x（メイン）と 192.168.1.x（隔離セグメント）に分離し、AdGuard Home（DNS フィルタ）と Twingate（ゼロトラスト）を各セグメントに冗長配置。ポートフォリオは Cloudflare Tunnel 経由で公開し、Minecraft も東京の Velocity プロキシ経由で公開するため、自宅からのインターネット直接ポート開放はゼロ。Discord ボット群・VOICEVOX 音声合成・ZenNotes 同期・各種セルフホストサービスを稼働し、Zabbix で全体を監視している。加えて、0.x セグメント配下の単体機（旧 Kasm WS ハードを転用・Debian 13）をベアメタル Minecraft サーバーとして運用し、Purpur サバイバル鯖を常時稼働。ワールドデータは DriveBackupV2 経由で HP-2 上の専用バックアップ CT に1週間分を自動保管している（深夜4時転送・40MB/s 帯域制限で帯域圧迫を防止）。取り出し用の FileBrowser も同 CT で稼働し、既存サービス同様 Cloudflare Tunnel 経由でアクセスする。",
     "design_philosophy": [
       "OPNsense をメイン FW/ルータとし、192.168.0.x / 192.168.1.x のネットワークセグメント分離",
       "AdGuard Home による DNS フィルタリング（セグメント別に冗長化）",
@@ -197,17 +197,19 @@
         "id": "minecraft-bm",
         "name": "Minecraft鯖",
         "hardware": "Intel Core i7-3770 + RAM 16GB DDR3 + SATA SSD 256GB",
-        "role": "スタンドアロン ベアメタル Minecraft サーバー（クラスター外）",
-        "purpose": "旧 Kasm WS 機を転用したベアメタル Minecraft 専用機（Kasm Workspaces は廃止・スペックは当時のまま）。Proxmox クラスター waras-nw の外で単体稼働し、重量級 Modpack サーバーを仮想化オーバーヘッドなしで動かす。公開は東京の Velocity プロキシ経由で、自宅の外部ポート開放はゼロ。",
+        "role": "スタンドアロン ベアメタル Minecraft サーバー（クラスター外・0.x 配下）",
+        "purpose": "旧 Kasm WS 機を転用したベアメタル Minecraft 専用機（Kasm Workspaces は廃止・スペックは当時のまま）。Proxmox クラスター waras-nw には参加せず、192.168.0.x セグメント配下で単体稼働。仮想化オーバーヘッドの排除・ゲーム鯖としての明確な分離・クラスターのクォーラムを4台にしない判断から、あえてベアメタル運用を選択した。リソースに余裕があるため他用途への活用余地も残している。アクセスは別拠点（東京）の Velocity プロキシ経由のみで、直接の外部露出はゼロ。",
         "workloads": [
           {
             "type": "Bare-metal",
-            "os": "Linux",
-            "name": "Minecraft (Mechanical Mastery)",
-            "purpose": "重量級 Modpack サーバー（Java Edition）",
+            "os": "Debian 13",
+            "name": "Minecraft (Purpur)",
+            "purpose": "常時稼働の Purpur サバイバルサーバー（Java Edition）",
             "details": [
-              "Mechanical Mastery Modpack",
-              "公開は東京の Velocity プロキシ経由（自宅側は外部ポート開放ゼロ）",
+              "GraalVM 17 / 21 / 25.1 を併用 — サーバー構成に応じて Java ランタイムを使い分け",
+              "必要時は ATM10 や持ち寄り Mod のサーバーも起動できる構成",
+              "webmap は Cloudflare Tunnel 経由で公開 / リソース監視は btop",
+              "アクセスは別拠点（東京）の Velocity 経由のみ — 直接の外部露出なし",
               "DriveBackupV2 でワールドデータを HP-2 の MC-Backup CT へ毎晩バックアップ（深夜4時・40MB/s 帯域制限・1週間分保持）"
             ]
           }
@@ -219,7 +221,7 @@
       "security": [
         "OPNsense メイン FW/ルータ — 192.168.0.x / 192.168.1.x のセグメント分離とファイアウォール制御",
         "AdGuard Home — 各セグメントに冗長配置し DNS フィルタリング（広告 / トラッカー / マルウェア）",
-        "Cloudflare Tunnel — ポートフォワード不要・受信接続ゼロ。CF Edge が TLS 終端、Anycast で DDoS 軽減（portfolio / FileBrowser など公開サービス共通）",
+        "Cloudflare Tunnel — ポートフォワード不要・受信接続ゼロ。CF Edge が TLS 終端、Anycast で DDoS 軽減（portfolio / FileBrowser / MC webmap など公開サービス共通）",
         "Twingate ゼロトラスト VPN — SSH・Proxmox WebUI・全内部サービスへのアクセスを Twingate 経由に限定（2セグメント冗長）",
         "外部ポート開放ゼロ — 受信接続なし。Minecraft も東京の Velocity プロキシ経由で公開し、自宅は直接開放しない",
         "Anubis Bot Protection — portfolio への自動スクレイパー・DDoS をリバースプロキシ層でフィルタ",
@@ -322,7 +324,8 @@
       ],
       "applications": [
         "Zabbix",
-        "Minecraft",
+        "Minecraft (Purpur)",
+        "GraalVM",
         "Velocity",
         "VOICEVOX",
         "Discord Bot",
@@ -344,7 +347,7 @@
       "Zabbix によるインフラ監視",
       "Caddy + Anubis + Cloudflare Tunnel によるリバースプロキシ / 公開設計",
       "Linux VM / LXC コンテナ管理",
-      "ベアメタル Minecraft サーバー運用と DriveBackupV2 による世代バックアップ設計（深夜転送 + 帯域制限で帯域圧迫を防止）"
+      "ベアメタル Minecraft サーバー運用（Purpur + GraalVM）と DriveBackupV2 による世代バックアップ設計（深夜転送 + 帯域制限で帯域圧迫を防止）"
     ],
     "operational_practices": {
       "monitoring": "Zabbix サーバー (VMID 400) + pote-monitor (BTC/ETH Discord 通知) + Proxmox Web UI",

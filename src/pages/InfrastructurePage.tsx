@@ -359,8 +359,9 @@ export const InfrastructurePage = ({ i18n }: InfrastructurePageProps) => {
                   pote-monitor (CT104)
                 </text>
                 <text x="35" y="1080" className="dgm-legend-text">
-                  <tspan className="dgm-legend-icon">🎮</tspan> ベアメタルMC — Minecraft 専用機
-                  (i7-3770 / 16GB / SSD 256GB · 旧 Kasm WS 転用) クラスター外
+                  <tspan className="dgm-legend-icon">🎮</tspan> ベアメタルMC — Purpur
+                  サバイバル常時稼働 (i7-3770 / 16GB / SSD 256GB · Debian 13 · 旧 Kasm WS 転用)
+                  クラスター外・0.x 配下
                 </text>
                 <text x="35" y="1110" className="dgm-legend-text">
                   <tspan className="dgm-legend-icon">💾</tspan> ワールドバックアップ — DriveBackupV2
@@ -390,8 +391,10 @@ export const InfrastructurePage = ({ i18n }: InfrastructurePageProps) => {
                   を受信ゼロで公開
                 </li>
                 <li>
-                  ✓ Minecraft はベアメタル専用機（旧 Kasm WS 転用）で稼働 — 公開は東京の Velocity
-                  プロキシ経由で自宅は外部ポート開放ゼロ（Dell CT301 連携）
+                  ✓ Minecraft はベアメタル専用機（Debian 13 · 0.x 配下 · 旧 Kasm WS 転用）で Purpur
+                  サバイバルを常時稼働 — アクセスは別拠点（東京）の Velocity
+                  経由のみで直接露出ゼロ（Dell CT301 連携）。GraalVM 17/21/25.1 併用・webmap は
+                  Cloudflare Tunnel 公開
                 </li>
                 <li>
                   ✓ ワールドバックアップ — DriveBackupV2 が深夜4時に HP-2 MC-Backup (CT100)
@@ -506,7 +509,7 @@ export const InfrastructurePage = ({ i18n }: InfrastructurePageProps) => {
                   ③ Minecraft ルート (東京 Velocity 経由)
                 </text>
                 <text x="820" y="163" textAnchor="middle" className="net-sl">
-                  ベアメタル専用機 — Modpack サーバー
+                  ベアメタル専用機 (0.x 配下) — Purpur サバイバル鯖
                 </text>
                 <text x="820" y="180" textAnchor="middle" className="net-sl">
                   ← 東京 Velocity 経由 (Dell CT301 連携)
@@ -551,7 +554,10 @@ export const InfrastructurePage = ({ i18n }: InfrastructurePageProps) => {
                 <text x="48" y="462" className="net-seg-row">
                   📡 pote-monitor · 🎮 Velocity · 📺 MeTube · 📊 Zabbix (Dell)
                 </text>
-                <text x="48" y="482" className="net-sl">
+                <text x="48" y="482" className="net-warn-txt">
+                  🎮 Minecraft ベアメタル機 — 東京 Velocity 経由 / webmap は CF Tunnel
+                </text>
+                <text x="48" y="502" className="net-sl">
                   上流 DNS: Cloudflare 1.1.1.1 / 1.0.0.1
                 </text>
 
@@ -609,7 +615,8 @@ export const InfrastructurePage = ({ i18n }: InfrastructurePageProps) => {
                 </text>
                 <line x1="45" y1="666" x2="105" y2="666" className="net-leg-line-exc" />
                 <text x="112" y="670" className="net-lt">
-                  ③ Minecraft (ベアメタル専用機) — 東京 Velocity 経由で公開 (自宅受信ゼロ)
+                  ③ Minecraft (ベアメタル機 · 0.x 配下) — 別拠点(東京) Velocity 経由で公開
+                  (自宅受信ゼロ)
                 </text>
               </svg>
             </div>
