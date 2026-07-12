@@ -78,7 +78,7 @@ npm run dev      # 開発開始
 
 ## 🗒 変更履歴
 
-- **2026-07-12**: Minecraft をベアメタル専用機へ移行（Kasm WS 廃止・ハード転用）— HP-2 CT100 に DriveBackupV2 バックアップサーバー + FileBrowser を新設し、インフラページへ反映
+- **2026-07-12**: Minecraft をベアメタル専用機へ移行（Kasm WS 廃止・ハード転用）— HP-2 CT100 に DriveBackupV2 バックアップサーバー + FileBrowser を新設し、インフラページへ反映。ZenNotes CT を廃止（メモ・ノートは Google Keep / Discord / GitHub / 物理へ移行）
 - **2026-07**: 全面刷新 — TypeScript 6.0 化・CLI 風デザイン洗練・モバイル対応・自宅鯖構成を実態（OPNsense 中核 / 隔離 Kasm WS）へ更新・GitHub Pages 廃止
 - **2026-04-24**: Vite+ 移行 — Vite 8 + Rolldown + Oxlint（ビルド ~2.6s → サブ秒）
 - **2026-04-23**: Cloudflare Tunnel 対応 — `portfolio.warasugi.com` をメインドメインに移行

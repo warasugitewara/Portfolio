@@ -32,7 +32,6 @@ const HP2_ROWS: DgmRow[] = [
     note: "メイン FW・ルータ / 0.x·1.x 分離",
     variant: "core",
   },
-  { icon: "📝", name: "Zennotes", id: "CT100", note: "Markdown ノート同期" },
   { icon: "🔐", name: "twingate-1.x", id: "CT105", note: "ゼロトラスト (1.x)" },
   { icon: "🛡️", name: "adguard-1.x", id: "CT106", note: "DNS フィルタ (1.x)" },
   { icon: "🛡️", name: "adguard-0.x", id: "CT107", note: "DNS フィルタ (0.x 冗長)" },
@@ -584,7 +583,7 @@ export const InfrastructurePage = ({ i18n }: InfrastructurePageProps) => {
                   💾 MC-Backup [CT100 · HP-2] — DriveBackupV2 受け / FileBrowser
                 </text>
                 <text x="538" y="462" className="net-seg-row">
-                  📝 Zennotes · 🔀 Headroom-Proxy · 🔒 secrets1 (HP-2)
+                  🔀 Headroom-Proxy · 🔒 secrets1 (HP-2)
                 </text>
                 <text x="538" y="482" className="net-sl">
                   上流 DNS: Cloudflare 1.1.1.1 / 1.0.0.1

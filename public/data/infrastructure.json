@@ -2,7 +2,7 @@
   "infrastructure": {
     "title": "自作鯖構成",
     "subtitle": "waras-nw — 3ノード Proxmox VE クラスター（OPNsense ルーティング）",
-    "overview": "HP Z240 SFF × 2台と Dell OptiPlex 7040 SFF で構成する 3ノード Proxmox VE クラスター（waras-nw）。OPNsense をメインファイアウォール/ルータとしてネットワークを 192.168.0.x（メイン）と 192.168.1.x（隔離セグメント）に分離し、AdGuard Home（DNS フィルタ）と Twingate（ゼロトラスト）を各セグメントに冗長配置。ポートフォリオは Cloudflare Tunnel 経由で公開し、Minecraft も東京の Velocity プロキシ経由で公開するため、自宅からのインターネット直接ポート開放はゼロ。Discord ボット群・VOICEVOX 音声合成・ZenNotes 同期・各種セルフホストサービスを稼働し、Zabbix で全体を監視している。加えて、0.x セグメント配下の単体機（旧 Kasm WS ハードを転用・Debian 13）をベアメタル Minecraft サーバーとして運用し、Purpur サバイバル鯖を常時稼働。ワールドデータは DriveBackupV2 経由で HP-2 上の専用バックアップ CT に1週間分を自動保管している（深夜4時転送・40MB/s 帯域制限で帯域圧迫を防止）。取り出し用の FileBrowser も同 CT で稼働し、既存サービス同様 Cloudflare Tunnel 経由でアクセスする。",
+    "overview": "HP Z240 SFF × 2台と Dell OptiPlex 7040 SFF で構成する 3ノード Proxmox VE クラスター（waras-nw）。OPNsense をメインファイアウォール/ルータとしてネットワークを 192.168.0.x（メイン）と 192.168.1.x（隔離セグメント）に分離し、AdGuard Home（DNS フィルタ）と Twingate（ゼロトラスト）を各セグメントに冗長配置。ポートフォリオは Cloudflare Tunnel 経由で公開し、Minecraft も東京の Velocity プロキシ経由で公開するため、自宅からのインターネット直接ポート開放はゼロ。Discord ボット群・VOICEVOX 音声合成・各種セルフホストサービスを稼働し、Zabbix で全体を監視している。加えて、0.x セグメント配下の単体機（旧 Kasm WS ハードを転用・Debian 13）をベアメタル Minecraft サーバーとして運用し、Purpur サバイバル鯖を常時稼働。ワールドデータは DriveBackupV2 経由で HP-2 上の専用バックアップ CT に1週間分を自動保管している（深夜4時転送・40MB/s 帯域制限で帯域圧迫を防止）。取り出し用の FileBrowser も同 CT で稼働し、既存サービス同様 Cloudflare Tunnel 経由でアクセスする。",
     "design_philosophy": [
       "OPNsense をメイン FW/ルータとし、192.168.0.x / 192.168.1.x のネットワークセグメント分離",
       "AdGuard Home による DNS フィルタリング（セグメント別に冗長化）",
@@ -68,7 +68,7 @@
         "name": "HP-2",
         "hardware": "HP Z240 SFF — Xeon E3-1245 v5 (8 threads) + RAM 16GB",
         "role": "ネットワーク中核 / サービスノード",
-        "purpose": "OPNsense をメイン FW/ルータとして稼働させるネットワークの中核ノード。AdGuard・Twingate（1.x 側）や ZenNotes 同期、Minecraft ワールドのバックアップ受けなど主要サービスを集約。",
+        "purpose": "OPNsense をメイン FW/ルータとして稼働させるネットワークの中核ノード。AdGuard・Twingate（1.x 側）や Minecraft ワールドのバックアップ受けなど主要サービスを集約。",
         "workloads": [
           {
             "type": "VM",
@@ -81,13 +81,6 @@
               "ファイアウォール / ルーティング / NAT",
               "AdGuard Home と連携した DNS 制御"
             ]
-          },
-          {
-            "type": "LXC",
-            "vmid": 100,
-            "os": "Debian",
-            "name": "Zennotes",
-            "purpose": "ZenNotes — Markdown ノート同期基盤（旧 obsidian-livesync の後継）"
           },
           {
             "type": "LXC",
@@ -271,7 +264,7 @@
           "Zabbix 監視導入",
           "Minecraft サーバー + Velocity プロキシ",
           "VOICEVOX 音声合成 / 読み上げボット",
-          "ZenNotes（Markdown ノート同期）へ移行",
+          "ZenNotes（Markdown ノート同期）へ移行（後に廃止 — Google Keep / Discord / GitHub 等へ集約）",
           "Cloudflare Tunnel 公開（portfolio.warasugi.com）",
           "Minecraft をベアメタル専用機へ移行（Kasm WS 廃止・ハード転用）+ MC-Backup CT 新設（DriveBackupV2 / FileBrowser）"
         ]
@@ -329,7 +322,6 @@
         "Velocity",
         "VOICEVOX",
         "Discord Bot",
-        "ZenNotes",
         "Homepage",
         "Headroom",
         "MeTube",
@@ -353,7 +345,7 @@
       "monitoring": "Zabbix サーバー (VMID 400) + pote-monitor (BTC/ETH Discord 通知) + Proxmox Web UI",
       "backups": "手動 + Google Drive クラウドバックアップ + DriveBackupV2（Minecraft ワールド・1週間分）",
       "updates": "定期更新 + 手動確認",
-      "documentation": "ZenNotes（Markdown ノート）"
+      "documentation": "メモは Google Keep、ノートは Discord・GitHub・物理で管理（ZenNotes は廃止 — AI 主導の運用に移行し、本人は閲覧中心）"
     },
     "operations": {
       "monitoring": {
