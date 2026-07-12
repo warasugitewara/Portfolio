@@ -36,7 +36,7 @@ const HP2_ROWS: DgmRow[] = [
   { icon: "🔐", name: "twingate-1.x", id: "CT105", note: "ゼロトラスト (1.x)" },
   { icon: "🛡️", name: "adguard-1.x", id: "CT106", note: "DNS フィルタ (1.x)" },
   { icon: "🛡️", name: "adguard-0.x", id: "CT107", note: "DNS フィルタ (0.x 冗長)" },
-  { icon: "🎮", name: "Minecraft", id: "CT300", note: "Modpack (公開は東京 Velocity 経由)" },
+  { icon: "💾", name: "MC-Backup", id: "CT100", note: "DriveBackupV2 受け · FileBrowser" },
   { icon: "🔀", name: "Headroom-Proxy", id: "CT700", note: "AI コンテキスト圧縮" },
   { icon: "🔒", name: "secrets1", id: "CT1000", note: "非公開" },
 ];
@@ -66,7 +66,7 @@ const renderNodeRows = (colX: number, rows: DgmRow[]) =>
             ? "dgm-row-rect dgm-row-rect--warn"
             : "dgm-row-rect";
     return (
-      <g key={row.id}>
+      <g key={row.name}>
         <rect x={colX + 10} y={y} width={DGM_COL_W - 20} height={40} rx={3} className={rectClass} />
         <text x={colX + 22} y={y + 17} className="dgm-row-name">
           {row.icon} {row.name}
@@ -156,7 +156,7 @@ export const InfrastructurePage = ({ i18n }: InfrastructurePageProps) => {
                 viewBox="0 0 1200 1150"
                 className="infra-svg"
                 role="img"
-                aria-label="waras-nw 3ノード Proxmox VE クラスター構成図（＋隔離 Kasm ワークステーション）"
+                aria-label="waras-nw 3ノード Proxmox VE クラスター構成図（＋ベアメタル Minecraft サーバー）"
               >
                 <text x="600" y="34" textAnchor="middle" className="dgm-title">
                   ホームラボ インフラ — waras-nw 3ノード Proxmox VE クラスター
@@ -297,6 +297,9 @@ export const InfrastructurePage = ({ i18n }: InfrastructurePageProps) => {
                 <text x="326" y="784" className="dgm-label dgm-label--sm">
                   • Proxmox VM バックアップ
                 </text>
+                <text x="326" y="802" className="dgm-label dgm-label--sm">
+                  • DriveBackupV2 (MC ワールド 1週間分)
+                </text>
 
                 <rect x="607" y="695" width="282" height="118" rx="4" className="dgm-node-rect" />
                 <text x="748" y="723" textAnchor="middle" className="dgm-node-text">
@@ -356,12 +359,12 @@ export const InfrastructurePage = ({ i18n }: InfrastructurePageProps) => {
                   pote-monitor (CT104)
                 </text>
                 <text x="35" y="1080" className="dgm-legend-text">
-                  <tspan className="dgm-legend-icon">🧪</tspan> 隔離WS — Kasm-WS (i7-3770 / 16GB /
-                  SSD 256GB · Ubuntu Server) クラスター外・完全隔離
+                  <tspan className="dgm-legend-icon">🎮</tspan> ベアメタルMC — Minecraft 専用機
+                  (i7-3770 / 16GB / SSD 256GB · 旧 Kasm WS 転用) クラスター外
                 </text>
                 <text x="35" y="1110" className="dgm-legend-text">
-                  <tspan className="dgm-legend-icon">⚡</tspan> 用途 — ブラウザ演算代行 /
-                  サンドボックス。必要時のみ OPNsense から WoL 起動（省電力）
+                  <tspan className="dgm-legend-icon">💾</tspan> ワールドバックアップ — DriveBackupV2
+                  → HP-2 MC-Backup (CT100)。深夜4時・40MB/s 制限・1週間分保持
                 </text>
               </svg>
             </div>
@@ -387,8 +390,13 @@ export const InfrastructurePage = ({ i18n }: InfrastructurePageProps) => {
                   を受信ゼロで公開
                 </li>
                 <li>
-                  ✓ Minecraft は東京の Velocity プロキシ経由で公開 — 自宅は外部ポート開放ゼロ（Dell
-                  CT301 Velocity 連携）
+                  ✓ Minecraft はベアメタル専用機（旧 Kasm WS 転用）で稼働 — 公開は東京の Velocity
+                  プロキシ経由で自宅は外部ポート開放ゼロ（Dell CT301 連携）
+                </li>
+                <li>
+                  ✓ ワールドバックアップ — DriveBackupV2 が深夜4時に HP-2 MC-Backup (CT100)
+                  へ転送（40MB/s 帯域制限・1週間分保持）。取り出しは FileBrowser（Cloudflare Tunnel
+                  公開）
                 </li>
                 <li>✓ 監視・多層防御 — Zabbix (Dell CT400) + Ed25519 SSH鍵 + TOTP 2FA + Anubis</li>
               </ul>
@@ -485,7 +493,7 @@ export const InfrastructurePage = ({ i18n }: InfrastructurePageProps) => {
                   受信接続ゼロ (outbound tunnel)
                 </text>
                 <text x="500" y="197" textAnchor="middle" className="net-sl">
-                  → portfolio (Dell CT103)
+                  → portfolio (Dell CT103) / FileBrowser (HP-2 CT100)
                 </text>
 
                 {/* ── ③ Minecraft (exception) ── */}
@@ -498,7 +506,7 @@ export const InfrastructurePage = ({ i18n }: InfrastructurePageProps) => {
                   ③ Minecraft ルート (東京 Velocity 経由)
                 </text>
                 <text x="820" y="163" textAnchor="middle" className="net-sl">
-                  HP-2 CT300 — Modpack サーバー
+                  ベアメタル専用機 — Modpack サーバー
                 </text>
                 <text x="820" y="180" textAnchor="middle" className="net-sl">
                   ← 東京 Velocity 経由 (Dell CT301 連携)
@@ -567,7 +575,7 @@ export const InfrastructurePage = ({ i18n }: InfrastructurePageProps) => {
                   🔐 twingate-1.x [CT105 · HP-2] — ゼロトラスト
                 </text>
                 <text x="538" y="442" className="net-warn-txt">
-                  🎮 Minecraft [CT300 · HP-2] — 東京 Velocity 経由で公開
+                  💾 MC-Backup [CT100 · HP-2] — DriveBackupV2 受け / FileBrowser
                 </text>
                 <text x="538" y="462" className="net-seg-row">
                   📝 Zennotes · 🔀 Headroom-Proxy · 🔒 secrets1 (HP-2)
@@ -601,7 +609,7 @@ export const InfrastructurePage = ({ i18n }: InfrastructurePageProps) => {
                 </text>
                 <line x1="45" y1="666" x2="105" y2="666" className="net-leg-line-exc" />
                 <text x="112" y="670" className="net-lt">
-                  ③ Minecraft CT300 — 東京 Velocity 経由で公開 (自宅受信ゼロ) / waras-nw 3ノード
+                  ③ Minecraft (ベアメタル専用機) — 東京 Velocity 経由で公開 (自宅受信ゼロ)
                 </text>
               </svg>
             </div>
