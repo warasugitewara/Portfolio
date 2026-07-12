@@ -2,14 +2,15 @@
   "infrastructure": {
     "title": "自作鯖構成",
     "subtitle": "waras-nw — 3ノード Proxmox VE クラスター（OPNsense ルーティング）",
-    "overview": "HP Z240 SFF × 2台と Dell OptiPlex 7040 SFF で構成する 3ノード Proxmox VE クラスター（waras-nw）。OPNsense をメインファイアウォール/ルータとしてネットワークを 192.168.0.x（メイン）と 192.168.1.x（隔離セグメント）に分離し、AdGuard Home（DNS フィルタ）と Twingate（ゼロトラスト）を各セグメントに冗長配置。ポートフォリオは Cloudflare Tunnel 経由で公開し、Minecraft も東京の Velocity プロキシ経由で公開するため、自宅からのインターネット直接ポート開放はゼロ。Discord ボット群・VOICEVOX 音声合成・Minecraft（東京 Velocity 経由）・ZenNotes 同期・各種セルフホストサービスを稼働し、Zabbix で全体を監視している。加えて、クラスターとは完全に隔離した単体機（Kasm Workstation / Ubuntu Server）を、必要時のみ OPNsense から WoL 起動してブラウザ演算代行・サンドボックス用途に利用している。",
+    "overview": "HP Z240 SFF × 2台と Dell OptiPlex 7040 SFF で構成する 3ノード Proxmox VE クラスター（waras-nw）。OPNsense をメインファイアウォール/ルータとしてネットワークを 192.168.0.x（メイン）と 192.168.1.x（隔離セグメント）に分離し、AdGuard Home（DNS フィルタ）と Twingate（ゼロトラスト）を各セグメントに冗長配置。ポートフォリオは Cloudflare Tunnel 経由で公開し、Minecraft も東京の Velocity プロキシ経由で公開するため、自宅からのインターネット直接ポート開放はゼロ。Discord ボット群・VOICEVOX 音声合成・各種セルフホストサービスを稼働し、Zabbix で全体を監視している。加えて、0.x セグメント配下の単体機（旧 Kasm WS ハードを転用・Debian 13）をベアメタル Minecraft サーバーとして運用し、Purpur サバイバル鯖を常時稼働。ワールドデータは DriveBackupV2 経由で HP-2 上の専用バックアップ CT に1週間分を自動保管している（深夜4時転送・40MB/s 帯域制限で帯域圧迫を防止）。取り出し用の FileBrowser も同 CT で稼働し、既存サービス同様 Cloudflare Tunnel 経由でアクセスする。",
     "design_philosophy": [
       "OPNsense をメイン FW/ルータとし、192.168.0.x / 192.168.1.x のネットワークセグメント分離",
       "AdGuard Home による DNS フィルタリング（セグメント別に冗長化）",
       "Twingate ゼロトラストアクセス（2セグメント冗長）— インターネットへのポート開放はゼロ",
       "3ノード Proxmox VE クラスターによる分散ワークロード構成",
       "Ed25519 SSH鍵認証 + パスワード認証無効化",
-      "複数メディアへのバックアップ（USB + クラウド）",
+      "複数メディアへのバックアップ（USB + クラウド + 専用バックアップ CT）",
+      "Minecraft ワールドは DriveBackupV2 で専用バックアップ CT へ毎晩保管（深夜4時・40MB/s 帯域制限・1週間分保持）",
       "Zabbix によるインフラメトリクス監視",
       "Cloudflare Tunnel 経由の安全なサービス公開（portfolio.warasugi.com）"
     ],
@@ -67,7 +68,7 @@
         "name": "HP-2",
         "hardware": "HP Z240 SFF — Xeon E3-1245 v5 (8 threads) + RAM 16GB",
         "role": "ネットワーク中核 / サービスノード",
-        "purpose": "OPNsense をメイン FW/ルータとして稼働させるネットワークの中核ノード。AdGuard・Twingate（1.x 側）や Minecraft、ZenNotes 同期など主要サービスを集約。",
+        "purpose": "OPNsense をメイン FW/ルータとして稼働させるネットワークの中核ノード。AdGuard・Twingate（1.x 側）や Minecraft ワールドのバックアップ受けなど主要サービスを集約。",
         "workloads": [
           {
             "type": "VM",
@@ -80,13 +81,6 @@
               "ファイアウォール / ルーティング / NAT",
               "AdGuard Home と連携した DNS 制御"
             ]
-          },
-          {
-            "type": "LXC",
-            "vmid": 100,
-            "os": "Debian",
-            "name": "Zennotes",
-            "purpose": "ZenNotes — Markdown ノート同期基盤（旧 obsidian-livesync の後継）"
           },
           {
             "type": "LXC",
@@ -111,14 +105,14 @@
           },
           {
             "type": "LXC",
-            "vmid": 300,
-            "os": "Debian",
-            "name": "Minecraft",
-            "purpose": "重量級 Modpack サーバー",
+            "vmid": 100,
+            "os": "Debian 12",
+            "name": "MC-Backup",
+            "purpose": "ベアメタル Minecraft サーバーのバックアップ CT。DriveBackupV2 経由でワールドデータを1週間分保管し、FileBrowser で取り出しを提供。",
             "details": [
-              "Mechanical Mastery Modpack",
-              "Java Edition サーバー",
-              "公開は東京の Velocity プロキシ経由（自宅側は外部ポート開放ゼロ）"
+              "2コア / システム SSD 8GB + データ用 128GB（1回 約20GB → 圧縮後 約12GB で1週間分を格納）",
+              "深夜4時に転送・40MB/s の帯域制限で帯域圧迫を防止",
+              "FileBrowser 同居 — バックアップの取り出し用（Cloudflare Tunnel 経由で公開）"
             ]
           },
           {
@@ -174,7 +168,7 @@
             "vmid": 301,
             "os": "Debian",
             "name": "Velocity",
-            "purpose": "Minecraft サーバー（HP-2 CT:300）の Velocity プロキシ。外部公開は東京の Velocity 経由で、自宅は受信接続ゼロ。"
+            "purpose": "ベアメタル Minecraft サーバーの Velocity プロキシ。外部公開は東京の Velocity 経由で、自宅は受信接続ゼロ。"
           },
           {
             "type": "LXC",
@@ -193,21 +187,23 @@
         ]
       },
       {
-        "id": "kasm",
-        "name": "Kasm-WS",
+        "id": "minecraft-bm",
+        "name": "Minecraft鯖",
         "hardware": "Intel Core i7-3770 + RAM 16GB DDR3 + SATA SSD 256GB",
-        "role": "スタンドアロン隔離ワークステーション（クラスター外）",
-        "purpose": "Proxmox クラスター waras-nw とは完全に隔離した単体機。Ubuntu Server 上で Kasm Workstation を稼働し、低スペック端末のブラウザ演算代行と第三者ソフトのサンドボックスを提供。電気代の都合で常時稼働はせず、必要時のみ OPNsense から Wake-on-LAN で起動する。",
+        "role": "スタンドアロン ベアメタル Minecraft サーバー（クラスター外・0.x 配下）",
+        "purpose": "旧 Kasm WS 機を転用したベアメタル Minecraft 専用機（Kasm Workspaces は廃止・スペックは当時のまま）。Proxmox クラスター waras-nw には参加せず、192.168.0.x セグメント配下で単体稼働。仮想化オーバーヘッドの排除・ゲーム鯖としての明確な分離・クラスターのクォーラムを4台にしない判断から、あえてベアメタル運用を選択した。リソースに余裕があるため他用途への活用余地も残している。アクセスは別拠点（東京）の Velocity プロキシ経由のみで、直接の外部露出はゼロ。",
         "workloads": [
           {
             "type": "Bare-metal",
-            "os": "Ubuntu Server",
-            "name": "Kasm Workstation",
-            "purpose": "ブラウザ演算代行 / 第三者ソフトのサンドボックス（コンテナ化ワークスペース）",
+            "os": "Debian 13",
+            "name": "Minecraft (Purpur)",
+            "purpose": "常時稼働の Purpur サバイバルサーバー（Java Edition）",
             "details": [
-              "Proxmox クラスターとネットワーク完全隔離",
-              "低スペック端末向けのリモートブラウザ / デスクトップ",
-              "必要時のみ OPNsense から WoL 起動（省電力運用）"
+              "GraalVM 17 / 21 / 25.1 を併用 — サーバー構成に応じて Java ランタイムを使い分け",
+              "必要時は ATM10 や持ち寄り Mod のサーバーも起動できる構成",
+              "webmap は Cloudflare Tunnel 経由で公開 / リソース監視は btop",
+              "アクセスは別拠点（東京）の Velocity 経由のみ — 直接の外部露出なし",
+              "DriveBackupV2 でワールドデータを HP-2 の MC-Backup CT へ毎晩バックアップ（深夜4時・40MB/s 帯域制限・1週間分保持）"
             ]
           }
         ]
@@ -218,7 +214,7 @@
       "security": [
         "OPNsense メイン FW/ルータ — 192.168.0.x / 192.168.1.x のセグメント分離とファイアウォール制御",
         "AdGuard Home — 各セグメントに冗長配置し DNS フィルタリング（広告 / トラッカー / マルウェア）",
-        "Cloudflare Tunnel — ポートフォワード不要・受信接続ゼロ。CF Edge が TLS 終端、Anycast で DDoS 軽減",
+        "Cloudflare Tunnel — ポートフォワード不要・受信接続ゼロ。CF Edge が TLS 終端、Anycast で DDoS 軽減（portfolio / FileBrowser / MC webmap など公開サービス共通）",
         "Twingate ゼロトラスト VPN — SSH・Proxmox WebUI・全内部サービスへのアクセスを Twingate 経由に限定（2セグメント冗長）",
         "外部ポート開放ゼロ — 受信接続なし。Minecraft も東京の Velocity プロキシ経由で公開し、自宅は直接開放しない",
         "Anubis Bot Protection — portfolio への自動スクレイパー・DDoS をリバースプロキシ層でフィルタ",
@@ -237,7 +233,8 @@
       "backup_strategy": [
         "Google Drive クラウドバックアップ",
         "USB ストレージ コールドバックアップ",
-        "Proxmox VM バックアップ"
+        "Proxmox VM バックアップ",
+        "DriveBackupV2 — Minecraft ワールドを HP-2 の MC-Backup CT へ毎晩保管（1週間分・深夜4時・40MB/s 帯域制限）"
       ],
       "authentication": {
         "proxmox": "TOTP 2FA enabled",
@@ -267,8 +264,9 @@
           "Zabbix 監視導入",
           "Minecraft サーバー + Velocity プロキシ",
           "VOICEVOX 音声合成 / 読み上げボット",
-          "ZenNotes（Markdown ノート同期）へ移行",
-          "Cloudflare Tunnel 公開（portfolio.warasugi.com）"
+          "ZenNotes（Markdown ノート同期）へ移行（後に廃止 — Google Keep / Discord / GitHub 等へ集約）",
+          "Cloudflare Tunnel 公開（portfolio.warasugi.com）",
+          "Minecraft をベアメタル専用機へ移行（Kasm WS 廃止・ハード転用）+ MC-Backup CT 新設（DriveBackupV2 / FileBrowser）"
         ]
       },
       "phase_3_future": {
@@ -319,15 +317,16 @@
       ],
       "applications": [
         "Zabbix",
-        "Minecraft",
+        "Minecraft (Purpur)",
+        "GraalVM",
         "Velocity",
         "VOICEVOX",
         "Discord Bot",
-        "ZenNotes",
         "Homepage",
         "Headroom",
         "MeTube",
-        "Kasm Workstation",
+        "DriveBackupV2",
+        "FileBrowser",
         "Bun + Hono"
       ]
     },
@@ -340,13 +339,13 @@
       "Zabbix によるインフラ監視",
       "Caddy + Anubis + Cloudflare Tunnel によるリバースプロキシ / 公開設計",
       "Linux VM / LXC コンテナ管理",
-      "Kasm によるブラウザ演算代行・サンドボックス環境（クラスターから完全隔離・WoL 省電力運用）"
+      "ベアメタル Minecraft サーバー運用（Purpur + GraalVM）と DriveBackupV2 による世代バックアップ設計（深夜転送 + 帯域制限で帯域圧迫を防止）"
     ],
     "operational_practices": {
       "monitoring": "Zabbix サーバー (VMID 400) + pote-monitor (BTC/ETH Discord 通知) + Proxmox Web UI",
-      "backups": "手動 + Google Drive クラウドバックアップ",
+      "backups": "手動 + Google Drive クラウドバックアップ + DriveBackupV2（Minecraft ワールド・1週間分）",
       "updates": "定期更新 + 手動確認",
-      "documentation": "ZenNotes（Markdown ノート）"
+      "documentation": "メモは Google Keep、ノートは Discord・GitHub・物理で管理（ZenNotes は廃止 — AI 主導の運用に移行し、本人は閲覧中心）"
     },
     "operations": {
       "monitoring": {
@@ -363,7 +362,7 @@
       "reliability": {
         "uptime_target": "ホームラボとして合理的な稼働率を維持",
         "restart_policy": "Proxmox の自動起動設定で CT/VM はホスト再起動後に自動復旧",
-        "backup": "Proxmox Backup Server による定期スナップショット（計画中）"
+        "backup": "Proxmox Backup Server による定期スナップショット（計画中）。Minecraft ワールドは DriveBackupV2 で毎晩 MC-Backup CT へ保管済み"
       }
     }
   }
