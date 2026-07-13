@@ -25,3 +25,6 @@ dist-ssr
 # Copilot local session files (sensitive)
 .copilot-local.md
 AGENTS.md
+
+# dist
+dist/*
