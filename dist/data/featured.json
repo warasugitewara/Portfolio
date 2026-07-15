@@ -1,0 +1,92 @@
+{
+  "featured": [
+    {
+      "id": "homelab",
+      "title": "waras-nw — Self-Hosted Homelab",
+      "title_ja": "waras-nw — 自宅サーバークラスター",
+      "tagline": "A 3-node Proxmox VE cluster, designed and operated end-to-end",
+      "tagline_ja": "3ノード Proxmox VE クラスターを設計から運用まで",
+      "background": "A Proxmox VE cluster built from three used PCs. I designed everything myself — network segmentation, security, backups and monitoring — and it runs real services 24/7, including Discord bots and this site.",
+      "background_ja": "中古 PC 3台で構築した Proxmox VE クラスター。ネットワーク設計・セキュリティ・バックアップ・監視まで全て自分で設計し、Discord ボットや本サイトなどの実サービスを常時運用している。",
+      "points": [
+        "OPNsense network segmentation with zero open inbound ports — published via Cloudflare Tunnel and an off-site Velocity proxy",
+        "Redundant AdGuard Home + Twingate across two segments, monitored with Zabbix",
+        "Generational Minecraft world backups via DriveBackupV2 to a dedicated CT (late-night transfer with a bandwidth cap)"
+      ],
+      "points_ja": [
+        "OPNsense でセグメント分離し、公開は Cloudflare Tunnel / 別拠点 Velocity 経由 — 外部ポート開放ゼロ",
+        "AdGuard Home・Twingate を2セグメントに冗長配置し、Zabbix で全体を監視",
+        "Minecraft ワールドは DriveBackupV2 で専用 CT へ世代バックアップ（深夜転送・帯域制限）"
+      ],
+      "tech": ["Proxmox VE", "OPNsense", "Cloudflare Tunnel", "Twingate", "Zabbix"],
+      "link": "/infrastructure",
+      "link_internal": true,
+      "link_label": "See the full architecture →",
+      "link_label_ja": "構成の詳細を見る →"
+    },
+    {
+      "id": "portfolio",
+      "title": "Portfolio (this site)",
+      "title_ja": "ポートフォリオ（本サイト）",
+      "tagline": "A CLI-styled SPA, self-hosted from my homelab",
+      "tagline_ja": "CLI 風デザインの SPA を自宅鯖からセルフホスト",
+      "background": "Migrated from GitHub Pages to my own server, choosing the entire stack myself — from build tooling to the serving layer. Lightweight and fast first; content is JSON-driven with ja/en i18n.",
+      "background_ja": "GitHub Pages から自宅サーバーへ移行し、ビルドツールから配信基盤まで自分で選定。軽量・高速を最優先にした構成で、コンテンツは JSON データ駆動・日英 i18n 対応。",
+      "points": [
+        "Sub-second builds with Vite+ (Vite 8 + Rolldown + Oxc)",
+        "Served by Bun + Hono behind Caddy + Anubis + Cloudflare Tunnel",
+        "Runs as a systemd service in an LXC container on Proxmox"
+      ],
+      "points_ja": [
+        "Vite+（Vite 8 + Rolldown + Oxc）でサブ秒ビルド",
+        "Bun + Hono で配信し、Caddy + Anubis + Cloudflare Tunnel の多層構成で公開",
+        "systemd サービス化して Proxmox 上の LXC で稼働"
+      ],
+      "tech": ["React 19", "TypeScript", "Vite+", "Bun", "Hono"],
+      "link": "https://github.com/warasugitewara/Portfolio",
+      "link_internal": false,
+      "link_label": "GitHub →",
+      "link_label_ja": "GitHub →"
+    },
+    {
+      "id": "discord-bots",
+      "title": "Discord Bots",
+      "title_ja": "Discord ボット群",
+      "tagline": "Music & VOICEVOX text-to-speech bots, running 24/7 on the homelab",
+      "tagline_ja": "音楽・VOICEVOX 読み上げボットを自宅鯖で常時稼働",
+      "background": "Python Discord bots running in LXC containers. The text-to-speech bot talks to a self-hosted VOICEVOX engine, so speech synthesis doesn't depend on external APIs.",
+      "background_ja": "Python 製の Discord ボットを LXC コンテナで運用。読み上げボットは自宅鯖上の VOICEVOX エンジンと連携し、外部 API に頼らない音声合成を実現している。",
+      "points": [
+        "Self-hosted VOICEVOX engine on a dedicated VM",
+        "Extended with NVIDIA NIM and the Gemini API",
+        "Auto-recovers after host restarts via Proxmox autostart"
+      ],
+      "points_ja": [
+        "VOICEVOX エンジンを専用 VM で稼働させ、ボットから連携",
+        "NVIDIA NIM・Gemini API を組み合わせた機能拡張",
+        "Proxmox の自動起動設定で障害後も自動復旧"
+      ],
+      "tech": ["Python", "VOICEVOX", "NVIDIA NIM", "Gemini API"]
+    },
+    {
+      "id": "paper-plugins",
+      "title": "Minecraft Paper Plugins",
+      "title_ja": "Minecraft Paper プラグイン",
+      "tagline": "Server plugins with a built-in WebUI",
+      "tagline_ja": "WebUI 付きのサーバー向けプラグイン開発",
+      "background": "Paper plugin development in Java/Kotlin. Combines a Javalin-powered WebUI, SQLite and OpenAPI definitions to build admin experiences that extend beyond the game.",
+      "background_ja": "Java / Kotlin による Paper プラグイン開発。Javalin 製の WebUI と SQLite、OpenAPI 定義を組み合わせ、ゲーム内に閉じない管理体験を作っている。",
+      "points": [
+        "Plugin architecture on the Paper / Bukkit API",
+        "Javalin WebUI with OpenAPI documentation",
+        "Lightweight persistence with SQLite"
+      ],
+      "points_ja": [
+        "Paper / Bukkit API ベースのプラグイン設計",
+        "Javalin による WebUI と OpenAPI ドキュメント",
+        "SQLite による軽量な永続化"
+      ],
+      "tech": ["Java", "Kotlin", "Paper API", "Javalin", "SQLite"]
+    }
+  ]
+}

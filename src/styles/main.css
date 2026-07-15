@@ -529,6 +529,99 @@ a:hover {
 }
 
 /* =========================================================================
+   Featured projects
+   ========================================================================= */
+.featured-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: var(--space-4);
+}
+
+.featured-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-5);
+  background: var(--color-surface-elev);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  transition: border-color var(--transition-base), transform var(--transition-base),
+    box-shadow var(--transition-base);
+}
+
+.featured-card:hover {
+  border-color: var(--color-border-strong);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.featured-title {
+  color: var(--color-neon-green);
+  font-size: 1.05rem;
+}
+
+.featured-tagline {
+  font-size: 0.85rem;
+  color: var(--color-text-secondary);
+  font-style: italic;
+}
+
+.featured-background {
+  font-size: 0.9rem;
+  line-height: 1.65;
+}
+
+.featured-points {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  font-size: 0.85rem;
+  color: var(--color-text-secondary);
+}
+
+.featured-points li::before {
+  content: "▸ ";
+  color: var(--color-neon-green);
+}
+
+.featured-footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  margin-top: auto;
+  padding-top: var(--space-2);
+}
+
+.featured-tech {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+}
+
+.featured-chip {
+  background: var(--color-chip-bg);
+  border: 1px solid var(--color-border);
+  padding: 0.15rem 0.5rem;
+  border-radius: var(--radius-sm);
+  color: var(--color-neon-green);
+  font-size: 0.75rem;
+}
+
+.featured-link {
+  color: var(--color-accent);
+  font-size: 0.85rem;
+  white-space: nowrap;
+}
+
+.featured-link:hover {
+  text-decoration: underline;
+}
+
+/* =========================================================================
    Projects
    ========================================================================= */
 .projects-list {

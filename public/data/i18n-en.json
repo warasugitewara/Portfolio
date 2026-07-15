@@ -27,6 +27,7 @@
   },
   "projects": {
     "title": "Projects",
+    "featured": "Featured Projects",
     "pinned": "Pinned Repositories"
   },
   "philosophy": {

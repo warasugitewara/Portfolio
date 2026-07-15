@@ -27,6 +27,7 @@
   },
   "projects": {
     "title": "プロジェクト",
+    "featured": "代表プロジェクト",
     "pinned": "ピン固定リポジトリ"
   },
   "philosophy": {

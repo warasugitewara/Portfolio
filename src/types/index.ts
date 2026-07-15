@@ -35,6 +35,23 @@ export interface Skill {
   items: string[];
 }
 
+export interface FeaturedProject {
+  id: string;
+  title: string;
+  title_ja?: string;
+  tagline: string;
+  tagline_ja?: string;
+  background: string;
+  background_ja?: string;
+  points: string[];
+  points_ja?: string[];
+  tech: string[];
+  link?: string;
+  link_internal?: boolean;
+  link_label?: string;
+  link_label_ja?: string;
+}
+
 export interface GitHubRepo {
   name: string;
   description: string;
