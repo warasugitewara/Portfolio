@@ -14,7 +14,7 @@ npm run start        # Bun + Hono 本番サーバー (dist/ を配信)
 
 React 19 SPA（Vite 7 ビルド）を、本番では Bun + Hono (`server.ts`) で配信する構成。
 本番は自宅サーバー（Proxmox VE）上の `/opt/portfolio` にデプロイされ、systemd サービス (`portfolio.service`) として稼働。
-Caddy がリバースプロキシとして `portfolio.wc.f5.si` を受け、Anubis（port 3001）経由でボット対策を行う。
+Caddy がリバースプロキシとして `portfolio.warasugi.com`（Cloudflare Tunnel 経由）を受け、Anubis（port 3001）経由でボット対策を行う。
 
 ### フロントエンド
 
@@ -30,7 +30,6 @@ Caddy がリバースプロキシとして `portfolio.wc.f5.si` を受け、Anub
 
 ### CI/CD・運用
 
-- `deploy.yml`: main push で npm ci → build → GitHub Pages デプロイ
 - `snake.yml`: 24h ごと + main push で GitHub contribution snake SVG を生成し、`dist/` と `public/` にコミット
 - **cron**: 6 時間ごとに `update-snake.sh` で本番の snake SVG を最新化
 - **正式ソース**: `/opt/portfolio`（本番ホスト）が最新。GitHub へはホストから push する運用。
