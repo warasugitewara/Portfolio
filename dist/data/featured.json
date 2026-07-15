@@ -18,11 +18,76 @@
         "AdGuard Home・Twingate を2セグメントに冗長配置し、Zabbix で全体を監視",
         "Minecraft ワールドは DriveBackupV2 で専用 CT へ世代バックアップ（深夜転送・帯域制限）"
       ],
-      "tech": ["Proxmox VE", "OPNsense", "Cloudflare Tunnel", "Twingate", "Zabbix"],
+      "tech": [
+        "Proxmox VE",
+        "OPNsense",
+        "Cloudflare Tunnel",
+        "Twingate",
+        "Zabbix"
+      ],
       "link": "/infrastructure",
       "link_internal": true,
       "link_label": "See the full architecture →",
       "link_label_ja": "構成の詳細を見る →"
+    },
+    {
+      "id": "ai-podcast-bot",
+      "title": "AI-Podcast-Bot",
+      "title_ja": "AI-Podcast-Bot",
+      "tagline": "A self-hosted AI radio station streaming into Discord VC",
+      "tagline_ja": "Discord VC へ自動配信するセルフホスト AI ラジオ",
+      "background": "A podcast bot where an LLM writes multi-character dialogue scripts, VOICEVOX synthesizes the voices and BGM selection is automated. News is injected via RSS/APIs to curb hallucinations — generative AI put into real 24/7 operation.",
+      "background_ja": "LLM が複数キャラクターの対話台本を生成し、VOICEVOX が音声合成、BGM 選曲まで自動化したポッドキャスト Bot。ニュースを RSS/API で注入してハルシネーションを抑えるなど、生成 AI を実運用に落とし込んでいる。",
+      "points": [
+        "NVIDIA NIM (Llama-3.3-70B) or any OpenAI-compatible API, with 13 VOICEVOX characters",
+        "Time-aware talk, ratio-based automatic music selection and a realtime web UI",
+        "Parallel health monitoring of 6 subsystems with Uptime Kuma push integration"
+      ],
+      "points_ja": [
+        "NVIDIA NIM (Llama-3.3-70B) / OpenAI 互換 API + VOICEVOX 13キャラクター対応",
+        "時間帯認識トーク・比率ベースの自動選曲・リアルタイム Web UI",
+        "6サブシステムの並列ヘルス監視と Uptime Kuma Push 連携"
+      ],
+      "tech": [
+        "Python",
+        "discord.py",
+        "NVIDIA NIM",
+        "VOICEVOX",
+        "Bun + Hono"
+      ],
+      "link": "https://github.com/warasugitewara/AI-Podcast-Bot",
+      "link_internal": false,
+      "link_label": "GitHub →",
+      "link_label_ja": "GitHub →"
+    },
+    {
+      "id": "yomiage-bot",
+      "title": "Waras-Yomiage-Bot",
+      "title_ja": "Waras-Yomiage-Bot",
+      "tagline": "A fully local Discord TTS bot powered by VOICEVOX",
+      "tagline_ja": "VOICEVOX ローカル完結型の Discord 読み上げ Bot",
+      "background": "No external TTS dependency — it talks directly to a self-hosted VOICEVOX ENGINE for low-latency, stable speech. Supports per-user voice settings and per-server pronunciation dictionaries.",
+      "background_ja": "外部 TTS サービスに依存せず、自宅鯖の VOICEVOX ENGINE と直結して低遅延・安定の読み上げを実現。ユーザーごとのボイス設定やサーバー独自の読み替え辞書を備える。",
+      "points": [
+        "Message preprocessing: URL/mention/emoji normalization and spam compression",
+        "Both prefix and slash commands",
+        "Startup/error notifications to Discord via webhooks"
+      ],
+      "points_ja": [
+        "URL・メンション・絵文字の自動整形やスパム圧縮などの前処理",
+        "プレフィックス / スラッシュ両コマンド対応",
+        "起動・エラーを Webhook で Discord へ通知"
+      ],
+      "tech": [
+        "Python 3.11",
+        "discord.py",
+        "VOICEVOX",
+        "FFmpeg"
+      ],
+      "link": "https://github.com/warasugitewara/Waras-Yomiage-Bot",
+      "link_internal": false,
+      "link_label": "GitHub →",
+      "link_label_ja": "GitHub →"
     },
     {
       "id": "portfolio",
@@ -42,31 +107,17 @@
         "Bun + Hono で配信し、Caddy + Anubis + Cloudflare Tunnel の多層構成で公開",
         "systemd サービス化して Proxmox 上の LXC で稼働"
       ],
-      "tech": ["React 19", "TypeScript", "Vite+", "Bun", "Hono"],
+      "tech": [
+        "React 19",
+        "TypeScript",
+        "Vite+",
+        "Bun",
+        "Hono"
+      ],
       "link": "https://github.com/warasugitewara/Portfolio",
       "link_internal": false,
       "link_label": "GitHub →",
       "link_label_ja": "GitHub →"
-    },
-    {
-      "id": "discord-bots",
-      "title": "Discord Bots",
-      "title_ja": "Discord ボット群",
-      "tagline": "Music & VOICEVOX text-to-speech bots, running 24/7 on the homelab",
-      "tagline_ja": "音楽・VOICEVOX 読み上げボットを自宅鯖で常時稼働",
-      "background": "Python Discord bots running in LXC containers. The text-to-speech bot talks to a self-hosted VOICEVOX engine, so speech synthesis doesn't depend on external APIs.",
-      "background_ja": "Python 製の Discord ボットを LXC コンテナで運用。読み上げボットは自宅鯖上の VOICEVOX エンジンと連携し、外部 API に頼らない音声合成を実現している。",
-      "points": [
-        "Self-hosted VOICEVOX engine on a dedicated VM",
-        "Extended with NVIDIA NIM and the Gemini API",
-        "Auto-recovers after host restarts via Proxmox autostart"
-      ],
-      "points_ja": [
-        "VOICEVOX エンジンを専用 VM で稼働させ、ボットから連携",
-        "NVIDIA NIM・Gemini API を組み合わせた機能拡張",
-        "Proxmox の自動起動設定で障害後も自動復旧"
-      ],
-      "tech": ["Python", "VOICEVOX", "NVIDIA NIM", "Gemini API"]
     },
     {
       "id": "paper-plugins",
@@ -86,7 +137,41 @@
         "Javalin による WebUI と OpenAPI ドキュメント",
         "SQLite による軽量な永続化"
       ],
-      "tech": ["Java", "Kotlin", "Paper API", "Javalin", "SQLite"]
+      "tech": [
+        "Java",
+        "Kotlin",
+        "Paper API",
+        "Javalin",
+        "SQLite"
+      ]
+    },
+    {
+      "id": "jp-museheart",
+      "title": "JP-MuseHeart-MusicBot",
+      "title_ja": "JP-MuseHeart-MusicBot",
+      "tagline": "A Japanese-localized fork of an existing OSS music bot",
+      "tagline_ja": "既存 OSS 音楽ボットの日本語化フォーク",
+      "background": "A Japanese fork of zRitsu/MuseHeart-MusicBot. I localized the configuration and docs, added Uptime Kuma health-check support, and run it 24/7 on the homelab.",
+      "background_ja": "zRitsu/MuseHeart-MusicBot の日本語フォーク。設定ファイルとドキュメントを日本語化し、Uptime Kuma による死活監視対応を追加して自宅鯖で常時運用している。",
+      "points": [
+        "Japanese localization of configuration and documentation",
+        "Added Uptime Kuma monitoring support",
+        "Runs 24/7 in a homelab LXC (CT101)"
+      ],
+      "points_ja": [
+        "設定ファイル・ドキュメントの日本語化",
+        "Uptime Kuma 監視対応を追加",
+        "自宅鯖の LXC (CT101) で常時稼働"
+      ],
+      "tech": [
+        "Python",
+        "discord.py",
+        "Uptime Kuma"
+      ],
+      "link": "https://github.com/warasugitewara/JP-MuseHeart-MusicBot",
+      "link_internal": false,
+      "link_label": "GitHub →",
+      "link_label_ja": "GitHub →"
     }
   ]
 }
