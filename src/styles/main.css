@@ -411,6 +411,32 @@ a:hover {
   color: var(--hero-text-muted);
 }
 
+.hero-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+  margin-top: var(--space-4);
+}
+
+.hero-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  min-width: 5.5rem;
+}
+
+.hero-stat__value {
+  color: var(--color-neon-green);
+  font-size: 1.4rem;
+  font-weight: bold;
+  line-height: 1.2;
+}
+
+.hero-stat__label {
+  font-size: 0.75rem;
+  color: var(--hero-text-muted);
+}
+
 /* =========================================================================
    About
    ========================================================================= */

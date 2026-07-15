@@ -52,7 +52,7 @@ export const HomePage = ({ i18n, lang }: HomePageProps) => {
   return (
     <>
       {showBoot && <BootAnimation onComplete={() => setShowBoot(false)} />}
-      <Hero i18n={i18n} profile={profile} />
+      <Hero i18n={i18n} profile={profile} lang={lang} />
       <About i18n={i18n} profile={profile} />
       <Snake i18n={i18n} />
       <Skills i18n={i18n} />
