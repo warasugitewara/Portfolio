@@ -36,29 +36,6 @@ app.get('/og-image.png', async (c) => {
   }
 })
 
-// Serve snake SVGs from dist/ (updated by cron git fetch)
-app.get('/github-contribution-grid-snake-dark.svg', async (c) => {
-  try {
-    const svg = await readFile('./dist/github-contribution-grid-snake-dark.svg', 'utf-8')
-    c.header('Content-Type', 'image/svg+xml')
-    c.header('Cache-Control', 'no-cache, must-revalidate')
-    return c.body(svg)
-  } catch {
-    return c.notFound()
-  }
-})
-
-app.get('/github-contribution-grid-snake.svg', async (c) => {
-  try {
-    const svg = await readFile('./dist/github-contribution-grid-snake.svg', 'utf-8')
-    c.header('Content-Type', 'image/svg+xml')
-    c.header('Cache-Control', 'no-cache, must-revalidate')
-    return c.body(svg)
-  } catch {
-    return c.notFound()
-  }
-})
-
 // Cache data JSON for 5 minutes
 app.use('/data/*', async (c, next) => {
   await next();

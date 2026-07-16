@@ -26,12 +26,11 @@ Caddy がリバースプロキシとして `portfolio.warasugi.com`（Cloudflare
 
 ### バックエンド（本番配信）
 
-`server.ts` は Bun ランタイムで動く Hono サーバー（port 3000）。`dist/` の静的ファイル配信と SPA フォールバック（`notFound` → `dist/index.html`）を担当。snake SVG や大きい画像ファイルは個別ルートでキャッシュヘッダーを設定。
+`server.ts` は Bun ランタイムで動く Hono サーバー（port 3000）。`dist/` の静的ファイル配信と SPA フォールバック（`notFound` → `dist/index.html`）を担当。大きい画像ファイルや OG 画像は個別ルートでキャッシュヘッダーを設定。
 
 ### CI/CD・運用
 
-- `snake.yml`: 24h ごと + main push で GitHub contribution snake SVG を生成し、`dist/` と `public/` にコミット
-- **cron**: 6 時間ごとに `update-snake.sh` で本番の snake SVG を最新化
+- contribution snake はプロフィールリポジトリ（warasugitewara/warasugitewara）側で生成し、本リポジトリはその raw URL を表示するのみ（生成 workflow・cron は廃止済み）
 - **正式ソース**: `/opt/portfolio`（本番ホスト）が最新。GitHub へはホストから push する運用。
 
 ## コーディング規約

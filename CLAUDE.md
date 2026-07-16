@@ -31,7 +31,7 @@ React 19 SPA を、**開発時は `vp dev`、本番時は Bun + Hono (`server.ts
 - **テーマ**: `useTheme` が `<html>` の `data-theme` を切り替え、CSS カスタムプロパティ（`--color-*`）で表現。スタイルは `src/styles/main.css` に集約（CSS-in-JS / フレームワーク無し）。
 
 ### バックエンド（本番配信）
-`server.ts` は Bun ランタイムの Hono サーバー（port 3000）。`dist/` の静的配信と SPA フォールバック（`notFound` → `dist/index.html`）を担当。snake SVG・大きい画像（`minecraft-city.png`）は個別ルートでキャッシュヘッダーを設定している。
+`server.ts` は Bun ランタイムの Hono サーバー（port 3000）。`dist/` の静的配信と SPA フォールバック（`notFound` → `dist/index.html`）を担当。大きい画像（`minecraft-city.png`）や OG 画像は個別ルートでキャッシュヘッダーを設定している。
 
 ## 規約・注意点
 
@@ -51,5 +51,5 @@ React 19 SPA を、**開発時は `vp dev`、本番時は Bun + Hono (`server.ts
 
 **本番は自宅サーバーのみ**（GitHub Pages は不使用）:
 - **自宅サーバー**: Proxmox VE 上の `/opt/portfolio` に配置し、systemd `portfolio.service` として稼働。Caddy がリバースプロキシ、Cloudflare Tunnel 経由で **`portfolio.warasugi.com`**（メインドメイン）を配信。GitHub へは**このホストから push する**運用なので、リモートが常に最新とは限らない。本番反映は `git pull` → `npm ci` → `npm run build` → `systemctl restart portfolio.service`。
-- **snake SVG**: `.github/workflows/snake.yml` が 24h ごと + main push で contribution snake を生成し `dist/` と `public/` にコミット。本番では 6 時間ごとに `update-snake.sh` が最新化。
+- **snake SVG**: contribution snake はプロフィールリポジトリ（warasugitewara/warasugitewara）の raw URL を `Snake.tsx` が直接参照。本リポジトリでの生成・配信は廃止済み。
 - `.github/copilot-instructions.md` にも旧構成の記述があるが、ドメイン等は README / 本ファイルが優先。

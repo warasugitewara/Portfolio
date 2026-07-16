@@ -70,7 +70,7 @@ npm run dev      # 開発開始
 - **リバースプロキシ**: Caddy がリクエストを受け、静的ファイルは直接 port 3000 へ、それ以外は Anubis（port 3001）経由で配信
   - `portfolio.warasugi.com` は Cloudflare Tunnel 経由（CF 側で TLS 終端、Caddy は HTTP のみ受信）
 - **反映手順**: `git pull` → `npm ci` → `npm run build` → `systemctl restart portfolio.service`
-- **Snake SVG**: `.github/workflows/snake.yml` が contribution snake を生成。本番では cron（6 時間ごと）の `update-snake.sh` が最新化。
+- **Snake SVG**: contribution snake はプロフィールリポジトリ（warasugitewara/warasugitewara）で生成された SVG の raw URL を直接表示（本リポジトリでの生成は廃止）。
 
 ## 📝 コンテンツ更新
 
