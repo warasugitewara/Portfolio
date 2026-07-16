@@ -78,6 +78,14 @@ npm run dev      # 開発開始
 
 **OG カード画像**: SNS クローラーは SVG を描画できないため、`public/og-image.svg`（デザイン原本）を編集したら 1200×630 の PNG に書き出し、256色以下に量子化して `public/og-image.png` を差し替えてください（例: ヘッドレスブラウザでスクリーンショット → Pillow の `quantize(colors=64)`）。
 
+## 🧰 既知の技術的負債（TODO）
+
+2026-07 のコードレビューで確認済み・未対応の改善項目。対応時はこの項目を削除すること。
+
+- [ ] **インフラ構成図のデータ一元化** — `InfrastructurePage.tsx` の `HP1_ROWS` / `HP2_ROWS` / `DELL_ROWS` は `infrastructure.json` の `nodes[*].workloads` と同じ事実のハードコード重複。構成変更のたびに両方（＋SVG 内の凡例文）の手動更新が必要で、ズレても検出されない。fetch 済み JSON から行を導出する形に一元化する（`icon` / `note` 相当のフィールドを JSON 側に追加する必要あり）
+- [ ] **`*_ja` 言語フォールバックの共通化** — 同じフォールバック規則が `FeaturedProjects.tsx`（`pick` ヘルパー）・`Hero.tsx`（インライン三項）・`Philosophy.tsx`（インライン三項）の3箇所に別実装で散在。`src/utils/` に `pickLang(lang, en, ja?)` を作って統一する
+- [ ] **Hero スタッツの自動算出** — `profile.json` の `stats`（ノード数 3 / CT・VM 17+ など）は `infrastructure.json` から数えられる事実の文字列再掲。構成変更時に黙ってズレるため、読み込んだデータからの導出に変更する（当面は構成変更時に手動で数値を見直すこと）
+
 ## 🗒 変更履歴
 
 - **2026-07-15**: 旧ドメイン `wc.f5.si` の参照を完全撤去 — OG / Twitter カードを `portfolio.warasugi.com` + PNG 画像（`og-image.png` を新規生成）に統一、canonical 追加、GitHub Pages 用 SPA リダイレクトスクリプトを削除。X リンクを新アカウント `@WARASUGI7` に更新

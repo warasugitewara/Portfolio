@@ -39,6 +39,14 @@ React 19 SPA を、**開発時は `vp dev`、本番時は Bun + Hono (`server.ts
 - **コンポーネントは名前付きエクスポートの関数コンポーネント**。Props は各ファイルで interface / type 定義。
 - TypeScript strict（`noUnusedLocals` / `noUnusedParameters` 有効）。CLAUDE 全体規約どおり `any` / `@ts-ignore` は使わない（既存 `HomePageProps` の `i18n: any` は例外的な既存箇所）。
 
+## 既知の技術的負債（変更時に注意）
+
+詳細は README の「🧰 既知の技術的負債（TODO）」を参照。要点:
+
+- **インフラ構成図は二重管理**: `src/pages/InfrastructurePage.tsx` の `HP1_ROWS` / `HP2_ROWS` / `DELL_ROWS`（＋SVG 内の凡例・ネットワーク図の文言）は `public/data/infrastructure.json` と同じ事実のハードコード。**インフラ構成を変更する際は JSON と TSX の両方を必ず更新する**こと（本来は JSON からの導出に一元化したい）。
+- `*_ja` 言語フォールバックが `FeaturedProjects` / `Hero` / `Philosophy` に3実装散在（`src/utils/pickLang` への共通化待ち）。
+- `profile.json` の `stats` はハードコード数値。**CT/VM を増減したら Hero のスタッツも見直す**。
+
 ## デプロイ運用（非自明）
 
 **本番は自宅サーバーのみ**（GitHub Pages は不使用）:
