@@ -76,6 +76,8 @@ npm run dev      # 開発開始
 
 静的な文言・プロフィール・スキル・インフラ情報は `public/data/` の JSON を編集して更新します。UI 文言は `i18n-{ja,en}.json` に **両言語** で追加してください。
 
+**OG カード画像**: SNS クローラーは SVG を描画できないため、`public/og-image.svg`（デザイン原本）を編集したら 1200×630 の PNG に書き出し、256色以下に量子化して `public/og-image.png` を差し替えてください（例: ヘッドレスブラウザでスクリーンショット → Pillow の `quantize(colors=64)`）。
+
 ## 🗒 変更履歴
 
 - **2026-07-15**: 旧ドメイン `wc.f5.si` の参照を完全撤去 — OG / Twitter カードを `portfolio.warasugi.com` + PNG 画像（`og-image.png` を新規生成）に統一、canonical 追加、GitHub Pages 用 SPA リダイレクトスクリプトを削除。X リンクを新アカウント `@WARASUGI7` に更新

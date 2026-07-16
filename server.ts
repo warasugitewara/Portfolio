@@ -22,6 +22,20 @@ app.get('/minecraft-city.png', async (c) => {
   }
 })
 
+// OG card image — fetched by social crawlers on every link unfurl
+app.get('/og-image.png', async (c) => {
+  try {
+    const fileBuffer = await readFile('./dist/og-image.png')
+    c.header('Content-Type', 'image/png')
+    c.header('Cache-Control', 'public, max-age=86400')
+    c.header('Content-Length', fileBuffer.length.toString())
+    return c.body(fileBuffer)
+  } catch (error) {
+    console.error('Error serving og-image.png:', error)
+    return c.notFound()
+  }
+})
+
 // Serve snake SVGs from dist/ (updated by cron git fetch)
 app.get('/github-contribution-grid-snake-dark.svg', async (c) => {
   try {

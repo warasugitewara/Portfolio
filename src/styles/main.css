@@ -526,7 +526,8 @@ a:hover {
   gap: var(--space-4);
 }
 
-.principle-card {
+.principle-card,
+.featured-card {
   padding: var(--space-5);
   background: var(--color-surface-elev);
   border: 1px solid var(--color-border);
@@ -536,7 +537,8 @@ a:hover {
     box-shadow var(--transition-base);
 }
 
-.principle-card:hover {
+.principle-card:hover,
+.featured-card:hover {
   border-color: var(--color-border-strong);
   transform: translateY(-2px);
   box-shadow: var(--shadow-md);
@@ -563,23 +565,11 @@ a:hover {
   gap: var(--space-4);
 }
 
+/* Card surface/hover shared with .principle-card (see Philosophy section) */
 .featured-card {
   display: flex;
   flex-direction: column;
   gap: var(--space-2);
-  padding: var(--space-5);
-  background: var(--color-surface-elev);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  box-shadow: var(--shadow-sm);
-  transition: border-color var(--transition-base), transform var(--transition-base),
-    box-shadow var(--transition-base);
-}
-
-.featured-card:hover {
-  border-color: var(--color-border-strong);
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-md);
 }
 
 .featured-title {
@@ -628,12 +618,8 @@ a:hover {
   gap: var(--space-1);
 }
 
+/* Chip surface shared with .project-language (see Projects section) */
 .featured-chip {
-  background: var(--color-chip-bg);
-  border: 1px solid var(--color-border);
-  padding: 0.15rem 0.5rem;
-  border-radius: var(--radius-sm);
-  color: var(--color-neon-green);
   font-size: 0.75rem;
 }
 
@@ -704,7 +690,8 @@ a:hover {
   flex-shrink: 0;
 }
 
-.project-language {
+.project-language,
+.featured-chip {
   background: var(--color-chip-bg);
   border: 1px solid var(--color-border);
   padding: 0.2rem 0.55rem;

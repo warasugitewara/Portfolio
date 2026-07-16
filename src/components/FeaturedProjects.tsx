@@ -17,7 +17,7 @@ export const FeaturedProjects = ({ i18n, lang }: FeaturedProjectsProps) => {
         const response = await fetch(getDataUrl("featured.json"));
         if (!response.ok) throw new Error(`Failed to load featured: ${response.status}`);
         const data = await response.json();
-        setProjects(data.featured);
+        setProjects(data.featured ?? []);
       } catch (error) {
         console.error("Failed to load featured projects:", error);
       }
@@ -33,48 +33,51 @@ export const FeaturedProjects = ({ i18n, lang }: FeaturedProjectsProps) => {
   return (
     <section id="featured" className="section featured">
       <div className="section-container">
-        <h2 className="section-title">{i18n.projects.featured}</h2>
+        <h2 className="section-title">{i18n.projects.featured ?? i18n.projects.title}</h2>
         <div className="featured-grid">
-          {projects.map((project) => (
-            <article key={project.id} className="featured-card">
-              <h3 className="featured-title">{pick(project.title, project.title_ja)}</h3>
-              <p className="featured-tagline">{pick(project.tagline, project.tagline_ja)}</p>
-              <p className="featured-background">
-                {pick(project.background, project.background_ja)}
-              </p>
-              <ul className="featured-points">
-                {(ja && project.points_ja ? project.points_ja : project.points).map(
-                  (point, idx) => (
-                    <li key={idx}>{point}</li>
-                  ),
-                )}
-              </ul>
-              <div className="featured-footer">
-                <div className="featured-tech">
-                  {project.tech.map((item) => (
-                    <span key={item} className="featured-chip">
-                      {item}
-                    </span>
-                  ))}
+          {projects.map((project) => {
+            const linkLabel = pick(project.link_label ?? "GitHub →", project.link_label_ja);
+            return (
+              <article key={project.id} className="featured-card">
+                <h3 className="featured-title">{pick(project.title, project.title_ja)}</h3>
+                <p className="featured-tagline">{pick(project.tagline, project.tagline_ja)}</p>
+                <p className="featured-background">
+                  {pick(project.background, project.background_ja)}
+                </p>
+                <ul className="featured-points">
+                  {(ja && project.points_ja ? project.points_ja : project.points).map(
+                    (point, idx) => (
+                      <li key={idx}>{point}</li>
+                    ),
+                  )}
+                </ul>
+                <div className="featured-footer">
+                  <div className="featured-tech">
+                    {project.tech.map((item) => (
+                      <span key={item} className="featured-chip">
+                        {item}
+                      </span>
+                    ))}
+                  </div>
+                  {project.link &&
+                    (project.link_internal ? (
+                      <Link to={project.link} className="featured-link">
+                        {linkLabel}
+                      </Link>
+                    ) : (
+                      <a
+                        href={project.link}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="featured-link"
+                      >
+                        {linkLabel}
+                      </a>
+                    ))}
                 </div>
-                {project.link &&
-                  (project.link_internal ? (
-                    <Link to={project.link} className="featured-link">
-                      {pick(project.link_label ?? "", project.link_label_ja)}
-                    </Link>
-                  ) : (
-                    <a
-                      href={project.link}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="featured-link"
-                    >
-                      {pick(project.link_label ?? "", project.link_label_ja)}
-                    </a>
-                  ))}
-              </div>
-            </article>
-          ))}
+              </article>
+            );
+          })}
         </div>
       </div>
     </section>

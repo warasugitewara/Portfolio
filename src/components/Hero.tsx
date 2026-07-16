@@ -33,7 +33,7 @@ export const Hero = ({ i18n, profile, lang }: HeroProps) => {
           {stats.length > 0 && (
             <div className="hero-stats">
               {stats.map((stat) => (
-                <div key={stat.label} className="hero-stat">
+                <div key={`${stat.value}-${stat.label}`} className="hero-stat">
                   <span className="hero-stat__value">{stat.value}</span>
                   <span className="hero-stat__label">
                     {lang === "ja" && stat.label_ja ? stat.label_ja : stat.label}
