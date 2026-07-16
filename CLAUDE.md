@@ -52,4 +52,3 @@ React 19 SPA を、**開発時は `vp dev`、本番時は Bun + Hono (`server.ts
 **本番は自宅サーバーのみ**（GitHub Pages は不使用）:
 - **自宅サーバー**: Proxmox VE 上の `/opt/portfolio` に配置し、systemd `portfolio.service` として稼働。Caddy がリバースプロキシ、Cloudflare Tunnel 経由で **`portfolio.warasugi.com`**（メインドメイン）を配信。GitHub へは**このホストから push する**運用なので、リモートが常に最新とは限らない。本番反映は `git pull` → `npm ci` → `npm run build` → `systemctl restart portfolio.service`。
 - **snake SVG**: contribution snake はプロフィールリポジトリ（warasugitewara/warasugitewara）の raw URL を `Snake.tsx` が直接参照。本リポジトリでの生成・配信は廃止済み。
-- `.github/copilot-instructions.md` にも旧構成の記述があるが、ドメイン等は README / 本ファイルが優先。
