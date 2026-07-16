@@ -13,6 +13,12 @@ export interface I18n {
 
 export type Language = "ja" | "en";
 
+export interface ProfileStat {
+  value: string;
+  label: string;
+  label_ja?: string;
+}
+
 export interface Profile {
   name: string;
   fullName: string;
@@ -23,6 +29,7 @@ export interface Profile {
   email: string;
   school: string;
   credentials?: string[];
+  stats?: ProfileStat[];
   socials: {
     github: string;
     twitter: string;
@@ -33,6 +40,23 @@ export interface Profile {
 export interface Skill {
   category: string;
   items: string[];
+}
+
+export interface FeaturedProject {
+  id: string;
+  title: string;
+  title_ja?: string;
+  tagline: string;
+  tagline_ja?: string;
+  background: string;
+  background_ja?: string;
+  points: string[];
+  points_ja?: string[];
+  tech: string[];
+  link?: string;
+  link_internal?: boolean;
+  link_label?: string;
+  link_label_ja?: string;
 }
 
 export interface GitHubRepo {

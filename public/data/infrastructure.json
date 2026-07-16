@@ -38,7 +38,7 @@
             "vmid": 101,
             "os": "Debian",
             "name": "Music-Bot",
-            "purpose": "Discord 音楽ボット"
+            "purpose": "Discord 音楽ボット（JP-MuseHeart-MusicBot — 既存 OSS の日本語化フォークを運用）"
           },
           {
             "type": "LXC",
@@ -52,7 +52,7 @@
             "vmid": 304,
             "os": "Debian",
             "name": "Yomiage-Bot",
-            "purpose": "Discord 読み上げボット（VOICEVOX 連携）"
+            "purpose": "自作 Discord 読み上げボット Waras-Yomiage-Bot（VOICEVOX 連携・ローカル完結 TTS）"
           },
           {
             "type": "VM",

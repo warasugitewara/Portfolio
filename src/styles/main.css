@@ -411,6 +411,32 @@ a:hover {
   color: var(--hero-text-muted);
 }
 
+.hero-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+  margin-top: var(--space-4);
+}
+
+.hero-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  min-width: 5.5rem;
+}
+
+.hero-stat__value {
+  color: var(--color-neon-green);
+  font-size: 1.4rem;
+  font-weight: bold;
+  line-height: 1.2;
+}
+
+.hero-stat__label {
+  font-size: 0.75rem;
+  color: var(--hero-text-muted);
+}
+
 /* =========================================================================
    About
    ========================================================================= */
@@ -500,7 +526,8 @@ a:hover {
   gap: var(--space-4);
 }
 
-.principle-card {
+.principle-card,
+.featured-card {
   padding: var(--space-5);
   background: var(--color-surface-elev);
   border: 1px solid var(--color-border);
@@ -510,7 +537,8 @@ a:hover {
     box-shadow var(--transition-base);
 }
 
-.principle-card:hover {
+.principle-card:hover,
+.featured-card:hover {
   border-color: var(--color-border-strong);
   transform: translateY(-2px);
   box-shadow: var(--shadow-md);
@@ -526,6 +554,83 @@ a:hover {
   font-size: 0.9rem;
   color: var(--color-text-secondary);
   line-height: 1.65;
+}
+
+/* =========================================================================
+   Featured projects
+   ========================================================================= */
+.featured-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: var(--space-4);
+}
+
+/* Card surface/hover shared with .principle-card (see Philosophy section) */
+.featured-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.featured-title {
+  color: var(--color-neon-green);
+  font-size: 1.05rem;
+}
+
+.featured-tagline {
+  font-size: 0.85rem;
+  color: var(--color-text-secondary);
+  font-style: italic;
+}
+
+.featured-background {
+  font-size: 0.9rem;
+  line-height: 1.65;
+}
+
+.featured-points {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  font-size: 0.85rem;
+  color: var(--color-text-secondary);
+}
+
+.featured-points li::before {
+  content: "▸ ";
+  color: var(--color-neon-green);
+}
+
+.featured-footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  margin-top: auto;
+  padding-top: var(--space-2);
+}
+
+.featured-tech {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+}
+
+/* Chip surface shared with .project-language (see Projects section) */
+.featured-chip {
+  font-size: 0.75rem;
+}
+
+.featured-link {
+  color: var(--color-accent);
+  font-size: 0.85rem;
+  white-space: nowrap;
+}
+
+.featured-link:hover {
+  text-decoration: underline;
 }
 
 /* =========================================================================
@@ -585,7 +690,8 @@ a:hover {
   flex-shrink: 0;
 }
 
-.project-language {
+.project-language,
+.featured-chip {
   background: var(--color-chip-bg);
   border: 1px solid var(--color-border);
   padding: 0.2rem 0.55rem;

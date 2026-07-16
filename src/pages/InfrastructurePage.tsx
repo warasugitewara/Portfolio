@@ -65,7 +65,7 @@ const renderNodeRows = (colX: number, rows: DgmRow[]) =>
             ? "dgm-row-rect dgm-row-rect--warn"
             : "dgm-row-rect";
     return (
-      <g key={row.name}>
+      <g key={`${row.id}-${row.name}`}>
         <rect x={colX + 10} y={y} width={DGM_COL_W - 20} height={40} rx={3} className={rectClass} />
         <text x={colX + 22} y={y + 17} className="dgm-row-name">
           {row.icon} {row.name}

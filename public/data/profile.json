@@ -13,9 +13,15 @@
     "文章能力検定３級",
     "計算技術検定３級"
   ],
+  "stats": [
+    { "value": "3", "label": "Proxmox VE nodes", "label_ja": "Proxmox VE ノード" },
+    { "value": "17+", "label": "CTs & VMs running 24/7", "label_ja": "常時稼働 CT・VM" },
+    { "value": "0", "label": "open inbound ports", "label_ja": "外部開放ポート" },
+    { "value": "4", "label": "certifications", "label_ja": "取得資格" }
+  ],
   "socials": {
     "github": "https://github.com/warasugitewara",
-    "twitter": "https://x.com/Warasg_Parasite",
+    "twitter": "https://x.com/WARASUGI7",
     "discord": "https://discord.com/users/811515262238064640"
   }
 }

@@ -5,6 +5,7 @@ import { About } from "../components/About";
 import { Snake } from "../components/Snake";
 import { Skills } from "../components/Skills";
 import { Philosophy } from "../components/Philosophy";
+import { FeaturedProjects } from "../components/FeaturedProjects";
 import { Projects } from "../components/Projects";
 import { Contact } from "../components/Contact";
 import type { I18n, Language, Profile } from "../types";
@@ -51,11 +52,12 @@ export const HomePage = ({ i18n, lang }: HomePageProps) => {
   return (
     <>
       {showBoot && <BootAnimation onComplete={() => setShowBoot(false)} />}
-      <Hero i18n={i18n} profile={profile} />
+      <Hero i18n={i18n} profile={profile} lang={lang} />
       <About i18n={i18n} profile={profile} />
       <Snake i18n={i18n} />
       <Skills i18n={i18n} />
       <Philosophy i18n={i18n} lang={lang} />
+      <FeaturedProjects i18n={i18n} lang={lang} />
       <Projects i18n={i18n} lang={lang} />
       <Contact i18n={i18n} profile={profile} />
     </>
