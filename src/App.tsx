@@ -24,7 +24,7 @@ function App() {
       >
         <Routes>
           <Route path="/" element={<HomePage i18n={i18n} lang={lang} />} />
-          <Route path="/infrastructure" element={<InfrastructurePage i18n={i18n} />} />
+          <Route path="/infrastructure" element={<InfrastructurePage i18n={i18n} lang={lang} />} />
         </Routes>
       </Layout>
     </BrowserRouter>

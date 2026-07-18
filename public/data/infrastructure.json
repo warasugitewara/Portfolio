@@ -1,8 +1,11 @@
 {
   "infrastructure": {
     "title": "自作鯖構成",
+    "title_en": "Self-Hosted Infrastructure",
     "subtitle": "waras-nw — 3ノード Proxmox VE クラスター（OPNsense ルーティング）",
+    "subtitle_en": "waras-nw — 3-node Proxmox VE cluster (OPNsense routing)",
     "overview": "HP Z240 SFF × 2台と Dell OptiPlex 7040 SFF で構成する 3ノード Proxmox VE クラスター（waras-nw）。OPNsense をメインファイアウォール/ルータとしてネットワークを 192.168.0.x（メイン）と 192.168.1.x（隔離セグメント）に分離し、AdGuard Home（DNS フィルタ）と Twingate（ゼロトラスト）を各セグメントに冗長配置。ポートフォリオは Cloudflare Tunnel 経由で公開し、Minecraft も東京の Velocity プロキシ経由で公開するため、自宅からのインターネット直接ポート開放はゼロ。Discord ボット群・VOICEVOX 音声合成・各種セルフホストサービスを稼働し、Zabbix で全体を監視している。加えて、0.x セグメント配下の単体機（旧 Kasm WS ハードを転用・Debian 13）をベアメタル Minecraft サーバーとして運用し、Purpur サバイバル鯖を常時稼働。ワールドデータは DriveBackupV2 経由で HP-2 上の専用バックアップ CT に1週間分を自動保管している（深夜4時転送・40MB/s 帯域制限で帯域圧迫を防止）。取り出し用の FileBrowser も同 CT で稼働し、既存サービス同様 Cloudflare Tunnel 経由でアクセスする。",
+    "overview_en": "A 3-node Proxmox VE cluster (waras-nw) built from two HP Z240 SFF machines and a Dell OptiPlex 7040 SFF. OPNsense acts as the main firewall/router, splitting the network into 192.168.0.x (main) and 192.168.1.x (isolated segment), with AdGuard Home (DNS filtering) and Twingate (zero-trust) deployed redundantly across both segments. The portfolio is served through Cloudflare Tunnel and Minecraft is exposed via a Velocity proxy in Tokyo, so there are zero direct inbound ports opened from home. It runs a fleet of Discord bots, VOICEVOX speech synthesis, and various self-hosted services, all monitored by Zabbix. In addition, a standalone box under the 0.x segment (repurposed former Kasm WS hardware, Debian 13) serves as a bare-metal Minecraft server running an always-on Purpur survival world. World data is automatically kept for one week on a dedicated backup CT on HP-2 via DriveBackupV2 (transferred at 4 AM with a 40MB/s bandwidth cap to avoid saturating the link). A FileBrowser instance for retrieval runs on the same CT and, like the other services, is accessed through Cloudflare Tunnel.",
     "design_philosophy": [
       "OPNsense をメイン FW/ルータとし、192.168.0.x / 192.168.1.x のネットワークセグメント分離",
       "AdGuard Home による DNS フィルタリング（セグメント別に冗長化）",
@@ -14,15 +17,34 @@
       "Zabbix によるインフラメトリクス監視",
       "Cloudflare Tunnel 経由の安全なサービス公開（portfolio.warasugi.com）"
     ],
+    "design_philosophy_en": [
+      "OPNsense as the main FW/router, with network segmentation of 192.168.0.x / 192.168.1.x",
+      "DNS filtering via AdGuard Home (redundant per segment)",
+      "Twingate zero-trust access (2-segment redundancy) — zero ports opened to the internet",
+      "Distributed workloads across a 3-node Proxmox VE cluster",
+      "Ed25519 SSH key authentication + password auth disabled",
+      "Backups across multiple media (USB + cloud + dedicated backup CT)",
+      "Minecraft worlds backed up nightly to a dedicated backup CT via DriveBackupV2 (4 AM · 40MB/s cap · 1-week retention)",
+      "Infrastructure metrics monitored with Zabbix",
+      "Secure service exposure via Cloudflare Tunnel (portfolio.warasugi.com)"
+    ],
     "hypervisor": {
       "platform": "Proxmox VE 9.x",
       "purpose": "KVM/QEMU 仮想化と LXC コンテナを統合管理。3ノードクラスター waras-nw として稼働。",
+      "purpose_en": "Unified management of KVM/QEMU virtualization and LXC containers. Runs as the 3-node cluster waras-nw.",
       "key_features": [
         "Web ベース仮想化管理 UI",
         "VM / LXC コンテナ統合管理",
         "スナップショットとバックアップ",
         "TOTP 二要素認証",
         "3ノードクラスター構成 (waras-nw)"
+      ],
+      "key_features_en": [
+        "Web-based virtualization management UI",
+        "Unified VM / LXC container management",
+        "Snapshots and backups",
+        "TOTP two-factor authentication",
+        "3-node cluster configuration (waras-nw)"
       ]
     },
     "nodes": [
@@ -31,35 +53,41 @@
         "name": "HP-1",
         "hardware": "HP Z240 SFF — Xeon E3-1225 + RAM 16GB + HDD",
         "role": "メディア・Discord ボットノード",
+        "role_en": "Media & Discord bot node",
         "purpose": "waras-nw クラスターの第1ノード。Discord ボット群と VOICEVOX 音声合成エンジン、個人ホームページを担当。",
+        "purpose_en": "The first node of the waras-nw cluster. Handles the fleet of Discord bots, the VOICEVOX speech-synthesis engine, and the personal homepage.",
         "workloads": [
           {
             "type": "LXC",
             "vmid": 101,
             "os": "Debian",
             "name": "Music-Bot",
-            "purpose": "Discord 音楽ボット（JP-MuseHeart-MusicBot — 既存 OSS の日本語化フォークを運用）"
+            "purpose": "Discord 音楽ボット（JP-MuseHeart-MusicBot — 既存 OSS の日本語化フォークを運用）",
+            "purpose_en": "Discord music bot (JP-MuseHeart-MusicBot — running a Japanese-localized fork of an existing OSS project)"
           },
           {
             "type": "LXC",
             "vmid": 108,
             "os": "Debian",
             "name": "homepage",
-            "purpose": "Homepage — セルフホスト型アプリケーションダッシュボード（gethomepage.dev）"
+            "purpose": "Homepage — セルフホスト型アプリケーションダッシュボード（gethomepage.dev）",
+            "purpose_en": "Homepage — a self-hosted application dashboard (gethomepage.dev)"
           },
           {
             "type": "LXC",
             "vmid": 304,
             "os": "Debian",
             "name": "Yomiage-Bot",
-            "purpose": "自作 Discord 読み上げボット Waras-Yomiage-Bot（VOICEVOX 連携・ローカル完結 TTS）"
+            "purpose": "自作 Discord 読み上げボット Waras-Yomiage-Bot（VOICEVOX 連携・ローカル完結 TTS）",
+            "purpose_en": "Waras-Yomiage-Bot, a self-made Discord text-to-speech bot (VOICEVOX integration · fully local TTS)"
           },
           {
             "type": "VM",
             "vmid": 600,
             "os": "Linux (VM)",
             "name": "Voicevox-Engine",
-            "purpose": "VOICEVOX 音声合成エンジン（読み上げ / AI Podcast 用 TTS）"
+            "purpose": "VOICEVOX 音声合成エンジン（読み上げ / AI Podcast 用 TTS）",
+            "purpose_en": "VOICEVOX speech-synthesis engine (TTS for readout / AI podcasts)"
           }
         ]
       },
@@ -68,7 +96,9 @@
         "name": "HP-2",
         "hardware": "HP Z240 SFF — Xeon E3-1245 v5 (8 threads) + RAM 16GB",
         "role": "ネットワーク中核 / サービスノード",
+        "role_en": "Network core / service node",
         "purpose": "OPNsense をメイン FW/ルータとして稼働させるネットワークの中核ノード。AdGuard・Twingate（1.x 側）や Minecraft ワールドのバックアップ受けなど主要サービスを集約。",
+        "purpose_en": "The network-core node that runs OPNsense as the main FW/router. It consolidates key services such as AdGuard, Twingate (1.x side), and the Minecraft world backup sink.",
         "workloads": [
           {
             "type": "VM",
@@ -76,10 +106,16 @@
             "os": "OPNsense (FreeBSD)",
             "name": "OPNsense",
             "purpose": "メインファイアウォール / ルータ。192.168.0.x と 192.168.1.x のセグメント分離を担当。",
+            "purpose_en": "Main firewall / router. Responsible for segmenting 192.168.0.x and 192.168.1.x.",
             "details": [
               "1.x セグメントを OPNsense で分離・隔離",
               "ファイアウォール / ルーティング / NAT",
               "AdGuard Home と連携した DNS 制御"
+            ],
+            "details_en": [
+              "The 1.x segment is separated and isolated by OPNsense",
+              "Firewall / routing / NAT",
+              "DNS control integrated with AdGuard Home"
             ]
           },
           {
@@ -87,21 +123,24 @@
             "vmid": 105,
             "os": "Debian",
             "name": "twingate-1.x",
-            "purpose": "Twingate コネクタ（1.x 隔離セグメント側）ゼロトラストトンネル"
+            "purpose": "Twingate コネクタ（1.x 隔離セグメント側）ゼロトラストトンネル",
+            "purpose_en": "Twingate connector (1.x isolated segment) — zero-trust tunnel"
           },
           {
             "type": "LXC",
             "vmid": 106,
             "os": "Debian",
             "name": "adguard-1.x",
-            "purpose": "AdGuard Home DNS（1.x セグメント）— 広告 / トラッカーフィルタ"
+            "purpose": "AdGuard Home DNS（1.x セグメント）— 広告 / トラッカーフィルタ",
+            "purpose_en": "AdGuard Home DNS (1.x segment) — ad / tracker filtering"
           },
           {
             "type": "LXC",
             "vmid": 107,
             "os": "Debian",
             "name": "adguard-0.x",
-            "purpose": "AdGuard Home DNS（0.x セグメント）— 冗長化"
+            "purpose": "AdGuard Home DNS（0.x セグメント）— 冗長化",
+            "purpose_en": "AdGuard Home DNS (0.x segment) — redundancy"
           },
           {
             "type": "LXC",
@@ -109,10 +148,16 @@
             "os": "Debian 12",
             "name": "MC-Backup",
             "purpose": "ベアメタル Minecraft サーバーのバックアップ CT。DriveBackupV2 経由でワールドデータを1週間分保管し、FileBrowser で取り出しを提供。",
+            "purpose_en": "Backup CT for the bare-metal Minecraft server. Retains one week of world data via DriveBackupV2 and provides retrieval through FileBrowser.",
             "details": [
               "2コア / システム SSD 8GB + データ用 128GB（1回 約20GB → 圧縮後 約12GB で1週間分を格納）",
               "深夜4時に転送・40MB/s の帯域制限で帯域圧迫を防止",
               "FileBrowser 同居 — バックアップの取り出し用（Cloudflare Tunnel 経由で公開）"
+            ],
+            "details_en": [
+              "2 cores / 8GB system SSD + 128GB data (about 20GB per run → about 12GB compressed, storing one week)",
+              "Transferred at 4 AM with a 40MB/s bandwidth cap to avoid saturating the link",
+              "FileBrowser co-located — for retrieving backups (exposed via Cloudflare Tunnel)"
             ]
           },
           {
@@ -120,14 +165,16 @@
             "vmid": 700,
             "os": "Debian",
             "name": "Headroom-Proxy",
-            "purpose": "Headroom — AI エージェント向けコンテキスト圧縮レイヤ（LLM トークン削減プロキシ / MCP）"
+            "purpose": "Headroom — AI エージェント向けコンテキスト圧縮レイヤ（LLM トークン削減プロキシ / MCP）",
+            "purpose_en": "Headroom — a context-compression layer for AI agents (LLM token-reduction proxy / MCP)"
           },
           {
             "type": "LXC",
             "vmid": 1000,
             "os": "Debian",
             "name": "secrets1",
-            "purpose": "非公開プロジェクト（詳細非公開）"
+            "purpose": "非公開プロジェクト（詳細非公開）",
+            "purpose_en": "Private project (details undisclosed)"
           }
         ]
       },
@@ -136,21 +183,25 @@
         "name": "Dell",
         "hardware": "Dell OptiPlex 7040 SFF — Intel Core i3-6100 (4 threads) + RAM 8GB + SSD 128GB + HDD (Toshiba)",
         "role": "Web公開 / 監視ノード",
+        "role_en": "Web-exposure / monitoring node",
         "purpose": "ポートフォリオ公開・監視・0.x 側ゼロトラストアクセスを担当するノード。Minecraft プロキシや各種セルフホストサービスも稼働。",
+        "purpose_en": "The node responsible for portfolio exposure, monitoring, and 0.x-side zero-trust access. Also runs the Minecraft proxy and various self-hosted services.",
         "workloads": [
           {
             "type": "LXC",
             "vmid": 102,
             "os": "Debian",
             "name": "twingate-0.x",
-            "purpose": "Twingate コネクタ（0.x セグメント側）ゼロトラストトンネル"
+            "purpose": "Twingate コネクタ（0.x セグメント側）ゼロトラストトンネル",
+            "purpose_en": "Twingate connector (0.x segment) — zero-trust tunnel"
           },
           {
             "type": "LXC",
             "vmid": 103,
             "os": "Debian",
             "name": "portfolio",
-            "purpose": "Bun + Hono で稼働中のポートフォリオサイト（portfolio.warasugi.com / Cloudflare Tunnel 公開）"
+            "purpose": "Bun + Hono で稼働中のポートフォリオサイト（portfolio.warasugi.com / Cloudflare Tunnel 公開）",
+            "purpose_en": "The portfolio site running on Bun + Hono (portfolio.warasugi.com / exposed via Cloudflare Tunnel)"
           },
           {
             "type": "LXC",
@@ -158,9 +209,14 @@
             "os": "Debian",
             "name": "pote-monitor",
             "purpose": "BTC/ETH 価格変動を1時間ごとに Discord Webhook で通知するモニタリングツール",
+            "purpose_en": "A monitoring tool that reports BTC/ETH price movements to a Discord webhook every hour",
             "details": [
               "github.com/Poteto-Groove/poteto-monitor",
               "1時間ごとに Discord へ価格通知"
+            ],
+            "details_en": [
+              "github.com/Poteto-Groove/poteto-monitor",
+              "Hourly price notifications to Discord"
             ]
           },
           {
@@ -168,42 +224,56 @@
             "vmid": 301,
             "os": "Debian",
             "name": "Velocity",
-            "purpose": "ベアメタル Minecraft サーバーの Velocity プロキシ。外部公開は東京の Velocity 経由で、自宅は受信接続ゼロ。"
+            "purpose": "ベアメタル Minecraft サーバーの Velocity プロキシ。外部公開は東京の Velocity 経由で、自宅は受信接続ゼロ。",
+            "purpose_en": "Velocity proxy for the bare-metal Minecraft server. External exposure goes through the Velocity in Tokyo, keeping zero inbound at home."
           },
           {
             "type": "LXC",
             "vmid": 302,
             "os": "Debian",
             "name": "MeTube",
-            "purpose": "セルフホスト動画ダウンローダ（yt-dlp Web UI）"
+            "purpose": "セルフホスト動画ダウンローダ（yt-dlp Web UI）",
+            "purpose_en": "Self-hosted video downloader (yt-dlp web UI)"
           },
           {
             "type": "LXC",
             "vmid": 400,
             "os": "Debian",
             "name": "Zabbix-Server",
-            "purpose": "Zabbix サーバー — クラスター全体のインフラメトリクス収集・アラート管理"
+            "purpose": "Zabbix サーバー — クラスター全体のインフラメトリクス収集・アラート管理",
+            "purpose_en": "Zabbix server — cluster-wide infrastructure metrics collection and alert management"
           }
         ]
       },
       {
         "id": "minecraft-bm",
         "name": "Minecraft鯖",
+        "name_en": "Minecraft Server",
         "hardware": "Intel Core i7-3770 + RAM 16GB DDR3 + SATA SSD 256GB",
         "role": "スタンドアロン ベアメタル Minecraft サーバー（クラスター外・0.x 配下）",
+        "role_en": "Standalone bare-metal Minecraft server (outside the cluster · under 0.x)",
         "purpose": "旧 Kasm WS 機を転用したベアメタル Minecraft 専用機（Kasm Workspaces は廃止・スペックは当時のまま）。Proxmox クラスター waras-nw には参加せず、192.168.0.x セグメント配下で単体稼働。仮想化オーバーヘッドの排除・ゲーム鯖としての明確な分離・クラスターのクォーラムを4台にしない判断から、あえてベアメタル運用を選択した。リソースに余裕があるため他用途への活用余地も残している。アクセスは別拠点（東京）の Velocity プロキシ経由のみで、直接の外部露出はゼロ。",
+        "purpose_en": "A dedicated bare-metal Minecraft box repurposed from the former Kasm WS machine (Kasm Workspaces retired; the specs are unchanged from then). It does not join the Proxmox cluster waras-nw and runs standalone under the 192.168.0.x segment. Bare-metal operation was chosen deliberately to eliminate virtualization overhead, keep the game server cleanly separated, and avoid pushing the cluster quorum to four nodes. With resources to spare, headroom is left for other uses. Access is only via the Velocity proxy at an off-site location (Tokyo), with zero direct external exposure.",
         "workloads": [
           {
             "type": "Bare-metal",
             "os": "Debian 13",
             "name": "Minecraft (Purpur)",
             "purpose": "常時稼働の Purpur サバイバルサーバー（Java Edition）",
+            "purpose_en": "An always-on Purpur survival server (Java Edition)",
             "details": [
               "GraalVM 17 / 21 / 25.1 を併用 — サーバー構成に応じて Java ランタイムを使い分け",
               "必要時は ATM10 や持ち寄り Mod のサーバーも起動できる構成",
               "webmap は Cloudflare Tunnel 経由で公開 / リソース監視は btop",
               "アクセスは別拠点（東京）の Velocity 経由のみ — 直接の外部露出なし",
               "DriveBackupV2 でワールドデータを HP-2 の MC-Backup CT へ毎晩バックアップ（深夜4時・40MB/s 帯域制限・1週間分保持）"
+            ],
+            "details_en": [
+              "Runs GraalVM 17 / 21 / 25.1 side by side — switching the Java runtime to suit the server setup",
+              "Configured to also spin up ATM10 or bring-your-own-mod servers when needed",
+              "The webmap is exposed via Cloudflare Tunnel / resource monitoring with btop",
+              "Access only via the off-site (Tokyo) Velocity — no direct external exposure",
+              "World data backed up nightly to HP-2's MC-Backup CT via DriveBackupV2 (4 AM · 40MB/s cap · 1-week retention)"
             ]
           }
         ]
@@ -211,6 +281,7 @@
     ],
     "network_design": {
       "topology": "OPNsense（HP-2 VM:500）をメインファイアウォール/ルータとして、LAN を 192.168.0.x（メイン）と 192.168.1.x（OPNsense で分離した隔離セグメント）に分割。各セグメントに Twingate コネクタと AdGuard Home を冗長配置する。公開トラフィックは Cloudflare Tunnel 経由のみで、内部管理は Twingate ゼロトラスト VPN で分離。",
+      "topology_en": "With OPNsense (HP-2 VM:500) as the main firewall/router, the LAN is split into 192.168.0.x (main) and 192.168.1.x (an isolated segment separated by OPNsense). A Twingate connector and AdGuard Home are deployed redundantly on each segment. Public traffic goes only through Cloudflare Tunnel, and internal management is isolated behind a Twingate zero-trust VPN.",
       "security": [
         "OPNsense メイン FW/ルータ — 192.168.0.x / 192.168.1.x のセグメント分離とファイアウォール制御",
         "AdGuard Home — 各セグメントに冗長配置し DNS フィルタリング（広告 / トラッカー / マルウェア）",
@@ -221,7 +292,18 @@
         "Ed25519 SSH鍵 + パスワード認証無効 — 全サーバーで鍵認証のみ許可",
         "TOTP 2FA — Proxmox WebUI への2段階認証必須"
       ],
-      "dns": "AdGuard Home（各セグメントに冗長配置）でフィルタリング。上流は Cloudflare DNS (1.1.1.1 / 1.0.0.1)。"
+      "security_en": [
+        "OPNsense main FW/router — segmentation of 192.168.0.x / 192.168.1.x and firewall control",
+        "AdGuard Home — deployed redundantly per segment for DNS filtering (ads / trackers / malware)",
+        "Cloudflare Tunnel — no port forwarding, zero inbound. The CF edge terminates TLS and mitigates DDoS with Anycast (shared across public services such as portfolio / FileBrowser / MC webmap)",
+        "Twingate zero-trust VPN — access to SSH, Proxmox WebUI, and all internal services limited to Twingate (2-segment redundancy)",
+        "Zero external ports — no inbound. Minecraft is also exposed via the Velocity proxy in Tokyo, with nothing opened directly at home",
+        "Anubis bot protection — filters automated scrapers and DDoS against the portfolio at the reverse-proxy layer",
+        "Ed25519 SSH keys + password auth disabled — key auth only on every server",
+        "TOTP 2FA — two-factor authentication required for the Proxmox WebUI"
+      ],
+      "dns": "AdGuard Home（各セグメントに冗長配置）でフィルタリング。上流は Cloudflare DNS (1.1.1.1 / 1.0.0.1)。",
+      "dns_en": "Filtering by AdGuard Home (deployed redundantly per segment). Upstream is Cloudflare DNS (1.1.1.1 / 1.0.0.1)."
     },
     "security_model": {
       "ssh": {
@@ -236,24 +318,39 @@
         "Proxmox VM バックアップ",
         "DriveBackupV2 — Minecraft ワールドを HP-2 の MC-Backup CT へ毎晩保管（1週間分・深夜4時・40MB/s 帯域制限）"
       ],
+      "backup_strategy_en": [
+        "Google Drive cloud backup",
+        "USB storage cold backup",
+        "Proxmox VM backup",
+        "DriveBackupV2 — Minecraft worlds kept nightly on HP-2's MC-Backup CT (1-week retention · 4 AM · 40MB/s bandwidth cap)"
+      ],
       "authentication": {
         "proxmox": "TOTP 2FA enabled",
         "linux_vms": "SSH key authentication only"
       },
-      "philosophy": "OPNsense によるセグメント分離とゼロトラストを組み合わせた多層防御。「信頼しない・常に検証する」原則に基づき、1.x を隔離セグメントとして分離しつつ、Cloudflare Tunnel で公開サービスを保護し、Twingate で管理トラフィックを分離。インターネット側の攻撃面を最小化する設計。"
+      "philosophy": "OPNsense によるセグメント分離とゼロトラストを組み合わせた多層防御。「信頼しない・常に検証する」原則に基づき、1.x を隔離セグメントとして分離しつつ、Cloudflare Tunnel で公開サービスを保護し、Twingate で管理トラフィックを分離。インターネット側の攻撃面を最小化する設計。",
+      "philosophy_en": "Defense in depth combining OPNsense segmentation with zero-trust. Following the \"never trust, always verify\" principle, the 1.x segment is kept isolated while Cloudflare Tunnel protects public services and Twingate isolates management traffic — a design that minimizes the internet-facing attack surface."
     },
     "future_roadmap": {
       "phase_1_current": {
         "status": "✅ 完了",
+        "status_en": "✅ Complete",
         "components": [
           "Proxmox 単一ノード（Dell）",
           "Twingate リモートアクセス",
           "Music Bot / ノート同期 LXC",
           "portfolio サービス公開"
+        ],
+        "components_en": [
+          "Single Proxmox node (Dell)",
+          "Twingate remote access",
+          "Music bot / note-sync LXC",
+          "portfolio service exposure"
         ]
       },
       "phase_2_planned": {
         "status": "✅ 完了",
+        "status_en": "✅ Complete",
         "components": [
           "HP Z240 SFF × 2 台追加",
           "Proxmox クラスター構築（waras-nw 3ノード）",
@@ -267,10 +364,25 @@
           "ZenNotes（Markdown ノート同期）へ移行（後に廃止 — Google Keep / Discord / GitHub 等へ集約）",
           "Cloudflare Tunnel 公開（portfolio.warasugi.com）",
           "Minecraft をベアメタル専用機へ移行（Kasm WS 廃止・ハード転用）+ MC-Backup CT 新設（DriveBackupV2 / FileBrowser）"
+        ],
+        "components_en": [
+          "Added 2× HP Z240 SFF",
+          "Built the Proxmox cluster (waras-nw, 3 nodes)",
+          "Deployed OPNsense as the main FW/router",
+          "Network segmentation of 192.168.0.x / 192.168.1.x",
+          "Made AdGuard Home redundant per segment (DNS filtering)",
+          "Twingate 2-segment redundancy",
+          "Introduced Zabbix monitoring",
+          "Minecraft server + Velocity proxy",
+          "VOICEVOX speech synthesis / readout bot",
+          "Migrated to ZenNotes (Markdown note sync), later retired — consolidated into Google Keep / Discord / GitHub, etc.",
+          "Cloudflare Tunnel exposure (portfolio.warasugi.com)",
+          "Migrated Minecraft to a dedicated bare-metal box (Kasm WS retired, hardware repurposed) + set up a new MC-Backup CT (DriveBackupV2 / FileBrowser)"
         ]
       },
       "phase_3_future": {
         "status": "計画中（部屋工事完了後 〜 中期）",
+        "status_en": "Planned (after room renovation ~ mid-term)",
         "components": [
           "パナソニック製 L2 管理スイッチ導入 — VLAN 設計による管理・サービス・Ceph 専用回線の完全分離",
           "TP-Link アンマネージドスイッチ併用 — L2 スイッチのポート数不足を補う構成でコスト最適化",
@@ -278,12 +390,24 @@
           "Ceph 分散ストレージ構築 — 10G 専用バックプレーン上でノード間のストレージ冗長化・ライブマイグレーション対応",
           "Z240 SFF 追加 — Proxmox HA クラスタへの拡張、クォーラム確保",
           "IP 体系移行 — OPNsense の VLAN ベースセグメントへ本格移行"
+        ],
+        "components_en": [
+          "Introduce a Panasonic L2 managed switch — full separation of management, service, and Ceph-dedicated links via VLAN design",
+          "Pair with a TP-Link unmanaged switch — cost-optimized layout to make up for the L2 switch's limited port count",
+          "SFP+ cards + DAC cables — connect the 3 nodes in a triangular 10G mesh",
+          "Build Ceph distributed storage — inter-node storage redundancy and live migration on a dedicated 10G backplane",
+          "Add a Z240 SFF — expand into a Proxmox HA cluster and secure quorum",
+          "IP scheme migration — a full move to OPNsense's VLAN-based segments"
         ]
       },
       "phase_4_longterm": {
         "status": "長期構想（1年以上先）",
+        "status_en": "Long-term vision (1+ years out)",
         "components": [
           "Mac mini — OpenClaw や LocalLLM サーバーとして活用、推論ワークロードの分散処理基盤"
+        ],
+        "components_en": [
+          "Mac mini — used as an OpenClaw / local-LLM server, a platform for distributing inference workloads"
         ]
       }
     },

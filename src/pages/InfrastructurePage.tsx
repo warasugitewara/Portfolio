@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
-import type { I18n, InfrastructureData, InfraRoadmapPhase } from "../types";
+import type { I18n, InfrastructureData, InfraRoadmapPhase, Language } from "../types";
 import { getDataUrl } from "../utils/path";
+import { pickLang } from "../utils/pickLang";
 import { CollapsibleSection } from "../components/CollapsibleSection";
 import "../styles/infrastructure.css";
 
 interface InfrastructurePageProps {
   i18n: I18n | null;
+  lang: Language;
 }
 
 /* ── Architecture-diagram node inventory (source: infrastructure.json) ── */
@@ -14,14 +16,40 @@ type DgmRow = {
   name: string;
   id: string;
   note: string;
+  /** English variant of `note`; used when `lang === "en"`. */
+  note_en: string;
   variant?: "core" | "cf" | "warn";
 };
 
 const HP1_ROWS: DgmRow[] = [
-  { icon: "🎵", name: "Music-Bot", id: "CT101", note: "Discord 音楽ボット" },
-  { icon: "🏠", name: "homepage", id: "CT108", note: "ダッシュボード (gethomepage)" },
-  { icon: "🔊", name: "Yomiage-Bot", id: "CT304", note: "読み上げ (VOICEVOX)" },
-  { icon: "🗣️", name: "Voicevox-Engine", id: "VM600", note: "TTS 音声合成エンジン" },
+  {
+    icon: "🎵",
+    name: "Music-Bot",
+    id: "CT101",
+    note: "Discord 音楽ボット",
+    note_en: "Discord music bot",
+  },
+  {
+    icon: "🏠",
+    name: "homepage",
+    id: "CT108",
+    note: "ダッシュボード (gethomepage)",
+    note_en: "Dashboard (gethomepage)",
+  },
+  {
+    icon: "🔊",
+    name: "Yomiage-Bot",
+    id: "CT304",
+    note: "読み上げ (VOICEVOX)",
+    note_en: "TTS readout (VOICEVOX)",
+  },
+  {
+    icon: "🗣️",
+    name: "Voicevox-Engine",
+    id: "VM600",
+    note: "TTS 音声合成エンジン",
+    note_en: "TTS synthesis engine",
+  },
 ];
 
 const HP2_ROWS: DgmRow[] = [
@@ -30,30 +58,98 @@ const HP2_ROWS: DgmRow[] = [
     name: "OPNsense",
     id: "VM500",
     note: "メイン FW・ルータ / 0.x·1.x 分離",
+    note_en: "Main FW / router · 0.x/1.x split",
     variant: "core",
   },
-  { icon: "🔐", name: "twingate-1.x", id: "CT105", note: "ゼロトラスト (1.x)" },
-  { icon: "🛡️", name: "adguard-1.x", id: "CT106", note: "DNS フィルタ (1.x)" },
-  { icon: "🛡️", name: "adguard-0.x", id: "CT107", note: "DNS フィルタ (0.x 冗長)" },
-  { icon: "💾", name: "MC-Backup", id: "CT100", note: "DriveBackupV2 受け · FileBrowser" },
-  { icon: "🔀", name: "Headroom-Proxy", id: "CT700", note: "AI コンテキスト圧縮" },
-  { icon: "🔒", name: "secrets1", id: "CT1000", note: "非公開" },
+  {
+    icon: "🔐",
+    name: "twingate-1.x",
+    id: "CT105",
+    note: "ゼロトラスト (1.x)",
+    note_en: "Zero-trust (1.x)",
+  },
+  {
+    icon: "🛡️",
+    name: "adguard-1.x",
+    id: "CT106",
+    note: "DNS フィルタ (1.x)",
+    note_en: "DNS filter (1.x)",
+  },
+  {
+    icon: "🛡️",
+    name: "adguard-0.x",
+    id: "CT107",
+    note: "DNS フィルタ (0.x 冗長)",
+    note_en: "DNS filter (0.x redundant)",
+  },
+  {
+    icon: "💾",
+    name: "MC-Backup",
+    id: "CT100",
+    note: "DriveBackupV2 受け · FileBrowser",
+    note_en: "DriveBackupV2 sink · FileBrowser",
+  },
+  {
+    icon: "🔀",
+    name: "Headroom-Proxy",
+    id: "CT700",
+    note: "AI コンテキスト圧縮",
+    note_en: "AI context compression",
+  },
+  { icon: "🔒", name: "secrets1", id: "CT1000", note: "非公開", note_en: "Private" },
 ];
 
 const DELL_ROWS: DgmRow[] = [
-  { icon: "🔐", name: "twingate-0.x", id: "CT102", note: "ゼロトラスト (0.x)" },
-  { icon: "🌐", name: "portfolio", id: "CT103", note: "Bun+Hono · CF Tunnel", variant: "cf" },
-  { icon: "📡", name: "pote-monitor", id: "CT104", note: "BTC/ETH Discord 通知" },
-  { icon: "🎮", name: "Velocity", id: "CT301", note: "Minecraft プロキシ" },
-  { icon: "📺", name: "MeTube", id: "CT302", note: "動画DL (yt-dlp)" },
-  { icon: "📊", name: "Zabbix-Server", id: "CT400", note: "クラスター監視" },
+  {
+    icon: "🔐",
+    name: "twingate-0.x",
+    id: "CT102",
+    note: "ゼロトラスト (0.x)",
+    note_en: "Zero-trust (0.x)",
+  },
+  {
+    icon: "🌐",
+    name: "portfolio",
+    id: "CT103",
+    note: "Bun+Hono · CF Tunnel",
+    note_en: "Bun+Hono · CF Tunnel",
+    variant: "cf",
+  },
+  {
+    icon: "📡",
+    name: "pote-monitor",
+    id: "CT104",
+    note: "BTC/ETH Discord 通知",
+    note_en: "BTC/ETH Discord alerts",
+  },
+  {
+    icon: "🎮",
+    name: "Velocity",
+    id: "CT301",
+    note: "Minecraft プロキシ",
+    note_en: "Minecraft proxy",
+  },
+  {
+    icon: "📺",
+    name: "MeTube",
+    id: "CT302",
+    note: "動画DL (yt-dlp)",
+    note_en: "Video DL (yt-dlp)",
+  },
+  {
+    icon: "📊",
+    name: "Zabbix-Server",
+    id: "CT400",
+    note: "クラスター監視",
+    note_en: "Cluster monitoring",
+  },
 ];
 
 const DGM_ROW_Y0 = 283;
 const DGM_ROW_STEP = 46;
 const DGM_COL_W = 370;
 
-const renderNodeRows = (colX: number, rows: DgmRow[]) =>
+const renderNodeRows = (colX: number, rows: DgmRow[], lang: Language) =>
   rows.map((row, i) => {
     const y = DGM_ROW_Y0 + i * DGM_ROW_STEP;
     const rectClass =
@@ -74,13 +170,13 @@ const renderNodeRows = (colX: number, rows: DgmRow[]) =>
           {row.id}
         </text>
         <text x={colX + 22} y={y + 33} className="dgm-row-note">
-          {row.note}
+          {pickLang(lang, row.note_en, row.note)}
         </text>
       </g>
     );
   });
 
-export const InfrastructurePage = ({ i18n }: InfrastructurePageProps) => {
+export const InfrastructurePage = ({ i18n, lang }: InfrastructurePageProps) => {
   const [infra, setInfra] = useState<InfrastructureData | null>(null);
 
   useEffect(() => {
@@ -103,18 +199,25 @@ export const InfrastructurePage = ({ i18n }: InfrastructurePageProps) => {
   const data = infra.infrastructure;
   const labels = i18n.infrastructure;
 
+  /** Resolve an infrastructure UI label; both locales define every key. */
+  const t = (key: string): string => labels?.[key] ?? "";
+
+  /** Localize a data-prose string array (JA base with optional `_en` variant). */
+  const pickArr = (en: string[] | undefined, ja: string[]): string[] =>
+    lang === "ja" ? ja : (en ?? ja);
+
   const stackLabel = (category: string): string => {
     switch (category) {
       case "virtualization":
-        return "仮想化";
+        return t("stackVirtualization");
       case "networking":
-        return "ネットワーク";
+        return t("stackNetworking");
       case "storage":
-        return "ストレージ";
+        return t("stackStorage");
       case "security":
-        return "セキュリティ";
+        return t("stackSecurity");
       case "applications":
-        return "アプリケーション";
+        return t("stackApplications");
       default:
         return category;
     }
@@ -123,13 +226,13 @@ export const InfrastructurePage = ({ i18n }: InfrastructurePageProps) => {
   const roadmapLabel = (phase: string): string => {
     switch (phase) {
       case "phase_1_current":
-        return "フェーズ 1: 完了";
+        return t("roadmapPhase1");
       case "phase_2_planned":
-        return "フェーズ 2: 完了";
+        return t("roadmapPhase2");
       case "phase_3_future":
-        return "フェーズ 3: 計画中";
+        return t("roadmapPhase3");
       case "phase_4_longterm":
-        return "フェーズ 4: 長期構想";
+        return t("roadmapPhase4");
       default:
         return phase;
     }
@@ -137,33 +240,37 @@ export const InfrastructurePage = ({ i18n }: InfrastructurePageProps) => {
 
   return (
     <div className="infra-page">
+      <title>{t("metaTitle")}</title>
+      <meta name="description" content={t("metaDescription")} />
       <div className="section-container">
         {/* Title */}
-        <h1 className="infra-title">🖧 {data.title}</h1>
-        <p className="infra-subtitle">{data.subtitle}</p>
+        <h1 className="infra-title">🖧 {pickLang(lang, data.title_en ?? data.title, data.title)}</h1>
+        <p className="infra-subtitle">
+          {pickLang(lang, data.subtitle_en ?? data.subtitle, data.subtitle)}
+        </p>
 
         {/* Overview */}
         <div className="infra-overview">
-          <p>{data.overview}</p>
+          <p>{pickLang(lang, data.overview_en ?? data.overview, data.overview)}</p>
         </div>
 
         {/* Architecture Diagram */}
-        <CollapsibleSection title="📊 アーキテクチャ図" defaultOpen>
+        <CollapsibleSection title={t("secArchitecture")} defaultOpen>
           <div className="infra-diagram-wrap">
             <div className="infra-diagram-canvas">
               <svg
                 viewBox="0 0 1200 1150"
                 className="infra-svg"
                 role="img"
-                aria-label="waras-nw 3ノード Proxmox VE クラスター構成図（＋ベアメタル Minecraft サーバー）"
+                aria-label={t("dgmAria")}
               >
                 <text x="600" y="34" textAnchor="middle" className="dgm-title">
-                  ホームラボ インフラ — waras-nw 3ノード Proxmox VE クラスター
+                  {t("dgmTitle")}
                 </text>
 
                 {/* ── Network-core flow ── */}
                 <text x="20" y="64" className="dgm-section-label">
-                  接続 &amp; ネットワーク中核
+                  {t("dgmConnCore")}
                 </text>
                 <rect x="20" y="74" width="175" height="56" rx="4" className="dgm-node-rect" />
                 <text x="107" y="100" textAnchor="middle" className="dgm-node-text">
@@ -181,7 +288,7 @@ export const InfrastructurePage = ({ i18n }: InfrastructurePageProps) => {
                   🛡️ OPNsense
                 </text>
                 <text x="370" y="116" textAnchor="middle" className="dgm-label">
-                  メイン FW・ルータ (HP-2 VM500)
+                  {t("dgmOpnRouter")}
                 </text>
 
                 <path d="M 495 102 L 541 102" className="dgm-connector" />
@@ -189,11 +296,11 @@ export const InfrastructurePage = ({ i18n }: InfrastructurePageProps) => {
 
                 <rect x="545" y="74" width="250" height="26" rx="3" className="dgm-seg-rect" />
                 <text x="670" y="91" textAnchor="middle" className="dgm-label">
-                  192.168.0.x — メイン
+                  {t("dgmSegMain")}
                 </text>
                 <rect x="545" y="104" width="250" height="26" rx="3" className="dgm-seg-rect" />
                 <text x="670" y="121" textAnchor="middle" className="dgm-label">
-                  192.168.1.x — 隔離
+                  {t("dgmSegIso")}
                 </text>
 
                 <rect x="815" y="74" width="365" height="56" rx="4" className="dgm-node-rect" />
@@ -201,7 +308,7 @@ export const InfrastructurePage = ({ i18n }: InfrastructurePageProps) => {
                   🔒 Twingate ZT + ☁️ Cloudflare Tunnel
                 </text>
                 <text x="997" y="116" textAnchor="middle" className="dgm-label">
-                  受信接続ゼロ / 外部ポート開放なし
+                  {t("dgmZeroInbound")}
                 </text>
 
                 {/* ── Cluster ── */}
@@ -214,7 +321,7 @@ export const InfrastructurePage = ({ i18n }: InfrastructurePageProps) => {
                   className="dgm-cluster-rect"
                 />
                 <text x="600" y="210" textAnchor="middle" className="dgm-node-text">
-                  🖧 waras-nw クラスター (Proxmox VE 9.x)
+                  {t("dgmCluster")}
                 </text>
 
                 {/* HP-1 */}
@@ -232,7 +339,7 @@ export const InfrastructurePage = ({ i18n }: InfrastructurePageProps) => {
                 <text x="210" y="265" textAnchor="middle" className="dgm-label">
                   HP Z240 SFF · Xeon E3-1225 · 16GB
                 </text>
-                {renderNodeRows(25, HP1_ROWS)}
+                {renderNodeRows(25, HP1_ROWS, lang)}
 
                 {/* HP-2 */}
                 <rect
@@ -244,12 +351,12 @@ export const InfrastructurePage = ({ i18n }: InfrastructurePageProps) => {
                   className="dgm-node-inner-rect"
                 />
                 <text x="600" y="246" textAnchor="middle" className="dgm-node-text">
-                  🖥️ HP-2 — ネットワーク中核
+                  {t("dgmHp2Core")}
                 </text>
                 <text x="600" y="265" textAnchor="middle" className="dgm-label">
                   HP Z240 SFF · Xeon E3-1245 v5 · 16GB
                 </text>
-                {renderNodeRows(415, HP2_ROWS)}
+                {renderNodeRows(415, HP2_ROWS, lang)}
 
                 {/* Dell */}
                 <rect
@@ -266,12 +373,12 @@ export const InfrastructurePage = ({ i18n }: InfrastructurePageProps) => {
                 <text x="990" y="265" textAnchor="middle" className="dgm-label">
                   OptiPlex 7040 SFF · i3-6100 · 8GB
                 </text>
-                {renderNodeRows(805, DELL_ROWS)}
+                {renderNodeRows(805, DELL_ROWS, lang)}
 
                 {/* ── Summary boxes ── */}
                 <rect x="15" y="695" width="282" height="118" rx="4" className="dgm-node-rect" />
                 <text x="156" y="723" textAnchor="middle" className="dgm-node-text">
-                  💾 ストレージ
+                  {t("dgmStorage")}
                 </text>
                 <text x="30" y="748" className="dgm-label dgm-label--sm">
                   • HP-1: HDD / HP-2: SSD+HDD
@@ -280,35 +387,35 @@ export const InfrastructurePage = ({ i18n }: InfrastructurePageProps) => {
                   • Dell: SSD 128GB + Toshiba HDD
                 </text>
                 <text x="30" y="784" className="dgm-label dgm-label--sm">
-                  • Proxmox スナップショット
+                  {t("dgmStorage3")}
                 </text>
 
                 <rect x="311" y="695" width="282" height="118" rx="4" className="dgm-node-rect" />
                 <text x="452" y="723" textAnchor="middle" className="dgm-node-text">
-                  ☁️ バックアップ
+                  {t("dgmBackup")}
                 </text>
                 <text x="326" y="748" className="dgm-label dgm-label--sm">
-                  • Google Drive クラウド
+                  {t("dgmBackup1")}
                 </text>
                 <text x="326" y="766" className="dgm-label dgm-label--sm">
-                  • USB コールドバックアップ
+                  {t("dgmBackup2")}
                 </text>
                 <text x="326" y="784" className="dgm-label dgm-label--sm">
-                  • Proxmox VM バックアップ
+                  {t("dgmBackup3")}
                 </text>
                 <text x="326" y="802" className="dgm-label dgm-label--sm">
-                  • DriveBackupV2 (MC ワールド 1週間分)
+                  {t("dgmBackup4")}
                 </text>
 
                 <rect x="607" y="695" width="282" height="118" rx="4" className="dgm-node-rect" />
                 <text x="748" y="723" textAnchor="middle" className="dgm-node-text">
-                  🔐 セキュリティ
+                  {t("dgmSecurity")}
                 </text>
                 <text x="622" y="748" className="dgm-label dgm-label--sm">
-                  • OPNsense FW + セグメント分離
+                  {t("dgmSecurity1")}
                 </text>
                 <text x="622" y="766" className="dgm-label dgm-label--sm">
-                  • Ed25519 SSH鍵 / PW認証無効
+                  {t("dgmSecurity2")}
                 </text>
                 <text x="622" y="784" className="dgm-label dgm-label--sm">
                   • TOTP 2FA + Anubis
@@ -316,7 +423,7 @@ export const InfrastructurePage = ({ i18n }: InfrastructurePageProps) => {
 
                 <rect x="903" y="695" width="282" height="118" rx="4" className="dgm-node-rect" />
                 <text x="1044" y="723" textAnchor="middle" className="dgm-node-text">
-                  📊 監視・運用
+                  {t("dgmMonitor")}
                 </text>
                 <text x="918" y="748" className="dgm-label dgm-label--sm">
                   • Zabbix (Dell CT400)
@@ -331,90 +438,63 @@ export const InfrastructurePage = ({ i18n }: InfrastructurePageProps) => {
                 {/* ── Legend ── */}
                 <rect x="15" y="833" width="1170" height="300" rx="4" className="dgm-node-rect" />
                 <text x="600" y="865" textAnchor="middle" className="dgm-legend-title">
-                  📋 凡例 / システム構成
+                  {t("dgmLegendTitle")}
                 </text>
                 <text x="35" y="900" className="dgm-legend-text">
-                  <tspan className="dgm-legend-icon">🖧</tspan> waras-nw — Proxmox VE 9.x 3ノード
-                  (HP-1 / HP-2 / Dell)
+                  <tspan className="dgm-legend-icon">🖧</tspan> {t("dgmLegend1")}
                 </text>
                 <text x="35" y="930" className="dgm-legend-text">
-                  <tspan className="dgm-legend-icon">🛡️</tspan> ネットワーク中核 — OPNsense (HP-2
-                  VM500) が 192.168.0.x / 192.168.1.x を分離
+                  <tspan className="dgm-legend-icon">🛡️</tspan> {t("dgmLegend2")}
                 </text>
                 <text x="35" y="960" className="dgm-legend-text">
-                  <tspan className="dgm-legend-icon">🔐</tspan> ゼロトラスト — Twingate
-                  を各セグメントに冗長 (1.x: CT105 / 0.x: CT102)
+                  <tspan className="dgm-legend-icon">🔐</tspan> {t("dgmLegend3")}
                 </text>
                 <text x="35" y="990" className="dgm-legend-text">
-                  <tspan className="dgm-legend-icon">🛡️</tspan> DNS フィルタ — AdGuard Home
-                  を各セグメントに冗長 (1.x: CT106 / 0.x: CT107)
+                  <tspan className="dgm-legend-icon">🛡️</tspan> {t("dgmLegend4")}
                 </text>
                 <text x="35" y="1020" className="dgm-legend-text">
-                  <tspan className="dgm-legend-icon">☁️</tspan> 公開 — Cloudflare Tunnel で
-                  portfolio.warasugi.com を受信ゼロ公開 / 外部ポート開放なし
+                  <tspan className="dgm-legend-icon">☁️</tspan> {t("dgmLegend5")}
                 </text>
                 <text x="35" y="1050" className="dgm-legend-text">
-                  <tspan className="dgm-legend-icon">📊</tspan> 監視 — Zabbix (Dell CT400) +
-                  pote-monitor (CT104)
+                  <tspan className="dgm-legend-icon">📊</tspan> {t("dgmLegend6")}
                 </text>
                 <text x="35" y="1080" className="dgm-legend-text">
-                  <tspan className="dgm-legend-icon">🎮</tspan> ベアメタルMC — Purpur
-                  サバイバル常時稼働 (i7-3770 / 16GB / SSD 256GB · Debian 13 · 旧 Kasm WS 転用)
-                  クラスター外・0.x 配下
+                  <tspan className="dgm-legend-icon">🎮</tspan> {t("dgmLegend7")}
                 </text>
                 <text x="35" y="1110" className="dgm-legend-text">
-                  <tspan className="dgm-legend-icon">💾</tspan> ワールドバックアップ — DriveBackupV2
-                  → HP-2 MC-Backup (CT100)。深夜4時・40MB/s 制限・1週間分保持
+                  <tspan className="dgm-legend-icon">💾</tspan> {t("dgmLegend8")}
                 </text>
               </svg>
             </div>
             <p className="infra-diagram-hint" aria-hidden="true">
-              ← スワイプでスクロール →
+              {t("swipeHint")}
             </p>
 
             {/* Architecture Notes */}
             <div className="infra-notes">
-              <h4 className="infra-notes__title">アーキテクチャのポイント</h4>
+              <h4 className="infra-notes__title">{t("notesTitle")}</h4>
               <ul className="infra-notes__list">
-                <li>
-                  ✓ ネットワーク中核 — OPNsense (HP-2 VM500) が 192.168.0.x / 192.168.1.x
-                  を分離しルーティング
-                </li>
-                <li>✓ DNS 冗長 — AdGuard Home を各セグメントに配置 (1.x: CT106 / 0.x: CT107)</li>
-                <li>
-                  ✓ ゼロトラスト冗長 — Twingate を 2 セグメントに配置 (1.x: HP-2 CT105 / 0.x: Dell
-                  CT102)
-                </li>
-                <li>
-                  ✓ 公開は Cloudflare Tunnel のみ — portfolio.warasugi.com (Dell CT103)
-                  を受信ゼロで公開
-                </li>
-                <li>
-                  ✓ Minecraft はベアメタル専用機（Debian 13 · 0.x 配下 · 旧 Kasm WS 転用）で Purpur
-                  サバイバルを常時稼働 — アクセスは別拠点（東京）の Velocity
-                  経由のみで直接露出ゼロ（Dell CT301 連携）。GraalVM 17/21/25.1 併用・webmap は
-                  Cloudflare Tunnel 公開
-                </li>
-                <li>
-                  ✓ ワールドバックアップ — DriveBackupV2 が深夜4時に HP-2 MC-Backup (CT100)
-                  へ転送（40MB/s 帯域制限・1週間分保持）。取り出しは FileBrowser（Cloudflare Tunnel
-                  公開）
-                </li>
-                <li>✓ 監視・多層防御 — Zabbix (Dell CT400) + Ed25519 SSH鍵 + TOTP 2FA + Anubis</li>
+                <li>✓ {t("notes1")}</li>
+                <li>✓ {t("notes2")}</li>
+                <li>✓ {t("notes3")}</li>
+                <li>✓ {t("notes4")}</li>
+                <li>✓ {t("notes5")}</li>
+                <li>✓ {t("notes6")}</li>
+                <li>✓ {t("notes7")}</li>
               </ul>
             </div>
           </div>
         </CollapsibleSection>
 
         {/* Network Topology */}
-        <CollapsibleSection title="🌐 ネットワーク通信経路" defaultOpen>
+        <CollapsibleSection title={t("secNetworkTopology")} defaultOpen>
           <div className="infra-diagram-wrap">
             <div className="infra-diagram-canvas">
               <svg
                 viewBox="0 0 1000 700"
                 className="infra-svg"
                 role="img"
-                aria-label="OPNsense によるセグメント分離とゼロトラストの通信経路図"
+                aria-label={t("netAria")}
               >
                 <defs>
                   <marker
@@ -463,20 +543,20 @@ export const InfrastructurePage = ({ i18n }: InfrastructurePageProps) => {
                 {/* ── ② Twingate (management) ── */}
                 <rect x="30" y="100" width="300" height="112" rx="5" className="net-ft" />
                 <text x="180" y="120" textAnchor="middle" className="net-tl">
-                  🔐 Twingate ゼロトラスト
+                  {t("netTwingateTitle")}
                 </text>
                 <line x1="30" y1="128" x2="330" y2="128" className="net-divider" />
                 <text x="180" y="145" textAnchor="middle" className="net-rt">
-                  ② 管理ルート
+                  {t("netRoute2")}
                 </text>
                 <text x="180" y="163" textAnchor="middle" className="net-sl">
-                  SSH / Proxmox WebUI / 内部サービス
+                  {t("netTwingateSvc")}
                 </text>
                 <text x="180" y="180" textAnchor="middle" className="net-sl">
-                  内部発信のみ・inbound なし
+                  {t("netTwingateInbound")}
                 </text>
                 <text x="180" y="197" textAnchor="middle" className="net-sl">
-                  冗長: 1.x CT105 / 0.x CT102
+                  {t("netTwingateRedundant")}
                 </text>
 
                 {/* ── ① Cloudflare (public) ── */}
@@ -486,13 +566,13 @@ export const InfrastructurePage = ({ i18n }: InfrastructurePageProps) => {
                 </text>
                 <line x1="350" y1="128" x2="650" y2="128" className="net-divider-cf" />
                 <text x="500" y="145" textAnchor="middle" className="net-rt-cf">
-                  ① 公開ルート
+                  {t("netRoute1")}
                 </text>
                 <text x="500" y="163" textAnchor="middle" className="net-sl">
                   portfolio.warasugi.com
                 </text>
                 <text x="500" y="180" textAnchor="middle" className="net-sl">
-                  受信接続ゼロ (outbound tunnel)
+                  {t("netCfInbound")}
                 </text>
                 <text x="500" y="197" textAnchor="middle" className="net-sl">
                   → portfolio (Dell CT103) / FileBrowser (HP-2 CT100)
@@ -501,20 +581,20 @@ export const InfrastructurePage = ({ i18n }: InfrastructurePageProps) => {
                 {/* ── ③ Minecraft (exception) ── */}
                 <rect x="670" y="100" width="300" height="112" rx="5" className="net-ft-warn" />
                 <text x="820" y="120" textAnchor="middle" className="net-warn-tl">
-                  🎮 Minecraft 公開
+                  {t("netMcTitle")}
                 </text>
                 <line x1="670" y1="128" x2="970" y2="128" className="net-divider" />
                 <text x="820" y="145" textAnchor="middle" className="net-warn-txt">
-                  ③ Minecraft ルート (東京 Velocity 経由)
+                  {t("netRoute3")}
                 </text>
                 <text x="820" y="163" textAnchor="middle" className="net-sl">
-                  ベアメタル専用機 (0.x 配下) — Purpur サバイバル鯖
+                  {t("netMcBaremetal")}
                 </text>
                 <text x="820" y="180" textAnchor="middle" className="net-sl">
-                  ← 東京 Velocity 経由 (Dell CT301 連携)
+                  {t("netMcVia")}
                 </text>
                 <text x="820" y="197" textAnchor="middle" className="net-sl">
-                  自宅の受信接続はゼロ
+                  {t("netMcZero")}
                 </text>
 
                 {/* routes → OPNsense */}
@@ -525,10 +605,10 @@ export const InfrastructurePage = ({ i18n }: InfrastructurePageProps) => {
                 {/* ── OPNsense core ── */}
                 <rect x="200" y="250" width="600" height="64" rx="5" className="net-core-rect" />
                 <text x="500" y="276" textAnchor="middle" className="net-tl">
-                  🛡️ OPNsense — メイン FW / ルータ (HP-2 VM500)
+                  {t("netOpnTitle")}
                 </text>
                 <text x="500" y="296" textAnchor="middle" className="net-sl">
-                  192.168.0.x ⇄ 192.168.1.x セグメント分離 / NAT / DNS 制御
+                  {t("netOpnDesc")}
                 </text>
 
                 {/* OPNsense → segments */}
@@ -538,26 +618,26 @@ export const InfrastructurePage = ({ i18n }: InfrastructurePageProps) => {
                 {/* ── 0.x segment ── */}
                 <rect x="30" y="352" width="450" height="190" rx="5" className="net-seg-rect" />
                 <text x="255" y="374" textAnchor="middle" className="net-seg-head">
-                  192.168.0.x — メインセグメント
+                  {t("netSeg0Head")}
                 </text>
                 <line x1="45" y1="382" x2="465" y2="382" className="net-divider" />
                 <text x="48" y="402" className="net-seg-row">
-                  🛡️ adguard-0.x [CT107] — AdGuard Home DNS (冗長)
+                  {t("netSeg0Row1")}
                 </text>
                 <text x="48" y="422" className="net-seg-row">
-                  🔐 twingate-0.x [CT102 · Dell] — ゼロトラスト
+                  {t("netSeg0Row2")}
                 </text>
                 <text x="48" y="442" className="net-nc">
-                  🌐 portfolio [CT103 · Dell] — ← Cloudflare Tunnel 公開
+                  {t("netSeg0Row3")}
                 </text>
                 <text x="48" y="462" className="net-seg-row">
                   📡 pote-monitor · 🎮 Velocity · 📺 MeTube · 📊 Zabbix (Dell)
                 </text>
                 <text x="48" y="482" className="net-warn-txt">
-                  🎮 Minecraft ベアメタル機 — 東京 Velocity 経由 / webmap は CF Tunnel
+                  {t("netSeg0Row5")}
                 </text>
                 <text x="48" y="502" className="net-sl">
-                  上流 DNS: Cloudflare 1.1.1.1 / 1.0.0.1
+                  {t("netUpstreamDns")}
                 </text>
 
                 {/* ── 1.x segment ── */}
@@ -570,57 +650,54 @@ export const InfrastructurePage = ({ i18n }: InfrastructurePageProps) => {
                   className="net-seg-rect--iso"
                 />
                 <text x="745" y="374" textAnchor="middle" className="net-seg-head--iso">
-                  192.168.1.x — 隔離セグメント (OPNsense 分離)
+                  {t("netSeg1Head")}
                 </text>
                 <line x1="535" y1="382" x2="955" y2="382" className="net-divider-cf" />
                 <text x="538" y="402" className="net-seg-row">
                   🛡️ adguard-1.x [CT106 · HP-2] — AdGuard Home DNS
                 </text>
                 <text x="538" y="422" className="net-seg-row">
-                  🔐 twingate-1.x [CT105 · HP-2] — ゼロトラスト
+                  {t("netSeg1Row2")}
                 </text>
                 <text x="538" y="442" className="net-warn-txt">
-                  💾 MC-Backup [CT100 · HP-2] — DriveBackupV2 受け / FileBrowser
+                  {t("netSeg1Row3")}
                 </text>
                 <text x="538" y="462" className="net-seg-row">
                   🔀 Headroom-Proxy · 🔒 secrets1 (HP-2)
                 </text>
                 <text x="538" y="482" className="net-sl">
-                  上流 DNS: Cloudflare 1.1.1.1 / 1.0.0.1
+                  {t("netUpstreamDns")}
                 </text>
 
                 {/* ── Security annotations ── */}
                 <text x="30" y="562" className="net-st">
-                  🔒 外部ポート開放ゼロ — 受信接続なし (Cloudflare Tunnel) / Minecraft も東京
-                  Velocity 経由
+                  {t("netSecAnnot1")}
                 </text>
                 <text x="30" y="578" className="net-st">
-                  🔐 SSH・Proxmox WebUI・内部サービスは Twingate ゼロトラスト経由のみ
-                  (2セグメント冗長)
+                  {t("netSecAnnot2")}
                 </text>
 
                 {/* ── Legend ── */}
                 <rect x="30" y="590" width="940" height="96" rx="5" className="net-leg-box" />
                 <text x="500" y="610" textAnchor="middle" className="net-tl">
-                  凡例 / Legend
+                  {t("netLegendLabel")}
                 </text>
                 <line x1="45" y1="626" x2="105" y2="626" className="net-leg-line-main" />
                 <text x="112" y="630" className="net-lt">
-                  ① 公開ルート — Internet → Cloudflare Tunnel → portfolio.warasugi.com (受信ゼロ)
+                  {t("netLeg1")}
                 </text>
                 <line x1="45" y1="646" x2="105" y2="646" className="net-leg-line-mgmt" />
                 <text x="112" y="650" className="net-lt">
-                  ② 管理ルート — Twingate ゼロトラスト → SSH / Proxmox / 内部サービス
+                  {t("netLeg2")}
                 </text>
                 <line x1="45" y1="666" x2="105" y2="666" className="net-leg-line-exc" />
                 <text x="112" y="670" className="net-lt">
-                  ③ Minecraft (ベアメタル機 · 0.x 配下) — 別拠点(東京) Velocity 経由で公開
-                  (自宅受信ゼロ)
+                  {t("netLeg3")}
                 </text>
               </svg>
             </div>
             <p className="infra-diagram-hint" aria-hidden="true">
-              ← スワイプでスクロール →
+              {t("swipeHint")}
             </p>
           </div>
         </CollapsibleSection>
@@ -629,7 +706,7 @@ export const InfrastructurePage = ({ i18n }: InfrastructurePageProps) => {
         <CollapsibleSection title={labels?.designPhilosophy || "設計哲学"} defaultOpen>
           <div className="infra-panel">
             <ul className="infra-list">
-              {data.design_philosophy.map((item, idx) => (
+              {pickArr(data.design_philosophy_en, data.design_philosophy).map((item, idx) => (
                 <li key={idx} className="infra-list__item">
                   <span className="infra-bullet">✓</span>
                   {item}
@@ -643,15 +720,23 @@ export const InfrastructurePage = ({ i18n }: InfrastructurePageProps) => {
         <CollapsibleSection title={`🖥️ ${labels?.hypervisor || "Proxmox VE"}`} defaultOpen>
           <div className="infra-panel">
             <h3 className="infra-hypervisor__platform">{data.hypervisor.platform}</h3>
-            <p className="infra-hypervisor__purpose">{data.hypervisor.purpose}</p>
-            <h4 className="infra-subhead">主な機能:</h4>
+            <p className="infra-hypervisor__purpose">
+              {pickLang(
+                lang,
+                data.hypervisor.purpose_en ?? data.hypervisor.purpose,
+                data.hypervisor.purpose,
+              )}
+            </p>
+            <h4 className="infra-subhead">{t("keyFeatures")}</h4>
             <ul className="infra-list">
-              {data.hypervisor.key_features.map((feature, idx) => (
-                <li key={idx} className="infra-list__item infra-list__item--sm">
-                  <span className="infra-bullet">•</span>
-                  {feature}
-                </li>
-              ))}
+              {pickArr(data.hypervisor.key_features_en, data.hypervisor.key_features).map(
+                (feature, idx) => (
+                  <li key={idx} className="infra-list__item infra-list__item--sm">
+                    <span className="infra-bullet">•</span>
+                    {feature}
+                  </li>
+                ),
+              )}
             </ul>
           </div>
         </CollapsibleSection>
@@ -665,28 +750,35 @@ export const InfrastructurePage = ({ i18n }: InfrastructurePageProps) => {
               title={
                 <span className="infra-node__head">
                   <span className="infra-node__name">
-                    {node.name} - {node.role}
+                    {pickLang(lang, node.name_en ?? node.name, node.name)} -{" "}
+                    {pickLang(lang, node.role_en ?? node.role, node.role)}
                   </span>
                   <span className="infra-node__hw">
-                    <strong>ハードウェア:</strong> {node.hardware}
+                    <strong>{t("lblHardware")}</strong> {node.hardware}
                   </span>
                 </span>
               }
             >
-              <p className="infra-subhead">目的:</p>
-              <p className="infra-muted">{node.purpose}</p>
+              <p className="infra-subhead">{t("lblPurpose")}</p>
+              <p className="infra-muted">
+                {pickLang(lang, node.purpose_en ?? node.purpose, node.purpose)}
+              </p>
 
-              <p className="infra-subhead">ワークロード:</p>
+              <p className="infra-subhead">{t("lblWorkloads")}</p>
               <ul className="infra-list">
                 {node.workloads.map((wl, idx) => (
                   <li key={idx} className="infra-node__wl">
                     <span className="infra-bullet">→</span>
                     <strong>{wl.name}</strong> ({wl.type}
                     {wl.vmid ? ` VMID:${wl.vmid}` : ""}){wl.os && ` - ${wl.os}`}
-                    {wl.purpose && <p className="infra-node__wl-purpose">{wl.purpose}</p>}
+                    {wl.purpose && (
+                      <p className="infra-node__wl-purpose">
+                        {pickLang(lang, wl.purpose_en ?? wl.purpose, wl.purpose)}
+                      </p>
+                    )}
                     {wl.details && (
                       <ul className="infra-node__wl-details">
-                        {wl.details.map((detail, didx) => (
+                        {pickArr(wl.details_en, wl.details).map((detail, didx) => (
                           <li key={didx} className="infra-muted">
                             • {detail}
                           </li>
@@ -704,19 +796,31 @@ export const InfrastructurePage = ({ i18n }: InfrastructurePageProps) => {
         <CollapsibleSection title={labels?.networkDesign || "ネットワーク設計"}>
           <div className="infra-panel">
             <p>
-              <strong>トポロジー:</strong> {data.network_design.topology}
+              <strong>{t("lblTopology")}</strong>{" "}
+              {pickLang(
+                lang,
+                data.network_design.topology_en ?? data.network_design.topology,
+                data.network_design.topology,
+              )}
             </p>
             <p>
-              <strong>DNS:</strong> {data.network_design.dns}
+              <strong>{t("lblDns")}</strong>{" "}
+              {pickLang(
+                lang,
+                data.network_design.dns_en ?? data.network_design.dns,
+                data.network_design.dns,
+              )}
             </p>
-            <p className="infra-subhead">セキュリティ対策:</p>
+            <p className="infra-subhead">{t("lblSecurityMeasures")}</p>
             <ul className="infra-list">
-              {data.network_design.security.map((sec, idx) => (
-                <li key={idx} className="infra-list__item infra-list__item--sm">
-                  <span className="infra-bullet">•</span>
-                  {sec}
-                </li>
-              ))}
+              {pickArr(data.network_design.security_en, data.network_design.security).map(
+                (sec, idx) => (
+                  <li key={idx} className="infra-list__item infra-list__item--sm">
+                    <span className="infra-bullet">•</span>
+                    {sec}
+                  </li>
+                ),
+              )}
             </ul>
           </div>
         </CollapsibleSection>
@@ -725,24 +829,24 @@ export const InfrastructurePage = ({ i18n }: InfrastructurePageProps) => {
         <CollapsibleSection title={`🔐 ${labels?.securityModel || "セキュリティモデル"}`}>
           <div className="infra-grid">
             <div className="infra-card">
-              <h4 className="infra-card__title">SSH設定</h4>
+              <h4 className="infra-card__title">{t("cardSshConfig")}</h4>
               <ul className="infra-list">
                 <li>
-                  Root ログイン: <strong>{data.security_model.ssh.root_login}</strong>
+                  {t("lblRootLogin")} <strong>{data.security_model.ssh.root_login}</strong>
                 </li>
                 <li>
-                  パスワード認証: <strong>{data.security_model.ssh.password_auth}</strong>
+                  {t("lblPasswordAuth")} <strong>{data.security_model.ssh.password_auth}</strong>
                 </li>
                 <li>
-                  鍵タイプ: <strong>{data.security_model.ssh.key_type}</strong>
+                  {t("lblKeyType")} <strong>{data.security_model.ssh.key_type}</strong>
                 </li>
                 <li>
-                  アクセス方法: <strong>{data.security_model.ssh.access_method}</strong>
+                  {t("lblAccessMethod")} <strong>{data.security_model.ssh.access_method}</strong>
                 </li>
               </ul>
             </div>
             <div className="infra-card">
-              <h4 className="infra-card__title">認証</h4>
+              <h4 className="infra-card__title">{t("cardAuthentication")}</h4>
               <ul className="infra-list">
                 <li>
                   Proxmox: <strong>{data.security_model.authentication.proxmox}</strong>
@@ -753,9 +857,12 @@ export const InfrastructurePage = ({ i18n }: InfrastructurePageProps) => {
               </ul>
             </div>
             <div className="infra-card">
-              <h4 className="infra-card__title">バックアップ戦略</h4>
+              <h4 className="infra-card__title">{t("cardBackupStrategy")}</h4>
               <ul className="infra-list">
-                {data.security_model.backup_strategy.map((strategy, idx) => (
+                {pickArr(
+                  data.security_model.backup_strategy_en,
+                  data.security_model.backup_strategy,
+                ).map((strategy, idx) => (
                   <li key={idx}>• {strategy}</li>
                 ))}
               </ul>
@@ -764,37 +871,100 @@ export const InfrastructurePage = ({ i18n }: InfrastructurePageProps) => {
         </CollapsibleSection>
 
         {/* Operations */}
-        <CollapsibleSection title="⚙️ 運用・監視">
+        <CollapsibleSection title={t("secOperations")}>
           <div className="infra-grid">
             <div className="infra-card">
-              <h4 className="infra-card__title">📊 監視</h4>
+              <h4 className="infra-card__title">{t("cardMonitoring")}</h4>
               <ul className="infra-list">
                 <li>
-                  ツール: <strong>{data.operations.monitoring.tool}</strong>
+                  {t("lblTool")} <strong>{data.operations.monitoring.tool}</strong>
                 </li>
                 <li>
-                  サーバー: <strong>{data.operations.monitoring.server}</strong>
+                  {t("lblServer")}{" "}
+                  <strong>
+                    {pickLang(
+                      lang,
+                      data.operations.monitoring.server_en ?? data.operations.monitoring.server,
+                      data.operations.monitoring.server,
+                    )}
+                  </strong>
                 </li>
-                <li>{data.operations.monitoring.coverage}</li>
-                <li>{data.operations.monitoring.alerting}</li>
+                <li>
+                  {pickLang(
+                    lang,
+                    data.operations.monitoring.coverage_en ?? data.operations.monitoring.coverage,
+                    data.operations.monitoring.coverage,
+                  )}
+                </li>
+                <li>
+                  {pickLang(
+                    lang,
+                    data.operations.monitoring.alerting_en ?? data.operations.monitoring.alerting,
+                    data.operations.monitoring.alerting,
+                  )}
+                </li>
               </ul>
             </div>
             <div className="infra-card">
-              <h4 className="infra-card__title">🔐 アクセス管理</h4>
+              <h4 className="infra-card__title">{t("cardAccessMgmt")}</h4>
               <ul className="infra-list">
-                <li>内部: {data.operations.access_management.internal}</li>
-                <li>リモート: {data.operations.access_management.remote_desktop}</li>
                 <li>
-                  認証: <strong>{data.operations.access_management.authentication}</strong>
+                  {t("lblInternal")}{" "}
+                  {pickLang(
+                    lang,
+                    data.operations.access_management.internal_en ??
+                      data.operations.access_management.internal,
+                    data.operations.access_management.internal,
+                  )}
+                </li>
+                <li>
+                  {t("lblRemote")}{" "}
+                  {pickLang(
+                    lang,
+                    data.operations.access_management.remote_desktop_en ??
+                      data.operations.access_management.remote_desktop,
+                    data.operations.access_management.remote_desktop,
+                  )}
+                </li>
+                <li>
+                  {t("lblAuth")}{" "}
+                  <strong>
+                    {pickLang(
+                      lang,
+                      data.operations.access_management.authentication_en ??
+                        data.operations.access_management.authentication,
+                      data.operations.access_management.authentication,
+                    )}
+                  </strong>
                 </li>
               </ul>
             </div>
             <div className="infra-card">
-              <h4 className="infra-card__title">🔄 可用性</h4>
+              <h4 className="infra-card__title">{t("cardReliability")}</h4>
               <ul className="infra-list">
-                <li>{data.operations.reliability.uptime_target}</li>
-                <li>{data.operations.reliability.restart_policy}</li>
-                <li>{data.operations.reliability.backup}</li>
+                <li>
+                  {pickLang(
+                    lang,
+                    data.operations.reliability.uptime_target_en ??
+                      data.operations.reliability.uptime_target,
+                    data.operations.reliability.uptime_target,
+                  )}
+                </li>
+                <li>
+                  {pickLang(
+                    lang,
+                    data.operations.reliability.restart_policy_en ??
+                      data.operations.reliability.restart_policy,
+                    data.operations.reliability.restart_policy,
+                  )}
+                </li>
+                <li>
+                  {pickLang(
+                    lang,
+                    data.operations.reliability.backup_en ?? data.operations.reliability.backup,
+                    data.operations.reliability.backup,
+                  )}
+                </li>
               </ul>
             </div>
           </div>
@@ -819,15 +989,17 @@ export const InfrastructurePage = ({ i18n }: InfrastructurePageProps) => {
         </CollapsibleSection>
 
         {/* Future Roadmap */}
-        <CollapsibleSection title="🛣️ 今後のロードマップ">
+        <CollapsibleSection title={t("secRoadmap")}>
           <div className="infra-grid">
             {Object.entries(data.future_roadmap).map(
               ([phase, phaseData]: [string, InfraRoadmapPhase]) => (
                 <div key={phase} className="infra-card">
                   <h4 className="infra-card__title">{roadmapLabel(phase)}</h4>
-                  <p className="infra-muted">{phaseData.status}</p>
+                  <p className="infra-muted">
+                    {pickLang(lang, phaseData.status_en ?? phaseData.status, phaseData.status)}
+                  </p>
                   <ul className="infra-list">
-                    {phaseData.components.map((comp, idx) => (
+                    {pickArr(phaseData.components_en, phaseData.components).map((comp, idx) => (
                       <li key={idx} className="infra-list__item infra-list__item--sm">
                         <span className="infra-bullet">▸</span>
                         {comp}
@@ -844,7 +1016,7 @@ export const InfrastructurePage = ({ i18n }: InfrastructurePageProps) => {
         <CollapsibleSection title={`📚 ${labels?.learningOutcomes || "学習成果"}`}>
           <div className="infra-panel">
             <ul className="infra-list">
-              {data.learning_outcomes.map((outcome, idx) => (
+              {pickArr(data.learning_outcomes_en, data.learning_outcomes).map((outcome, idx) => (
                 <li key={idx} className="infra-list__item">
                   <span className="infra-bullet">→</span>
                   {outcome}
