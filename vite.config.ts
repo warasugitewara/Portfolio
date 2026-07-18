@@ -150,5 +150,18 @@ export default defineConfig({
   server: {
     port: 3000,
     strictPort: false,
+    // Dev-only mirror of the production Hono GitHub proxy so Projects.tsx can
+    // fetch the same `/api/github/repos` path in both dev and prod.
+    proxy: {
+      '/api/github/repos': {
+        target: 'https://api.github.com',
+        changeOrigin: true,
+        rewrite: () => '/users/warasugitewara/repos?sort=updated&per_page=12&type=owner',
+        headers: {
+          'User-Agent': 'warasugi-portfolio',
+          Accept: 'application/vnd.github+json',
+        },
+      },
+    },
   },
 })

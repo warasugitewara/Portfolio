@@ -345,7 +345,7 @@ a:hover {
   display: flex;
   align-items: center;
   justify-content: center;
-  background-image: url('/minecraft-city.png');
+  background-image: url('/minecraft-city.webp');
   background-size: cover;
   background-position: center;
   background-attachment: fixed;
