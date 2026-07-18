@@ -26,5 +26,8 @@ dist-ssr
 .copilot-local.md
 AGENTS.md
 
+# Playwright MCP debug dumps
+.playwright-mcp/
+
 # dist
 dist/*

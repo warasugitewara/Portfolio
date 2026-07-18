@@ -24,9 +24,10 @@ export const Projects = ({ i18n, lang }: ProjectsProps) => {
     const loadRepos = async () => {
       try {
         setLoading(true);
-        const response = await fetch(
-          "https://api.github.com/users/warasugitewara/repos?sort=updated&per_page=12&type=owner",
-        );
+        const response = await fetch("/api/github/repos");
+        if (!response.ok) {
+          throw new Error(`Failed to fetch GitHub repos: ${response.status}`);
+        }
         const data: GitHubRepoRaw[] = await response.json();
         const locale = lang === "ja" ? "ja-JP" : "en-US";
 

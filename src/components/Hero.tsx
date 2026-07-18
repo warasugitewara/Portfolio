@@ -1,4 +1,5 @@
 import type { Profile, I18n, Language } from "../types";
+import { pickLang } from "../utils/pickLang";
 
 interface HeroProps {
   i18n: I18n | null;
@@ -36,7 +37,7 @@ export const Hero = ({ i18n, profile, lang }: HeroProps) => {
                 <div key={`${stat.value}-${stat.label}`} className="hero-stat">
                   <span className="hero-stat__value">{stat.value}</span>
                   <span className="hero-stat__label">
-                    {lang === "ja" && stat.label_ja ? stat.label_ja : stat.label}
+                    {pickLang(lang, stat.label, stat.label_ja)}
                   </span>
                 </div>
               ))}

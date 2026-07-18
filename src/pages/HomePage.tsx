@@ -49,8 +49,12 @@ export const HomePage = ({ i18n, lang }: HomePageProps) => {
 
   if (!i18n) return null;
 
+  const metaDescription = `${i18n.hero.subtitle} — ${i18n.about.description}`;
+
   return (
     <>
+      <title>{`${i18n.hero.title} - Portfolio`}</title>
+      <meta name="description" content={metaDescription} />
       {showBoot && <BootAnimation onComplete={() => setShowBoot(false)} />}
       <Hero i18n={i18n} profile={profile} lang={lang} />
       <About i18n={i18n} profile={profile} />

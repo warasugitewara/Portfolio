@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { Link } from "react-router-dom";
 import type { I18n, Language } from "../types";
 
 interface HeaderProps {
@@ -13,25 +14,25 @@ export const Header = ({ lang, i18n, onLanguageSwitch, onThemeToggle, theme }: H
   return (
     <header className="header">
       <div className="header-wrapper">
-        <a href="/" style={{ textDecoration: "none", color: "inherit" }}>
+        <Link to="/" style={{ textDecoration: "none", color: "inherit" }}>
           <h1 className="header-title">warasugi</h1>
-        </a>
+        </Link>
         <nav className="header-nav">
-          <a href="/#about" className="nav-link">
+          <Link to="/#about" className="nav-link">
             {i18n.nav.about}
-          </a>
-          <a href="/#skills" className="nav-link">
+          </Link>
+          <Link to="/#skills" className="nav-link">
             {i18n.nav.skills}
-          </a>
-          <a href="/infrastructure" className="nav-link">
+          </Link>
+          <Link to="/infrastructure" className="nav-link">
             {i18n.nav.infrastructure}
-          </a>
-          <a href="/#projects" className="nav-link">
+          </Link>
+          <Link to="/#projects" className="nav-link">
             {i18n.nav.projects}
-          </a>
-          <a href="/#contact" className="nav-link">
+          </Link>
+          <Link to="/#contact" className="nav-link">
             {i18n.nav.contact}
-          </a>
+          </Link>
           <div className="lang-switcher">
             <button
               className={`lang-btn ${lang === "ja" ? "active" : ""}`}

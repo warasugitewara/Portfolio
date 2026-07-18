@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import type { FeaturedProject, I18n, Language } from "../types";
 import { getDataUrl } from "../utils/path";
+import { pickLang } from "../utils/pickLang";
 
 interface FeaturedProjectsProps {
   i18n: I18n | null;
@@ -28,7 +29,6 @@ export const FeaturedProjects = ({ i18n, lang }: FeaturedProjectsProps) => {
   if (!i18n || projects.length === 0) return null;
 
   const ja = lang === "ja";
-  const pick = (en: string, jaText?: string) => (ja && jaText ? jaText : en);
 
   return (
     <section id="featured" className="section featured">
@@ -36,13 +36,21 @@ export const FeaturedProjects = ({ i18n, lang }: FeaturedProjectsProps) => {
         <h2 className="section-title">{i18n.projects.featured ?? i18n.projects.title}</h2>
         <div className="featured-grid">
           {projects.map((project) => {
-            const linkLabel = pick(project.link_label ?? "GitHub →", project.link_label_ja);
+            const linkLabel = pickLang(
+              lang,
+              project.link_label ?? "GitHub →",
+              project.link_label_ja,
+            );
             return (
               <article key={project.id} className="featured-card">
-                <h3 className="featured-title">{pick(project.title, project.title_ja)}</h3>
-                <p className="featured-tagline">{pick(project.tagline, project.tagline_ja)}</p>
+                <h3 className="featured-title">
+                  {pickLang(lang, project.title, project.title_ja)}
+                </h3>
+                <p className="featured-tagline">
+                  {pickLang(lang, project.tagline, project.tagline_ja)}
+                </p>
                 <p className="featured-background">
-                  {pick(project.background, project.background_ja)}
+                  {pickLang(lang, project.background, project.background_ja)}
                 </p>
                 <ul className="featured-points">
                   {(ja && project.points_ja ? project.points_ja : project.points).map(

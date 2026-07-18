@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import type { I18n, Language } from "../types";
 import { getDataUrl } from "../utils/path";
+import { pickLang } from "../utils/pickLang";
 
 interface Principle {
   title: string;
@@ -41,12 +42,10 @@ export const Philosophy = ({ i18n, lang }: PhilosophyProps) => {
           {principles.map((principle) => (
             <div key={principle.title} className="principle-card">
               <h3 className="principle-title">
-                {lang === "ja" && principle.title_ja ? principle.title_ja : principle.title}
+                {pickLang(lang, principle.title, principle.title_ja)}
               </h3>
               <p className="principle-description">
-                {lang === "ja" && principle.description_ja
-                  ? principle.description_ja
-                  : principle.description}
+                {pickLang(lang, principle.description, principle.description_ja)}
               </p>
             </div>
           ))}

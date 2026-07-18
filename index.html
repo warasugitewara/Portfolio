@@ -3,7 +3,6 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="warasugi - CLI-focused engineer. Lightweight systems, infrastructure design, and custom tools. Portfolio & projects." />
     <meta name="keywords" content="warasugi, engineer, CLI, lightweight, infrastructure, Rust, TypeScript" />
     <meta property="og:type" content="website" />
     <meta property="og:title" content="warasugi" />
@@ -22,7 +21,17 @@
     <link rel="preconnect" href="https://api.github.com" />
     <link rel="dns-prefetch" href="https://avatars.githubusercontent.com" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-    <title>warasugi - Portfolio</title>
+    <script>
+      // Apply the saved theme before first paint to avoid a FOUC / theme flash.
+      (function () {
+        try {
+          var saved = localStorage.getItem("theme");
+          document.documentElement.dataset.theme = saved === "light" ? "light" : "dark";
+        } catch (e) {
+          document.documentElement.dataset.theme = "dark";
+        }
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

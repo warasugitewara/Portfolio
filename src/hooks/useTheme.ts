@@ -6,11 +6,13 @@ export const useTheme = (
   defaultTheme?: Theme,
 ): { theme: Theme; switchTheme: (newTheme: Theme) => void; toggleTheme: () => void } => {
   const [theme, setTheme] = useState<Theme>(() => {
-    const saved = localStorage.getItem("theme") as Theme | null;
-    if (saved) return saved;
-    if (defaultTheme) return defaultTheme;
-    if (window.matchMedia("(prefers-color-scheme: dark)").matches) return "dark";
-    return "light";
+    // The blocking script in index.html already applied the persisted theme to
+    // <html data-theme>. Read it back so initial state matches first paint.
+    const applied = document.documentElement.dataset.theme;
+    if (applied === "light" || applied === "dark") return applied;
+    const saved = localStorage.getItem("theme");
+    if (saved === "light" || saved === "dark") return saved;
+    return defaultTheme ?? "dark";
   });
 
   useEffect(() => {
