@@ -43,8 +43,7 @@ React 19 SPA を、**開発時は `vp dev`、本番時は Bun + Hono (`server.ts
 
 詳細は README の「🧰 既知の技術的負債（TODO）」を参照。要点:
 
-- **インフラ構成図は二重管理**: `src/pages/InfrastructurePage.tsx` の `HP1_ROWS` / `HP2_ROWS` / `DELL_ROWS`（＋SVG 内の凡例・ネットワーク図の文言）は `public/data/infrastructure.json` と同じ事実のハードコード。**インフラ構成を変更する際は JSON と TSX の両方を必ず更新する**こと（本来は JSON からの導出に一元化したい）。
-- `*_ja` 言語フォールバックが `FeaturedProjects` / `Hero` / `Philosophy` に3実装散在（`src/utils/pickLang` への共通化待ち）。
+- **インフラ構成図の行は JSON から導出**: `src/pages/InfrastructurePage.tsx` は `public/data/infrastructure.json` の `nodes[*].workloads` から図の行（名前・ID・並び）を自動生成する。CT/VM を増減・改名しても図は自動追従する。**新規 CT を追加した場合のみ**、アイコンと短いキャプションを同ファイルの `DGM_META`（CT/VM ID キー）に追記すること（未登録なら 📦 と空キャプションにフォールバック）。なお SVG 内の凡例・ネットワーク図の文言は i18n JSON（`dgmLegend*` / `netSeg*` 等）に別管理なので、必要に応じてそちらも更新する。
 - `profile.json` の `stats` はハードコード数値。**CT/VM を増減したら Hero のスタッツも見直す**。
 
 ## デプロイ運用（非自明）
