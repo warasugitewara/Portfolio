@@ -80,10 +80,10 @@ npm run dev      # 開発開始
 
 ## 🧰 既知の技術的負債（TODO）
 
-2026-07 のコードレビューで確認済み・未対応の改善項目。対応時はこの項目を削除すること。
+2026-07 のコードレビューで確認済みの改善項目。対応時はこの項目を削除すること。
 
-- [ ] **インフラ構成図のデータ一元化** — `InfrastructurePage.tsx` の `HP1_ROWS` / `HP2_ROWS` / `DELL_ROWS` は `infrastructure.json` の `nodes[*].workloads` と同じ事実のハードコード重複。構成変更のたびに両方（＋SVG 内の凡例文）の手動更新が必要で、ズレても検出されない。fetch 済み JSON から行を導出する形に一元化する（`icon` / `note` 相当のフィールドを JSON 側に追加する必要あり）
-- [ ] **`*_ja` 言語フォールバックの共通化** — 同じフォールバック規則が `FeaturedProjects.tsx`（`pick` ヘルパー）・`Hero.tsx`（インライン三項）・`Philosophy.tsx`（インライン三項）の3箇所に別実装で散在。`src/utils/` に `pickLang(lang, en, ja?)` を作って統一する
+- [x] ~~**インフラ構成図のデータ一元化**~~ — 対応済み。`InfrastructurePage.tsx` は `infrastructure.json` の `nodes[*].workloads` から図の行を導出し、アイコン／短キャプションのみ `DGM_META`（ID キー）に保持。CT/VM の増減・改名は図に自動反映される。
+- [x] ~~**`*_ja` 言語フォールバックの共通化**~~ — 対応済み。`src/utils/pickLang.ts` に統一。
 - [ ] **Hero スタッツの自動算出** — `profile.json` の `stats`（ノード数 3 / CT・VM 17+ など）は `infrastructure.json` から数えられる事実の文字列再掲。構成変更時に黙ってズレるため、読み込んだデータからの導出に変更する（当面は構成変更時に手動で数値を見直すこと）
 
 ## 🗒 変更履歴

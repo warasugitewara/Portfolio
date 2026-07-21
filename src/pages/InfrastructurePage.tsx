@@ -1,5 +1,12 @@
 import { useEffect, useState } from "react";
-import type { I18n, InfrastructureData, InfraRoadmapPhase, Language } from "../types";
+import type {
+  I18n,
+  InfrastructureData,
+  InfraNode,
+  InfraRoadmapPhase,
+  InfraWorkload,
+  Language,
+} from "../types";
 import { getDataUrl } from "../utils/path";
 import { pickLang } from "../utils/pickLang";
 import { CollapsibleSection } from "../components/CollapsibleSection";
@@ -10,7 +17,16 @@ interface InfrastructurePageProps {
   lang: Language;
 }
 
-/* ── Architecture-diagram node inventory (source: infrastructure.json) ── */
+/* ── Architecture-diagram rows ──────────────────────────────────────────
+ * The row list (which containers exist, their name/id and order) is derived
+ * from infrastructure.json at render time — the JSON is the single source of
+ * truth. Only diagram-specific presentation (icon, short caption, colour
+ * variant) lives here, keyed by CT/VM id. Adding/removing/renaming a workload
+ * in the JSON updates the diagram automatically; a brand-new id simply falls
+ * back to a default icon and blank caption until an entry is added below.
+ */
+type DgmVariant = "core" | "cf" | "warn";
+
 type DgmRow = {
   icon: string;
   name: string;
@@ -18,132 +34,69 @@ type DgmRow = {
   note: string;
   /** English variant of `note`; used when `lang === "en"`. */
   note_en: string;
-  variant?: "core" | "cf" | "warn";
+  variant?: DgmVariant;
 };
 
-const HP1_ROWS: DgmRow[] = [
-  {
-    icon: "🎵",
-    name: "Music-Bot",
-    id: "CT101",
-    note: "Discord 音楽ボット",
-    note_en: "Discord music bot",
-  },
-  {
-    icon: "🏠",
-    name: "homepage",
-    id: "CT108",
-    note: "ダッシュボード (gethomepage)",
-    note_en: "Dashboard (gethomepage)",
-  },
-  {
-    icon: "🔊",
-    name: "Yomiage-Bot",
-    id: "CT304",
-    note: "読み上げ (VOICEVOX)",
-    note_en: "TTS readout (VOICEVOX)",
-  },
-  {
-    icon: "🗣️",
-    name: "Voicevox-Engine",
-    id: "VM600",
-    note: "TTS 音声合成エンジン",
-    note_en: "TTS synthesis engine",
-  },
-];
+type DgmMeta = { icon: string; note: string; note_en: string; variant?: DgmVariant };
 
-const HP2_ROWS: DgmRow[] = [
-  {
+const DGM_META: Record<string, DgmMeta> = {
+  // HP-1
+  CT101: { icon: "🎵", note: "Discord 音楽ボット", note_en: "Discord music bot" },
+  CT108: { icon: "🏠", note: "ダッシュボード (gethomepage)", note_en: "Dashboard (gethomepage)" },
+  CT304: { icon: "🔊", note: "読み上げ (VOICEVOX)", note_en: "TTS readout (VOICEVOX)" },
+  VM600: { icon: "🗣️", note: "TTS 音声合成エンジン", note_en: "TTS synthesis engine" },
+  // HP-2
+  VM500: {
     icon: "🛡️",
-    name: "OPNsense",
-    id: "VM500",
     note: "メイン FW・ルータ / 0.x·1.x 分離",
     note_en: "Main FW / router · 0.x/1.x split",
     variant: "core",
   },
-  {
-    icon: "🔐",
-    name: "twingate-1.x",
-    id: "CT105",
-    note: "ゼロトラスト (1.x)",
-    note_en: "Zero-trust (1.x)",
-  },
-  {
-    icon: "🛡️",
-    name: "adguard-1.x",
-    id: "CT106",
-    note: "DNS フィルタ (1.x)",
-    note_en: "DNS filter (1.x)",
-  },
-  {
-    icon: "🛡️",
-    name: "adguard-0.x",
-    id: "CT107",
-    note: "DNS フィルタ (0.x 冗長)",
-    note_en: "DNS filter (0.x redundant)",
-  },
-  {
+  CT105: { icon: "🔐", note: "ゼロトラスト (1.x)", note_en: "Zero-trust (1.x)" },
+  CT106: { icon: "🛡️", note: "DNS フィルタ (1.x)", note_en: "DNS filter (1.x)" },
+  CT107: { icon: "🛡️", note: "DNS フィルタ (0.x 冗長)", note_en: "DNS filter (0.x redundant)" },
+  CT100: {
     icon: "💾",
-    name: "MC-Backup",
-    id: "CT100",
     note: "DriveBackupV2 受け · FileBrowser",
     note_en: "DriveBackupV2 sink · FileBrowser",
   },
-  {
-    icon: "🔀",
-    name: "Headroom-Proxy",
-    id: "CT700",
-    note: "AI コンテキスト圧縮",
-    note_en: "AI context compression",
-  },
-  { icon: "🔒", name: "secrets1", id: "CT1000", note: "非公開", note_en: "Private" },
-];
-
-const DELL_ROWS: DgmRow[] = [
-  {
-    icon: "🔐",
-    name: "twingate-0.x",
-    id: "CT102",
-    note: "ゼロトラスト (0.x)",
-    note_en: "Zero-trust (0.x)",
-  },
-  {
+  CT700: { icon: "🔀", note: "AI コンテキスト圧縮", note_en: "AI context compression" },
+  CT1000: { icon: "🔒", note: "非公開", note_en: "Private" },
+  // Dell
+  CT102: { icon: "🔐", note: "ゼロトラスト (0.x)", note_en: "Zero-trust (0.x)" },
+  CT103: {
     icon: "🌐",
-    name: "portfolio",
-    id: "CT103",
     note: "Bun+Hono · CF Tunnel",
     note_en: "Bun+Hono · CF Tunnel",
     variant: "cf",
   },
-  {
-    icon: "📡",
-    name: "pote-monitor",
-    id: "CT104",
-    note: "BTC/ETH Discord 通知",
-    note_en: "BTC/ETH Discord alerts",
-  },
-  {
-    icon: "🎮",
-    name: "Velocity",
-    id: "CT301",
-    note: "Minecraft プロキシ",
-    note_en: "Minecraft proxy",
-  },
-  {
-    icon: "📺",
-    name: "MeTube",
-    id: "CT302",
-    note: "動画DL (yt-dlp)",
-    note_en: "Video DL (yt-dlp)",
-  },
-  {
-    icon: "📊",
-    name: "Zabbix-Server",
-    id: "CT400",
-    note: "クラスター監視",
-    note_en: "Cluster monitoring",
-  },
-];
+  CT104: { icon: "📡", note: "BTC/ETH Discord 通知", note_en: "BTC/ETH Discord alerts" },
+  CT301: { icon: "🎮", note: "Minecraft プロキシ", note_en: "Minecraft proxy" },
+  CT302: { icon: "📺", note: "動画DL (yt-dlp)", note_en: "Video DL (yt-dlp)" },
+  CT400: { icon: "📊", note: "クラスター監視", note_en: "Cluster monitoring" },
+};
+
+const DGM_META_FALLBACK: DgmMeta = { icon: "📦", note: "", note_en: "" };
+
+/** Derive a diagram row id from a workload: e.g. LXC 101 → "CT101", VM 500 → "VM500". */
+const workloadRowId = (wl: InfraWorkload): string => `${wl.type === "VM" ? "VM" : "CT"}${wl.vmid}`;
+
+/** Build the diagram rows for a node by merging its JSON workloads with DGM_META. */
+const buildDgmRows = (node: InfraNode | undefined): DgmRow[] =>
+  (node?.workloads ?? [])
+    .filter((wl) => wl.vmid !== undefined)
+    .map((wl) => {
+      const id = workloadRowId(wl);
+      const meta = DGM_META[id] ?? DGM_META_FALLBACK;
+      return {
+        icon: meta.icon,
+        name: wl.name,
+        id,
+        note: meta.note,
+        note_en: meta.note_en,
+        variant: meta.variant,
+      };
+    });
 
 const DGM_ROW_Y0 = 283;
 const DGM_ROW_STEP = 46;
@@ -198,6 +151,11 @@ export const InfrastructurePage = ({ i18n, lang }: InfrastructurePageProps) => {
 
   const data = infra.infrastructure;
   const labels = i18n.infrastructure;
+
+  // Diagram rows derived from the JSON node inventory (single source of truth).
+  const hp1Rows = buildDgmRows(data.nodes.find((n) => n.id === "hp1"));
+  const hp2Rows = buildDgmRows(data.nodes.find((n) => n.id === "hp2"));
+  const dellRows = buildDgmRows(data.nodes.find((n) => n.id === "dell"));
 
   /** Resolve an infrastructure UI label; both locales define every key. */
   const t = (key: string): string => labels?.[key] ?? "";
@@ -339,7 +297,7 @@ export const InfrastructurePage = ({ i18n, lang }: InfrastructurePageProps) => {
                 <text x="210" y="265" textAnchor="middle" className="dgm-label">
                   HP Z240 SFF · Xeon E3-1225 · 16GB
                 </text>
-                {renderNodeRows(25, HP1_ROWS, lang)}
+                {renderNodeRows(25, hp1Rows, lang)}
 
                 {/* HP-2 */}
                 <rect
@@ -356,7 +314,7 @@ export const InfrastructurePage = ({ i18n, lang }: InfrastructurePageProps) => {
                 <text x="600" y="265" textAnchor="middle" className="dgm-label">
                   HP Z240 SFF · Xeon E3-1245 v5 · 16GB
                 </text>
-                {renderNodeRows(415, HP2_ROWS, lang)}
+                {renderNodeRows(415, hp2Rows, lang)}
 
                 {/* Dell */}
                 <rect
@@ -373,7 +331,7 @@ export const InfrastructurePage = ({ i18n, lang }: InfrastructurePageProps) => {
                 <text x="990" y="265" textAnchor="middle" className="dgm-label">
                   OptiPlex 7040 SFF · i3-6100 · 8GB
                 </text>
-                {renderNodeRows(805, DELL_ROWS, lang)}
+                {renderNodeRows(805, dellRows, lang)}
 
                 {/* ── Summary boxes ── */}
                 <rect x="15" y="695" width="282" height="118" rx="4" className="dgm-node-rect" />
