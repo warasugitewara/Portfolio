@@ -186,3 +186,56 @@ workloads[]: { vmid, kind: "lxc"|"qemu"|"baremetal", name, status: "running"|"st
 - Uptime Kuma の API 連携・サイト内ライブ表示（リンクとバッジのみ）
 - `server.ts` のキャッシュヘッダ・セキュリティヘッダ改善、`robots.txt` / `sitemap.xml`（2026-07 レビューの残課題だが、今回のスコープ外。必要なら別タスク）
 - GitHub API 取得ロジックの変更（現行のプロキシ + フォールバックを維持）
+
+---
+
+## 検証結果による前提の修正（2026-09-20 追記）
+
+既存コードを全数確認した結果、上記の計画に**4件の前提の誤り**が見つかった。実装時はこちらを優先する。
+
+1. **`infrastructure.json` のノードは 3 つではなく 4 つ**。`minecraft-bm`（ベアメタル）が `nodes[]` に含まれており、「ノード構成」セクションは 4 件すべてを描画している。図に出ないのは `buildDgmRows` の `.filter(wl => wl.vmid !== undefined)` が**暗黙に**落としているだけ。→ スキーマに **`nodes[].kind: "pve" | "baremetal"` を必ず追加**する（これが無いと「Proxmox ノード数 3」も図の列数も導出できない）。
+2. **現行 JSON の行数内訳は HP-1:4 / HP-2:7 / dell:6（vmid 付き 17 件）**。本文の「HP-1:6 / HP-2:8 / dell:6（20 件）」は**今回追加する新データ**であり、現状はまだ破綻していない。図の許容は**ちょうど 8 行**（9 行目で枠を 26px 突破）なので、新データで HP-2 が 8 行になると**余裕ゼロ**になる。可変高化は必須だが理由は「既に溢れている」ではなく「次の 1 件で溢れる」。
+3. **`HomePageProps` の `i18n: any` は既に存在しない**（`src/pages/HomePage.tsx:14-17` は `i18n: I18n`。リポジトリ全体で `any` は 0 件、oxlint が `no-explicit-any: error`）。`CLAUDE.md:40` の記述が stale なので併せて削除する。
+4. **テストは `src/utils/*.test.ts` 併置が既存パターン**（`i18n.test.ts` / `githubRepos.test.ts` が既にある）。`CLAUDE.md:22` の「テストランナーは未設定」も stale。
+
+### スキーマ設計の修正
+
+- `workloads[]` は **判別可能ユニオン**にする（`{kind:"lxc"|"qemu"; vmid:number}` と `{kind:"baremetal"}`）。`vmid` 必須にすると `minecraft-bm` の 2 件が表現できない。
+- 本文のスキーマ案から**欠落していた既存フィールドを残す**: `workloads[].os`、`nodes[].name_en`、`nodes[].purpose` / `purpose_en`（`purpose` → `summary` へのリネームは 19 workload × 2 言語の一括変更になる）。
+- HW 諸元は `node.hardware` 文字列（1 箇所）だけでなく **`InfrastructurePage.tsx:298/315/332/342/345` に TSX 直書きでも存在**（三重管理）。構造化しただけでは追従しないので同時に置換する。
+
+### スタッツ導出の修正
+
+「全部 `infrastructure.json` から導出」は成立しない。**nodes / running guests の 2 件のみ導出**、`certifications` は `profile.credentials.length`、`open inbound ports: 0` は数えられる事実ではないのでリテラル維持。また `/` で 32KB の `infrastructure.json` を追加 fetch することになり、`App.tsx` が `InfrastructurePage` を lazy 化している設計思想と逆行するため、**`infra` が null の間は既存の `value` リテラルをフォールバック表示**する（チラつきなし）。
+
+### i18n 撤去作業の危険性（最重要）
+
+`t()` は `labels?.[key] ?? ""` で、`I18nInfrastructure` が index signature を持つため、**キーを消しても型チェック・lint・build は全て通り、画面が静かに空白になる**。撤去対象は 48 キー、保持は 51 キー（分類は検証結果に準拠）。必ず以下のテストを**先に**入れてから撤去する:
+
+- ja / en のキー集合一致（現在 113 vs 113 で一致）
+- `InfrastructurePage.tsx` の `t("...")` 参照キーが両 JSON に存在すること（index signature で失われた型安全性をテストで復元）
+- `infrastructure` セクションの全値が `/CT\d{3,4}|VM\d{3}|192\.168\.\d\./` にマッチしないこと（撤去完了後に有効化し、再混入を恒久的に防ぐ）
+
+なお図 2 には **i18n 化されておらず言語切替しない行が 3 つ**ある（`:592` / `:615` / `:624`。`netSeg0Row4` / `netSeg1Row1` / `netSeg1Row4` が JSON に存在しない）。これも JSON 由来に寄せて解消する。
+
+### ジオメトリ計算式（検証済み）
+
+現行のリテラル群は `maxRows = 8` / `legendRows = 8` で下式と**厳密に一致**する（近似ではない）。これが式化の正当性の根拠であり、ゴールデン回帰テストの基準になる。
+
+```
+nodeY    = 185 + 35
+rowY0    = nodeY + 63
+nodeH    = 63 + (n-1)*46 + 40 + 20      // = 46n + 77  → n=8 で 445 ✓
+clusterH = 35 + nodeH + 10              // = 46n + 122 → n=8 で 490 ✓
+summaryY = 185 + clusterH + 20          //             → n=8 で 695 ✓
+legendY  = summaryY + 118 + 20          //             → n=8 で 833 ✓
+legendH  = 67 + (L-1)*30 + 23           //             → L=8 で 300 ✓
+vbHeight = legendY + legendH + 17       //             → 1150 ✓
+```
+
+置換対象の座標リテラルは縦方向で約 40 箇所（`viewBox` / cluster `y,height` / node `y,height` ×3 / ノード名 y ×3 / HW ラベル y ×3 / サマリ箱 y ×4 + 内部 17 個 / 凡例 y,height,title y + 行 y ×8）。`y ≤ 130` のネットワーク帯は行数に非依存なので据え置き可。
+
+### モバイルと文字サイズ
+
+可変高化は**モバイル表示に影響しない**（viewBox 幅 1200 は不変、フォントの実効サイズは 1px も変わらない）。ただし **デスクトップで既に読めない**問題が別に存在する: 図の実効倍率は 0.657（デスクトップ）/ 0.547（480px 幅）で、`.dgm-row-note` の 10px は実効 6.6px、`.net-*` の 8px は 5.3px。行数が増える前に **`.dgm-row-*` のフォント底上げ（10→12px / 12→14px）と、デスクトップ側にも横スクロールを許す `min-width` 設定**が必要。
+また **SVG 内の `font-size` はトークン化しない**（SVG 座標系の px と CSS の rem は意味が異なり、倍率計算が壊れる）。トークン化は `.infra-*`（DOM 側）に限定する。
