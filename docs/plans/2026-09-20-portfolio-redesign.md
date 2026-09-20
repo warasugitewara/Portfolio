@@ -289,3 +289,25 @@ vbHeight = legendY + legendH + 17       //             → 1150 ✓
 ### 未解決（実装前に要確認）
 
 - **CT601 `tango` の用途**。VM600 と 601 は別物であることがスクリーンショットで確定したため、「Voicevox の演算分離」の説明は VM600 のものとして扱った。601 は ZenNotes の `Tango Phase 1 現況メモ` では **JST 基準の間隔反復学習アプリ**（tags `ct;db;debian`、2core / 4GB / 67GB）だが、本人の確認が取れていない
+
+---
+
+## 実装の進捗（2026-09-20 時点）
+
+**完了（PR #4 の `02f0891` / `a8c1aa9` / `b013d10`）**
+
+1. `infrastructure.json` を pvesh 実データで再構築し、スキーマを構造化（`nodes[].kind` / 判別可能ユニオン / `status` / `cores` / `memMiB` / `diskGiB` / `icon` / `caption`）
+2. コード内定数 `DGM_META` を廃止し、構成図の行を JSON から直接生成
+3. Hero のスタッツを導出に変更（`profile.json` の `derive`、読み込み中は既存リテラルにフォールバック）
+4. `infraStats` / `infraHardware` / `infraIcons` / `dgmGeometry` を純関数として切り出し、テスト 38 件が通る状態
+5. 改名・移設・廃止で嘘になっていた文言を両言語そろえて修正
+6. 構成図のジオメトリを計算式化（実データの 7 行で viewBox が 1104 に自動追従することをブラウザで確認）。停止中ゲストは破線の輪郭で描き分け
+
+**残り**
+
+- `purpose` → `summary` へのリネームは**見送った**（19 workload × 2 言語の一括変更に対して得るものが小さいため。`caption` の追加だけで二重管理は解消できている）
+- i18n の CT 番号ベタ書き撤去（48 キー）と parity テストの導入。※事実として誤っていた分は修正済みで、残るのは「データの再掲を JSON へ寄せる」構造改善
+- デザイン刷新の本体: フォントのセルフホスト（HackGen サブセット + IBM Plex Sans）、トークン刷新、ヒーローの計器盤化、BootAnimation の置き換え、Setup / Gear 節の新設、インフラページのセグメントナビ化
+- `infrastructure.css` の生 px/rem 116 箇所のトークン化、`.dgm-row-*` のフォント底上げ（実効 6.6px で読めない）
+- `skills.json` / `featured.json` / `philosophy.json` の内容更新、README の既知負債の更新
+- **撤去したもの節は作らない**（本人判断で不要）
