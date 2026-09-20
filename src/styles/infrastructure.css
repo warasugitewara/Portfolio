@@ -2,34 +2,35 @@
    Infrastructure page — theme-aware styles (CLI / terminal aesthetic)
    All colors derive from the global tokens defined in main.css:
      --color-bg, --color-surface, --color-text, --color-text-secondary,
-     --color-neon-green, --color-neon-cyan, --color-accent
+     --color-accent, --color-signal, --color-alert
    Local vars below are derived from those tokens and overridden for light
    mode so both diagrams and cards stay legible in both themes.
    ============================================================================ */
 
 .infra-page {
   /* accents */
-  --infra-accent: var(--color-neon-green);
-  --infra-cyan: var(--color-neon-cyan);
-  --infra-warn: #f59e0b; /* amber — VM / exception routes (dark default) */
-  --infra-vm-color: #f59e0b;
+  --infra-accent: var(--color-accent);
+  --infra-cyan: var(--color-signal);
+  --infra-warn: var(--color-alert);
+  --infra-vm-color: var(--color-signal);
 
-  /* surfaces & borders derived from the green accent */
+  /* Surfaces and hairlines stay neutral: tinting them with the copper accent
+     turns the whole diagram into a warm wash. Accent is for emphasis only. */
   --infra-diagram-surface: var(--color-surface);
-  --infra-surface-tint: color-mix(in srgb, var(--color-neon-green) 6%, transparent);
-  --infra-header-bg: color-mix(in srgb, var(--color-neon-green) 12%, transparent);
-  --infra-header-bg-hover: color-mix(in srgb, var(--color-neon-green) 20%, transparent);
-  --infra-border: color-mix(in srgb, var(--color-neon-green) 45%, transparent);
-  --infra-border-soft: color-mix(in srgb, var(--color-neon-green) 22%, transparent);
+  --infra-surface-tint: color-mix(in srgb, var(--color-text) 4%, transparent);
+  --infra-header-bg: color-mix(in srgb, var(--color-text) 6%, transparent);
+  --infra-header-bg-hover: color-mix(in srgb, var(--color-accent) 12%, transparent);
+  --infra-border: var(--color-border-strong);
+  --infra-border-soft: var(--color-border);
 
   padding: 2rem 0;
   font-family: var(--font-mono);
 }
 
 [data-theme='light'] .infra-page {
-  /* darker amber so it stays readable on a light diagram surface */
-  --infra-warn: #b45309;
-  --infra-vm-color: #b45309;
+  /* Both hues already carry light-theme values from the palette. */
+  --infra-warn: var(--color-alert);
+  --infra-vm-color: var(--color-signal);
 }
 
 /* ── Heading / overview ─────────────────────────────────────────────── */
@@ -135,6 +136,7 @@
 }
 
 .infra-subhead {
+  font-family: var(--font-mono);
   color: var(--color-text-secondary);
   margin-bottom: 0.5rem;
 }
@@ -335,12 +337,12 @@
   font-style: italic;
 }
 .dgm-node-rect {
-  fill: color-mix(in srgb, var(--infra-accent) 10%, transparent);
-  stroke: var(--infra-accent);
-  stroke-width: 2;
+  fill: color-mix(in srgb, var(--color-text) 4%, transparent);
+  stroke: var(--infra-border);
+  stroke-width: 1;
 }
 .dgm-cluster-rect {
-  fill: color-mix(in srgb, var(--infra-accent) 5%, transparent);
+  fill: color-mix(in srgb, var(--color-text) 2%, transparent);
   stroke: var(--infra-accent);
   stroke-width: 3;
   stroke-dasharray: 8, 4;
