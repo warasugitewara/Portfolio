@@ -358,7 +358,7 @@ export const InfrastructurePage = ({ i18n, lang }: InfrastructurePageProps) => {
                   • Zabbix (Dell CT400)
                 </text>
                 <text x="918" y="766" className="dgm-label dgm-label--sm">
-                  • pote-monitor (CT104)
+                  • Discord-Pin-Service (CT104)
                 </text>
                 <text x="918" y="784" className="dgm-label dgm-label--sm">
                   • Proxmox Web UI
@@ -560,7 +560,7 @@ export const InfrastructurePage = ({ i18n, lang }: InfrastructurePageProps) => {
                   {t("netSeg0Row3")}
                 </text>
                 <text x="48" y="462" className="net-seg-row">
-                  📡 pote-monitor · 🎮 Velocity · 📺 MeTube · 📊 Zabbix (Dell)
+                  📡 Discord-Pin-Service · 📺 MeTube · 📊 Zabbix · 🗄️ media-server (Dell)
                 </text>
                 <text x="48" y="482" className="net-warn-txt">
                   {t("netSeg0Row5")}
@@ -592,7 +592,7 @@ export const InfrastructurePage = ({ i18n, lang }: InfrastructurePageProps) => {
                   {t("netSeg1Row3")}
                 </text>
                 <text x="538" y="462" className="net-seg-row">
-                  🔀 Headroom-Proxy · 🔒 secrets1 (HP-2)
+                  📈 Pens-Uptime-kuma · 🤖 Uir-bot (HP-2)
                 </text>
                 <text x="538" y="482" className="net-sl">
                   {t("netUpstreamDns")}

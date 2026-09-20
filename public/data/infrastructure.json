@@ -643,14 +643,14 @@
       ],
       "applications": [
         "Zabbix",
+        "Uptime Kuma",
         "Minecraft (Purpur)",
         "Terraria",
         "GraalVM",
         "Velocity",
         "VOICEVOX",
         "Discord Bot",
-        "Homepage",
-        "Headroom",
+        "Samba",
         "MeTube",
         "DriveBackupV2",
         "FileBrowser",
@@ -669,17 +669,17 @@
       "ベアメタル Minecraft サーバー運用（Purpur + GraalVM）と DriveBackupV2 による世代バックアップ設計（深夜転送 + 帯域制限で帯域圧迫を防止）"
     ],
     "operational_practices": {
-      "monitoring": "Zabbix サーバー (VMID 400) + pote-monitor (BTC/ETH Discord 通知) + Proxmox Web UI",
+      "monitoring": "Zabbix サーバー (CT400) + Discord-Pin-Service (CT104) による webhook 通知 + Proxmox Web UI",
       "backups": "手動 + Google Drive クラウドバックアップ + DriveBackupV2（Minecraft ワールド・1週間分）",
       "updates": "定期更新 + 手動確認",
-      "documentation": "メモは Google Keep、ノートは Discord・GitHub・物理で管理（ZenNotes は廃止 — AI 主導の運用に移行し、本人は閲覧中心）"
+      "documentation": "メモは Google Keep、ノートは Discord・GitHub・物理で管理。ZenNotes はローカル運用で足りるため CT を廃止した"
     },
     "operations": {
       "monitoring": {
         "tool": "Zabbix",
-        "server": "VMID:400 LXC（Dell ノード）",
+        "server": "CT400（Dell ノード）",
         "coverage": "全ノード・全 CT/VM を監視対象。CPU・メモリ・ディスク使用率・プロセス死活・ネットワーク帯域をリアルタイム計測",
-        "alerting": "pote-monitor (CT:104) が価格アラートを Discord 通知に統合。Zabbix アラートと併用"
+        "alerting": "Zabbix のアラートに加え、Discord-Pin-Service (CT104) が各種通知の webhook 処理を引き受けている"
       },
       "access_management": {
         "internal": "Twingate VPN 経由でのみ Proxmox WebUI・SSH にアクセス可能",
@@ -689,7 +689,7 @@
       "reliability": {
         "uptime_target": "ホームラボとして合理的な稼働率を維持",
         "restart_policy": "Proxmox の自動起動設定で CT/VM はホスト再起動後に自動復旧",
-        "backup": "Proxmox Backup Server による定期スナップショット（計画中）。Minecraft ワールドは DriveBackupV2 で毎晩 MC-Backup CT へ保管済み"
+        "backup": "Proxmox Backup Server による定期スナップショット（計画中）。Minecraft ワールドは DriveBackupV2 で毎晩 MC-Backup CT (CT100) へ保管済み"
       }
     }
   }
