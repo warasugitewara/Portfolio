@@ -193,7 +193,7 @@ export const InfrastructurePage = ({ i18n, lang }: InfrastructurePageProps) => {
       <meta name="description" content={t("metaDescription")} />
       <div className="section-container">
         {/* Title */}
-        <h1 className="infra-title">🖧 {pickLang(lang, data.title_en ?? data.title, data.title)}</h1>
+        <h1 className="infra-title"> {pickLang(lang, data.title_en ?? data.title, data.title)}</h1>
         <p className="infra-subtitle">
           {pickLang(lang, data.subtitle_en ?? data.subtitle, data.subtitle)}
         </p>
@@ -218,7 +218,7 @@ export const InfrastructurePage = ({ i18n, lang }: InfrastructurePageProps) => {
                 </text>
                 <rect x="20" y="74" width="175" height="56" rx="4" className="dgm-node-rect" />
                 <text x="107" y="100" textAnchor="middle" className="dgm-node-text">
-                  🌐 au one net
+                   au one net
                 </text>
                 <text x="107" y="118" textAnchor="middle" className="dgm-label">
                   1Gbps / ONU
@@ -229,7 +229,7 @@ export const InfrastructurePage = ({ i18n, lang }: InfrastructurePageProps) => {
 
                 <rect x="245" y="74" width="250" height="56" rx="4" className="dgm-core-rect" />
                 <text x="370" y="98" textAnchor="middle" className="dgm-node-text">
-                  🛡️ OPNsense
+                   OPNsense
                 </text>
                 <text x="370" y="116" textAnchor="middle" className="dgm-label">
                   {t("dgmOpnRouter")}
@@ -249,7 +249,7 @@ export const InfrastructurePage = ({ i18n, lang }: InfrastructurePageProps) => {
 
                 <rect x="815" y="74" width="365" height="56" rx="4" className="dgm-node-rect" />
                 <text x="997" y="98" textAnchor="middle" className="dgm-node-text">
-                  🔒 Twingate ZT + ☁️ Cloudflare Tunnel
+                   Twingate ZT +  Cloudflare Tunnel
                 </text>
                 <text x="997" y="116" textAnchor="middle" className="dgm-label">
                   {t("dgmZeroInbound")}
@@ -278,7 +278,7 @@ export const InfrastructurePage = ({ i18n, lang }: InfrastructurePageProps) => {
                   className="dgm-node-inner-rect"
                 />
                 <text x="210" y={geo.nodeTitleY} textAnchor="middle" className="dgm-node-text">
-                  🖥️ HP-1
+                   HP-1
                 </text>
                 <text x="210" y={geo.nodeHwY} textAnchor="middle" className="dgm-label">
                   HP Z240 SFF · Xeon E3-1225 · 16GB
@@ -312,7 +312,7 @@ export const InfrastructurePage = ({ i18n, lang }: InfrastructurePageProps) => {
                   className="dgm-node-inner-rect"
                 />
                 <text x="990" y={geo.nodeTitleY} textAnchor="middle" className="dgm-node-text">
-                  🖥️ Dell
+                   Dell
                 </text>
                 <text x="990" y={geo.nodeHwY} textAnchor="middle" className="dgm-label">
                   OptiPlex 7040 SFF · i3-6100 · 8GB
@@ -425,28 +425,28 @@ export const InfrastructurePage = ({ i18n, lang }: InfrastructurePageProps) => {
                   {t("dgmLegendTitle")}
                 </text>
                 <text x="35" y={geo.legendRowY(0)} className="dgm-legend-text">
-                  <tspan className="dgm-legend-icon">🖧</tspan> {t("dgmLegend1")}
+                  <tspan className="dgm-legend-icon"></tspan> {t("dgmLegend1")}
                 </text>
                 <text x="35" y={geo.legendRowY(1)} className="dgm-legend-text">
-                  <tspan className="dgm-legend-icon">🛡️</tspan> {t("dgmLegend2")}
+                  <tspan className="dgm-legend-icon"></tspan> {t("dgmLegend2")}
                 </text>
                 <text x="35" y={geo.legendRowY(2)} className="dgm-legend-text">
-                  <tspan className="dgm-legend-icon">🔐</tspan> {t("dgmLegend3")}
+                  <tspan className="dgm-legend-icon"></tspan> {t("dgmLegend3")}
                 </text>
                 <text x="35" y={geo.legendRowY(3)} className="dgm-legend-text">
-                  <tspan className="dgm-legend-icon">🛡️</tspan> {t("dgmLegend4")}
+                  <tspan className="dgm-legend-icon"></tspan> {t("dgmLegend4")}
                 </text>
                 <text x="35" y={geo.legendRowY(4)} className="dgm-legend-text">
-                  <tspan className="dgm-legend-icon">☁️</tspan> {t("dgmLegend5")}
+                  <tspan className="dgm-legend-icon"></tspan> {t("dgmLegend5")}
                 </text>
                 <text x="35" y={geo.legendRowY(5)} className="dgm-legend-text">
-                  <tspan className="dgm-legend-icon">📊</tspan> {t("dgmLegend6")}
+                  <tspan className="dgm-legend-icon"></tspan> {t("dgmLegend6")}
                 </text>
                 <text x="35" y={geo.legendRowY(6)} className="dgm-legend-text">
-                  <tspan className="dgm-legend-icon">🎮</tspan> {t("dgmLegend7")}
+                  <tspan className="dgm-legend-icon"></tspan> {t("dgmLegend7")}
                 </text>
                 <text x="35" y={geo.legendRowY(7)} className="dgm-legend-text">
-                  <tspan className="dgm-legend-icon">💾</tspan> {t("dgmLegend8")}
+                  <tspan className="dgm-legend-icon"></tspan> {t("dgmLegend8")}
                 </text>
               </svg>
             </div>
@@ -516,7 +516,7 @@ export const InfrastructurePage = ({ i18n, lang }: InfrastructurePageProps) => {
                 {/* ── Internet ── */}
                 <rect x="350" y="16" width="300" height="50" rx="5" className="net-ft" />
                 <text x="500" y="46" textAnchor="middle" className="net-tl">
-                  🌐 Internet — au one net 1Gbps
+                   Internet — au one net 1Gbps
                 </text>
 
                 {/* Internet → routes */}
@@ -546,7 +546,7 @@ export const InfrastructurePage = ({ i18n, lang }: InfrastructurePageProps) => {
                 {/* ── ① Cloudflare (public) ── */}
                 <rect x="350" y="100" width="300" height="112" rx="5" className="net-ft-cf" />
                 <text x="500" y="120" textAnchor="middle" className="net-cl">
-                  ☁️ Cloudflare Tunnel
+                   Cloudflare Tunnel
                 </text>
                 <line x1="350" y1="128" x2="650" y2="128" className="net-divider-cf" />
                 <text x="500" y="145" textAnchor="middle" className="net-rt-cf">
@@ -615,7 +615,7 @@ export const InfrastructurePage = ({ i18n, lang }: InfrastructurePageProps) => {
                   {t("netSeg0Row3")}
                 </text>
                 <text x="48" y="462" className="net-seg-row">
-                  📡 Discord-Pin-Service · 📺 MeTube · 📊 Zabbix · 🗄️ media-server (Dell)
+                   Discord-Pin-Service ·  MeTube ·  Zabbix ·  media-server (Dell)
                 </text>
                 <text x="48" y="482" className="net-warn-txt">
                   {t("netSeg0Row5")}
@@ -638,7 +638,7 @@ export const InfrastructurePage = ({ i18n, lang }: InfrastructurePageProps) => {
                 </text>
                 <line x1="535" y1="382" x2="955" y2="382" className="net-divider-cf" />
                 <text x="538" y="402" className="net-seg-row">
-                  🛡️ adguard-1.x [CT106 · HP-2] — AdGuard Home DNS
+                   adguard-1.x [CT106 · HP-2] — AdGuard Home DNS
                 </text>
                 <text x="538" y="422" className="net-seg-row">
                   {t("netSeg1Row2")}
@@ -647,7 +647,7 @@ export const InfrastructurePage = ({ i18n, lang }: InfrastructurePageProps) => {
                   {t("netSeg1Row3")}
                 </text>
                 <text x="538" y="462" className="net-seg-row">
-                  📈 Pens-Uptime-kuma · 🤖 Uir-bot (HP-2)
+                   Pens-Uptime-kuma ·  Uir-bot (HP-2)
                 </text>
                 <text x="538" y="482" className="net-sl">
                   {t("netUpstreamDns")}
@@ -701,7 +701,7 @@ export const InfrastructurePage = ({ i18n, lang }: InfrastructurePageProps) => {
         </CollapsibleSection>
 
         {/* Hypervisor */}
-        <CollapsibleSection title={`🖥️ ${labels?.hypervisor || "Proxmox VE"}`} defaultOpen>
+        <CollapsibleSection title={` ${labels?.hypervisor || "Proxmox VE"}`} defaultOpen>
           <div className="infra-panel">
             <h3 className="infra-hypervisor__platform">{data.hypervisor.platform}</h3>
             <p className="infra-hypervisor__purpose">
@@ -810,7 +810,7 @@ export const InfrastructurePage = ({ i18n, lang }: InfrastructurePageProps) => {
         </CollapsibleSection>
 
         {/* Security Model */}
-        <CollapsibleSection title={`🔐 ${labels?.securityModel || "セキュリティモデル"}`}>
+        <CollapsibleSection title={` ${labels?.securityModel || "セキュリティモデル"}`}>
           <div className="infra-grid">
             <div className="infra-card">
               <h4 className="infra-card__title">{t("cardSshConfig")}</h4>
@@ -997,7 +997,7 @@ export const InfrastructurePage = ({ i18n, lang }: InfrastructurePageProps) => {
         </CollapsibleSection>
 
         {/* Learning Outcomes */}
-        <CollapsibleSection title={`📚 ${labels?.learningOutcomes || "学習成果"}`}>
+        <CollapsibleSection title={` ${labels?.learningOutcomes || "学習成果"}`}>
           <div className="infra-panel">
             <ul className="infra-list">
               {pickArr(data.learning_outcomes_en, data.learning_outcomes).map((outcome, idx) => (

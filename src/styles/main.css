@@ -131,6 +131,15 @@
 /* =========================================================================
    Reset & base
    ========================================================================= */
+/* Form controls do not inherit the family on their own, and the icon
+   glyphs live in the mono face. */
+button,
+input,
+select,
+textarea {
+  font-family: inherit;
+}
+
 * {
   margin: 0;
   padding: 0;

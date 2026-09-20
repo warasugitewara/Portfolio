@@ -31,7 +31,7 @@ export const Hero = ({ i18n, profile, infra, lang }: HeroProps) => {
           <p className="hero-subtitle">{i18n.hero.subtitle}</p>
           {profile && (
             <p className="hero-location">
-              {"📍"} {profile.location}
+              {""} {profile.location}
             </p>
           )}
           {stats.length > 0 && (

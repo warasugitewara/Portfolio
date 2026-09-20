@@ -533,8 +533,8 @@
     },
     "future_roadmap": {
       "phase_1_current": {
-        "status": "✅ 完了",
-        "status_en": "✅ Complete",
+        "status": "✓ 完了",
+        "status_en": "✓ Complete",
         "components": [
           "Proxmox 単一ノード（Dell）",
           "Twingate リモートアクセス",
@@ -549,8 +549,8 @@
         ]
       },
       "phase_2_planned": {
-        "status": "✅ 完了",
-        "status_en": "✅ Complete",
+        "status": "✓ 完了",
+        "status_en": "✓ Complete",
         "components": [
           "HP Z240 SFF × 2 台追加",
           "Proxmox クラスター構築（waras-nw 3ノード）",
