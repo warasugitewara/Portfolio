@@ -5,10 +5,13 @@ import type {
   InfraNode,
   InfraRoadmapPhase,
   InfraWorkload,
+  InfraWorkloadStatus,
   Language,
 } from "../types";
 import { getDataUrl } from "../utils/path";
 import { pickLang } from "../utils/pickLang";
+import { formatHardware } from "../utils/infraHardware";
+import { iconFor } from "../utils/infraIcons";
 import { CollapsibleSection } from "../components/CollapsibleSection";
 import "../styles/infrastructure.css";
 
@@ -31,72 +34,40 @@ type DgmRow = {
   icon: string;
   name: string;
   id: string;
-  note: string;
-  /** English variant of `note`; used when `lang === "en"`. */
-  note_en: string;
+  /** Short caption shown under the workload name. */
+  caption: string;
+  /** English variant of `caption`; used when `lang === "en"`. */
+  caption_en: string;
   variant?: DgmVariant;
+  status: InfraWorkloadStatus;
 };
 
-type DgmMeta = { icon: string; note: string; note_en: string; variant?: DgmVariant };
+/** Human-facing label for a workload kind. `qemu` is an internal token, never shown. */
+const workloadKindLabel = (kind: InfraWorkload["kind"]): string =>
+  kind === "qemu" ? "VM" : kind === "lxc" ? "LXC" : "Bare-metal";
 
-const DGM_META: Record<string, DgmMeta> = {
-  // HP-1
-  CT101: { icon: "🎵", note: "Discord 音楽ボット", note_en: "Discord music bot" },
-  CT108: { icon: "🏠", note: "ダッシュボード (gethomepage)", note_en: "Dashboard (gethomepage)" },
-  CT304: { icon: "🔊", note: "読み上げ (VOICEVOX)", note_en: "TTS readout (VOICEVOX)" },
-  VM600: { icon: "🗣️", note: "TTS 音声合成エンジン", note_en: "TTS synthesis engine" },
-  // HP-2
-  VM500: {
-    icon: "🛡️",
-    note: "メイン FW・ルータ / 0.x·1.x 分離",
-    note_en: "Main FW / router · 0.x/1.x split",
-    variant: "core",
-  },
-  CT105: { icon: "🔐", note: "ゼロトラスト (1.x)", note_en: "Zero-trust (1.x)" },
-  CT106: { icon: "🛡️", note: "DNS フィルタ (1.x)", note_en: "DNS filter (1.x)" },
-  CT107: { icon: "🛡️", note: "DNS フィルタ (0.x 冗長)", note_en: "DNS filter (0.x redundant)" },
-  CT100: {
-    icon: "💾",
-    note: "DriveBackupV2 受け · FileBrowser",
-    note_en: "DriveBackupV2 sink · FileBrowser",
-  },
-  CT700: { icon: "🔀", note: "AI コンテキスト圧縮", note_en: "AI context compression" },
-  CT1000: { icon: "🔒", note: "非公開", note_en: "Private" },
-  // Dell
-  CT102: { icon: "🔐", note: "ゼロトラスト (0.x)", note_en: "Zero-trust (0.x)" },
-  CT103: {
-    icon: "🌐",
-    note: "Bun+Hono · CF Tunnel",
-    note_en: "Bun+Hono · CF Tunnel",
-    variant: "cf",
-  },
-  CT104: { icon: "📡", note: "BTC/ETH Discord 通知", note_en: "BTC/ETH Discord alerts" },
-  CT301: { icon: "🎮", note: "Minecraft プロキシ", note_en: "Minecraft proxy" },
-  CT302: { icon: "📺", note: "動画DL (yt-dlp)", note_en: "Video DL (yt-dlp)" },
-  CT400: { icon: "📊", note: "クラスター監視", note_en: "Cluster monitoring" },
-};
+/** Derive a diagram row id from a workload: e.g. LXC 101 -> "CT101", VM 500 -> "VM500". */
+const workloadRowId = (wl: InfraWorkload): string =>
+  `${wl.kind === "qemu" ? "VM" : "CT"}${wl.vmid}`;
 
-const DGM_META_FALLBACK: DgmMeta = { icon: "📦", note: "", note_en: "" };
-
-/** Derive a diagram row id from a workload: e.g. LXC 101 → "CT101", VM 500 → "VM500". */
-const workloadRowId = (wl: InfraWorkload): string => `${wl.type === "VM" ? "VM" : "CT"}${wl.vmid}`;
-
-/** Build the diagram rows for a node by merging its JSON workloads with DGM_META. */
+/**
+ * Build the diagram rows for a node straight from its JSON workloads.
+ *
+ * Bare-metal services have no vmid and live outside the cluster, so they are
+ * not drawn in the cluster diagram.
+ */
 const buildDgmRows = (node: InfraNode | undefined): DgmRow[] =>
   (node?.workloads ?? [])
-    .filter((wl) => wl.vmid !== undefined)
-    .map((wl) => {
-      const id = workloadRowId(wl);
-      const meta = DGM_META[id] ?? DGM_META_FALLBACK;
-      return {
-        icon: meta.icon,
-        name: wl.name,
-        id,
-        note: meta.note,
-        note_en: meta.note_en,
-        variant: meta.variant,
-      };
-    });
+    .filter((wl) => wl.kind !== "baremetal")
+    .map((wl) => ({
+      icon: iconFor(wl.icon),
+      name: wl.name,
+      id: workloadRowId(wl),
+      caption: wl.caption,
+      caption_en: wl.caption_en,
+      variant: wl.variant,
+      status: wl.status,
+    }));
 
 const DGM_ROW_Y0 = 283;
 const DGM_ROW_STEP = 46;
@@ -123,7 +94,7 @@ const renderNodeRows = (colX: number, rows: DgmRow[], lang: Language) =>
           {row.id}
         </text>
         <text x={colX + 22} y={y + 33} className="dgm-row-note">
-          {pickLang(lang, row.note_en, row.note)}
+          {pickLang(lang, row.caption_en, row.caption)}
         </text>
       </g>
     );
@@ -712,7 +683,7 @@ export const InfrastructurePage = ({ i18n, lang }: InfrastructurePageProps) => {
                     {pickLang(lang, node.role_en ?? node.role, node.role)}
                   </span>
                   <span className="infra-node__hw">
-                    <strong>{t("lblHardware")}</strong> {node.hardware}
+                    <strong>{t("lblHardware")}</strong> {formatHardware(node.hardware)}
                   </span>
                 </span>
               }
@@ -727,7 +698,7 @@ export const InfrastructurePage = ({ i18n, lang }: InfrastructurePageProps) => {
                 {node.workloads.map((wl, idx) => (
                   <li key={idx} className="infra-node__wl">
                     <span className="infra-bullet">→</span>
-                    <strong>{wl.name}</strong> ({wl.type}
+                    <strong>{wl.name}</strong> ({workloadKindLabel(wl.kind)}
                     {wl.vmid ? ` VMID:${wl.vmid}` : ""}){wl.os && ` - ${wl.os}`}
                     {wl.purpose && (
                       <p className="infra-node__wl-purpose">

@@ -1,12 +1,12 @@
 {
   "name": "warasugi",
   "fullName": "warasugitewara",
-  "avatar": "https://avatars.githubusercontent.com/warasugitewara?v=4&t=1708592153",
+  "avatar": "https://avatars.githubusercontent.com/warasugitewara?v=4",
   "bio": "CLI-focused engineer | Paper plugins · Discord bots · Android apps | Homelab & infrastructure enthusiast",
   "location": "北海道 (Hokkaido)",
   "github": "https://github.com/warasugitewara",
   "email": "warasugitewarasabu@gmail.com",
-  "school": "工業系高校に在学中(3年)",
+  "school": "情報系の学生",
   "credentials": [
     "第二種電気工事士",
     "丙種危険物取扱者",
@@ -14,10 +14,26 @@
     "計算技術検定３級"
   ],
   "stats": [
-    { "value": "3", "label": "Proxmox VE nodes", "label_ja": "Proxmox VE ノード" },
-    { "value": "17+", "label": "CTs & VMs running 24/7", "label_ja": "常時稼働 CT・VM" },
-    { "value": "0", "label": "open inbound ports", "label_ja": "外部開放ポート" },
-    { "value": "4", "label": "certifications", "label_ja": "取得資格" }
+    {
+      "derive": "pveNodes",
+      "label": "Proxmox VE nodes",
+      "label_ja": "Proxmox VE ノード"
+    },
+    {
+      "derive": "runningGuests",
+      "label": "CTs & VMs running 24/7",
+      "label_ja": "常時稼働 CT・VM"
+    },
+    {
+      "value": "0",
+      "label": "open inbound ports",
+      "label_ja": "外部開放ポート"
+    },
+    {
+      "derive": "credentials",
+      "label": "certifications",
+      "label_ja": "取得資格"
+    }
   ],
   "socials": {
     "github": "https://github.com/warasugitewara",
