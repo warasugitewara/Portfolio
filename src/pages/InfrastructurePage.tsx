@@ -12,6 +12,8 @@ import { getDataUrl } from "../utils/path";
 import { pickLang } from "../utils/pickLang";
 import { formatHardware } from "../utils/infraHardware";
 import { iconFor } from "../utils/infraIcons";
+import { DGM_LAYOUT, computeDgmGeometry } from "../utils/dgmGeometry";
+import type { DgmGeometry } from "../utils/dgmGeometry";
 import { CollapsibleSection } from "../components/CollapsibleSection";
 import "../styles/infrastructure.css";
 
@@ -69,13 +71,14 @@ const buildDgmRows = (node: InfraNode | undefined): DgmRow[] =>
       status: wl.status,
     }));
 
-const DGM_ROW_Y0 = 283;
-const DGM_ROW_STEP = 46;
-const DGM_COL_W = 370;
+const DGM_COL_W = DGM_LAYOUT.colW;
 
-const renderNodeRows = (colX: number, rows: DgmRow[], lang: Language) =>
+/** Legend entries rendered below the summary boxes (dgmLegend1..8). */
+const DGM_LEGEND_ROWS = 8;
+
+const renderNodeRows = (colX: number, rows: DgmRow[], lang: Language, geo: DgmGeometry) =>
   rows.map((row, i) => {
-    const y = DGM_ROW_Y0 + i * DGM_ROW_STEP;
+    const y = geo.rowY(i);
     const rectClass =
       row.variant === "core"
         ? "dgm-row-rect dgm-row-rect--core"
@@ -84,10 +87,23 @@ const renderNodeRows = (colX: number, rows: DgmRow[], lang: Language) =>
           : row.variant === "warn"
             ? "dgm-row-rect dgm-row-rect--warn"
             : "dgm-row-rect";
+    // A powered-off guest reads as an outline rather than a filled row.
+    const stoppedClass = row.status === "stopped" ? " dgm-row-rect--stopped" : "";
     return (
       <g key={`${row.id}-${row.name}`}>
-        <rect x={colX + 10} y={y} width={DGM_COL_W - 20} height={40} rx={3} className={rectClass} />
-        <text x={colX + 22} y={y + 17} className="dgm-row-name">
+        <rect
+          x={colX + 10}
+          y={y}
+          width={DGM_COL_W - 20}
+          height={40}
+          rx={3}
+          className={`${rectClass}${stoppedClass}`}
+        />
+        <text
+          x={colX + 22}
+          y={y + 17}
+          className={`dgm-row-name${row.status === "stopped" ? " dgm-row-name--stopped" : ""}`}
+        >
           {row.icon} {row.name}
         </text>
         <text x={colX + DGM_COL_W - 22} y={y + 17} textAnchor="end" className="dgm-row-id">
@@ -127,6 +143,10 @@ export const InfrastructurePage = ({ i18n, lang }: InfrastructurePageProps) => {
   const hp1Rows = buildDgmRows(data.nodes.find((n) => n.id === "hp1"));
   const hp2Rows = buildDgmRows(data.nodes.find((n) => n.id === "hp2"));
   const dellRows = buildDgmRows(data.nodes.find((n) => n.id === "dell"));
+  const geo = computeDgmGeometry(
+    Math.max(hp1Rows.length, hp2Rows.length, dellRows.length),
+    DGM_LEGEND_ROWS,
+  );
 
   /** Resolve an infrastructure UI label; both locales define every key. */
   const t = (key: string): string => labels?.[key] ?? "";
@@ -187,12 +207,7 @@ export const InfrastructurePage = ({ i18n, lang }: InfrastructurePageProps) => {
         <CollapsibleSection title={t("secArchitecture")} defaultOpen>
           <div className="infra-diagram-wrap">
             <div className="infra-diagram-canvas">
-              <svg
-                viewBox="0 0 1200 1150"
-                className="infra-svg"
-                role="img"
-                aria-label={t("dgmAria")}
-              >
+              <svg viewBox={geo.viewBox} className="infra-svg" role="img" aria-label={t("dgmAria")}>
                 <text x="600" y="34" textAnchor="middle" className="dgm-title">
                   {t("dgmTitle")}
                 </text>
@@ -243,154 +258,194 @@ export const InfrastructurePage = ({ i18n, lang }: InfrastructurePageProps) => {
                 {/* ── Cluster ── */}
                 <rect
                   x="15"
-                  y="185"
+                  y={geo.clusterY}
                   width="1170"
-                  height="490"
+                  height={geo.clusterH}
                   rx="6"
                   className="dgm-cluster-rect"
                 />
-                <text x="600" y="210" textAnchor="middle" className="dgm-node-text">
+                <text x="600" y={geo.clusterTitleY} textAnchor="middle" className="dgm-node-text">
                   {t("dgmCluster")}
                 </text>
 
                 {/* HP-1 */}
                 <rect
                   x="25"
-                  y="220"
+                  y={geo.nodeY}
                   width="370"
-                  height="445"
+                  height={geo.nodeH}
                   rx="4"
                   className="dgm-node-inner-rect"
                 />
-                <text x="210" y="246" textAnchor="middle" className="dgm-node-text">
+                <text x="210" y={geo.nodeTitleY} textAnchor="middle" className="dgm-node-text">
                   🖥️ HP-1
                 </text>
-                <text x="210" y="265" textAnchor="middle" className="dgm-label">
+                <text x="210" y={geo.nodeHwY} textAnchor="middle" className="dgm-label">
                   HP Z240 SFF · Xeon E3-1225 · 16GB
                 </text>
-                {renderNodeRows(25, hp1Rows, lang)}
+                {renderNodeRows(geo.colX(0), hp1Rows, lang, geo)}
 
                 {/* HP-2 */}
                 <rect
                   x="415"
-                  y="220"
+                  y={geo.nodeY}
                   width="370"
-                  height="445"
+                  height={geo.nodeH}
                   rx="4"
                   className="dgm-node-inner-rect"
                 />
-                <text x="600" y="246" textAnchor="middle" className="dgm-node-text">
+                <text x="600" y={geo.nodeTitleY} textAnchor="middle" className="dgm-node-text">
                   {t("dgmHp2Core")}
                 </text>
-                <text x="600" y="265" textAnchor="middle" className="dgm-label">
+                <text x="600" y={geo.nodeHwY} textAnchor="middle" className="dgm-label">
                   HP Z240 SFF · Xeon E3-1245 v5 · 16GB
                 </text>
-                {renderNodeRows(415, hp2Rows, lang)}
+                {renderNodeRows(geo.colX(1), hp2Rows, lang, geo)}
 
                 {/* Dell */}
                 <rect
                   x="805"
-                  y="220"
+                  y={geo.nodeY}
                   width="370"
-                  height="445"
+                  height={geo.nodeH}
                   rx="4"
                   className="dgm-node-inner-rect"
                 />
-                <text x="990" y="246" textAnchor="middle" className="dgm-node-text">
+                <text x="990" y={geo.nodeTitleY} textAnchor="middle" className="dgm-node-text">
                   🖥️ Dell
                 </text>
-                <text x="990" y="265" textAnchor="middle" className="dgm-label">
+                <text x="990" y={geo.nodeHwY} textAnchor="middle" className="dgm-label">
                   OptiPlex 7040 SFF · i3-6100 · 8GB
                 </text>
-                {renderNodeRows(805, dellRows, lang)}
+                {renderNodeRows(geo.colX(2), dellRows, lang, geo)}
 
                 {/* ── Summary boxes ── */}
-                <rect x="15" y="695" width="282" height="118" rx="4" className="dgm-node-rect" />
-                <text x="156" y="723" textAnchor="middle" className="dgm-node-text">
+                <rect
+                  x="15"
+                  y={geo.summaryY}
+                  width="282"
+                  height="118"
+                  rx="4"
+                  className="dgm-node-rect"
+                />
+                <text x="156" y={geo.summaryLineY[0]} textAnchor="middle" className="dgm-node-text">
                   {t("dgmStorage")}
                 </text>
-                <text x="30" y="748" className="dgm-label dgm-label--sm">
+                <text x="30" y={geo.summaryLineY[1]} className="dgm-label dgm-label--sm">
                   • HP-1: HDD / HP-2: SSD+HDD
                 </text>
-                <text x="30" y="766" className="dgm-label dgm-label--sm">
+                <text x="30" y={geo.summaryLineY[2]} className="dgm-label dgm-label--sm">
                   • Dell: SSD 128GB + Toshiba HDD
                 </text>
-                <text x="30" y="784" className="dgm-label dgm-label--sm">
+                <text x="30" y={geo.summaryLineY[3]} className="dgm-label dgm-label--sm">
                   {t("dgmStorage3")}
                 </text>
 
-                <rect x="311" y="695" width="282" height="118" rx="4" className="dgm-node-rect" />
-                <text x="452" y="723" textAnchor="middle" className="dgm-node-text">
+                <rect
+                  x="311"
+                  y={geo.summaryY}
+                  width="282"
+                  height="118"
+                  rx="4"
+                  className="dgm-node-rect"
+                />
+                <text x="452" y={geo.summaryLineY[0]} textAnchor="middle" className="dgm-node-text">
                   {t("dgmBackup")}
                 </text>
-                <text x="326" y="748" className="dgm-label dgm-label--sm">
+                <text x="326" y={geo.summaryLineY[1]} className="dgm-label dgm-label--sm">
                   {t("dgmBackup1")}
                 </text>
-                <text x="326" y="766" className="dgm-label dgm-label--sm">
+                <text x="326" y={geo.summaryLineY[2]} className="dgm-label dgm-label--sm">
                   {t("dgmBackup2")}
                 </text>
-                <text x="326" y="784" className="dgm-label dgm-label--sm">
+                <text x="326" y={geo.summaryLineY[3]} className="dgm-label dgm-label--sm">
                   {t("dgmBackup3")}
                 </text>
-                <text x="326" y="802" className="dgm-label dgm-label--sm">
+                <text x="326" y={geo.summaryLineY[4]} className="dgm-label dgm-label--sm">
                   {t("dgmBackup4")}
                 </text>
 
-                <rect x="607" y="695" width="282" height="118" rx="4" className="dgm-node-rect" />
-                <text x="748" y="723" textAnchor="middle" className="dgm-node-text">
+                <rect
+                  x="607"
+                  y={geo.summaryY}
+                  width="282"
+                  height="118"
+                  rx="4"
+                  className="dgm-node-rect"
+                />
+                <text x="748" y={geo.summaryLineY[0]} textAnchor="middle" className="dgm-node-text">
                   {t("dgmSecurity")}
                 </text>
-                <text x="622" y="748" className="dgm-label dgm-label--sm">
+                <text x="622" y={geo.summaryLineY[1]} className="dgm-label dgm-label--sm">
                   {t("dgmSecurity1")}
                 </text>
-                <text x="622" y="766" className="dgm-label dgm-label--sm">
+                <text x="622" y={geo.summaryLineY[2]} className="dgm-label dgm-label--sm">
                   {t("dgmSecurity2")}
                 </text>
-                <text x="622" y="784" className="dgm-label dgm-label--sm">
+                <text x="622" y={geo.summaryLineY[3]} className="dgm-label dgm-label--sm">
                   • TOTP 2FA + Anubis
                 </text>
 
-                <rect x="903" y="695" width="282" height="118" rx="4" className="dgm-node-rect" />
-                <text x="1044" y="723" textAnchor="middle" className="dgm-node-text">
+                <rect
+                  x="903"
+                  y={geo.summaryY}
+                  width="282"
+                  height="118"
+                  rx="4"
+                  className="dgm-node-rect"
+                />
+                <text
+                  x="1044"
+                  y={geo.summaryLineY[0]}
+                  textAnchor="middle"
+                  className="dgm-node-text"
+                >
                   {t("dgmMonitor")}
                 </text>
-                <text x="918" y="748" className="dgm-label dgm-label--sm">
+                <text x="918" y={geo.summaryLineY[1]} className="dgm-label dgm-label--sm">
                   • Zabbix (Dell CT400)
                 </text>
-                <text x="918" y="766" className="dgm-label dgm-label--sm">
+                <text x="918" y={geo.summaryLineY[2]} className="dgm-label dgm-label--sm">
                   • Discord-Pin-Service (CT104)
                 </text>
-                <text x="918" y="784" className="dgm-label dgm-label--sm">
+                <text x="918" y={geo.summaryLineY[3]} className="dgm-label dgm-label--sm">
                   • Proxmox Web UI
                 </text>
 
                 {/* ── Legend ── */}
-                <rect x="15" y="833" width="1170" height="300" rx="4" className="dgm-node-rect" />
-                <text x="600" y="865" textAnchor="middle" className="dgm-legend-title">
+                <rect
+                  x="15"
+                  y={geo.legendY}
+                  width="1170"
+                  height={geo.legendH}
+                  rx="4"
+                  className="dgm-node-rect"
+                />
+                <text x="600" y={geo.legendTitleY} textAnchor="middle" className="dgm-legend-title">
                   {t("dgmLegendTitle")}
                 </text>
-                <text x="35" y="900" className="dgm-legend-text">
+                <text x="35" y={geo.legendRowY(0)} className="dgm-legend-text">
                   <tspan className="dgm-legend-icon">🖧</tspan> {t("dgmLegend1")}
                 </text>
-                <text x="35" y="930" className="dgm-legend-text">
+                <text x="35" y={geo.legendRowY(1)} className="dgm-legend-text">
                   <tspan className="dgm-legend-icon">🛡️</tspan> {t("dgmLegend2")}
                 </text>
-                <text x="35" y="960" className="dgm-legend-text">
+                <text x="35" y={geo.legendRowY(2)} className="dgm-legend-text">
                   <tspan className="dgm-legend-icon">🔐</tspan> {t("dgmLegend3")}
                 </text>
-                <text x="35" y="990" className="dgm-legend-text">
+                <text x="35" y={geo.legendRowY(3)} className="dgm-legend-text">
                   <tspan className="dgm-legend-icon">🛡️</tspan> {t("dgmLegend4")}
                 </text>
-                <text x="35" y="1020" className="dgm-legend-text">
+                <text x="35" y={geo.legendRowY(4)} className="dgm-legend-text">
                   <tspan className="dgm-legend-icon">☁️</tspan> {t("dgmLegend5")}
                 </text>
-                <text x="35" y="1050" className="dgm-legend-text">
+                <text x="35" y={geo.legendRowY(5)} className="dgm-legend-text">
                   <tspan className="dgm-legend-icon">📊</tspan> {t("dgmLegend6")}
                 </text>
-                <text x="35" y="1080" className="dgm-legend-text">
+                <text x="35" y={geo.legendRowY(6)} className="dgm-legend-text">
                   <tspan className="dgm-legend-icon">🎮</tspan> {t("dgmLegend7")}
                 </text>
-                <text x="35" y="1110" className="dgm-legend-text">
+                <text x="35" y={geo.legendRowY(7)} className="dgm-legend-text">
                   <tspan className="dgm-legend-icon">💾</tspan> {t("dgmLegend8")}
                 </text>
               </svg>

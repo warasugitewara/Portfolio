@@ -419,6 +419,17 @@
   stroke: var(--infra-warn);
   stroke-width: 1.5;
 }
+/* Powered-off guests: drawn as an outline so they never read as live. */
+.dgm-row-rect--stopped {
+  fill: none;
+  stroke-dasharray: 4 3;
+  opacity: 0.75;
+}
+
+.dgm-row-name--stopped {
+  opacity: 0.7;
+}
+
 .dgm-row-name {
   fill: var(--color-text);
   font-family: inherit;
