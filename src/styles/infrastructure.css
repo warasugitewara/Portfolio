@@ -135,6 +135,40 @@
   color: var(--color-text-secondary);
 }
 
+/* Edge devices: name, address and role on one line, the reason underneath. */
+.infra-device {
+  display: grid;
+  grid-template-columns: 1.4rem auto auto 1fr;
+  gap: 0 var(--space-3);
+  align-items: baseline;
+  margin-bottom: var(--space-3);
+}
+
+.infra-device__icon {
+  color: var(--infra-accent);
+}
+
+.infra-device__addr {
+  font-variant-numeric: tabular-nums;
+  color: var(--color-text-secondary);
+}
+
+.infra-device p {
+  grid-column: 2 / -1;
+  margin-top: 2px;
+}
+
+@media (max-width: 640px) {
+  .infra-device {
+    grid-template-columns: 1.4rem 1fr;
+  }
+
+  .infra-device__addr,
+  .infra-device > span:last-of-type {
+    grid-column: 2;
+  }
+}
+
 .infra-subhead {
   font-family: var(--font-mono);
   color: var(--color-text-secondary);
