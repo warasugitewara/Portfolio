@@ -16,6 +16,8 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
+      # server.test.ts exercises the SPA fallback, which serves dist/index.html.
+      - run: npm run build
       - run: npm test -- --run
       - run: npm run type-check
       - run: npm run lint
