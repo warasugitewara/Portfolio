@@ -16,7 +16,8 @@ CLI / ターミナル風デザインの個人ポートフォリオ。React 19 + 
 
 ## ✨ 特徴
 
-- **CLI 風デザイン** — 起動アニメーションとモノスペース中心の UI
+- **ダッシュボード型のトップ** — ヒーローは `infrastructure.json` から組み立てる実データの盤面（ノード別のゲスト一覧・稼働状態・スタッツ）
+- **自前ホストの書体** — HackGen Console NF のサブセット（別名 `Waras Console`）と IBM Plex Sans。外部 CDN 無し・日本語はシステムフォント
 - **ダーク / ライト テーマ** ＆ **日本語 / 英語**（`localStorage` で保持）
 - **モバイルファースト** — スマホ〜PC まで破綻しないレスポンシブ
 - **データ駆動** — 静的コンテンツは `public/data/*.json`、リポジトリ一覧は GitHub API から動的取得
@@ -84,10 +85,15 @@ npm run dev      # 開発開始
 
 - [x] ~~**インフラ構成図のデータ一元化**~~ — 対応済み。`InfrastructurePage.tsx` は `infrastructure.json` の `nodes[*].workloads` から図の行を導出し、アイコン／短キャプションのみ `DGM_META`（ID キー）に保持。CT/VM の増減・改名は図に自動反映される。
 - [x] ~~**`*_ja` 言語フォールバックの共通化**~~ — 対応済み。`src/utils/pickLang.ts` に統一。
-- [ ] **Hero スタッツの自動算出** — `profile.json` の `stats`（ノード数 3 / CT・VM 17+ など）は `infrastructure.json` から数えられる事実の文字列再掲。構成変更時に黙ってズレるため、読み込んだデータからの導出に変更する（当面は構成変更時に手動で数値を見直すこと）
+- [x] ~~**Hero スタッツの自動算出**~~ — 対応済み。`profile.json` の `stats` は `derive` キーで `infrastructure.json` から導出する（`src/utils/infraStats.ts`）。
+- [x] ~~**構成図の座標が固定リテラル**~~ — 対応済み。`src/utils/dgmGeometry.ts` がワークロード件数から縦位置を算出する。
+- [x] ~~**i18n に CT 番号・HW 諸元がベタ書き**~~ — 対応済み。注記と凡例は `infrastructure.json` 側に移した。`src/utils/i18nParity.test.ts` が再発を検出する。
+- [ ] **`infrastructure.css` の生 px/rem** — `--space-*` / `--radius-*` を使っていない箇所が残る。ただし **SVG 内の `font-size` はトークン化しない**（SVG 座標系の px と CSS の rem は意味が違い、倍率計算が壊れる）。
 
 ## 🗒 変更履歴
 
+- **2026-09-21**: デザイン刷新 — 配色を銅アクセントの「図面と計器盤」へ変更、タイポスケール導入、アイコンを絵文字から Nerd Font グリフへ統一、ヒーローを写真からクラスター盤面へ置換（起動アニメーションは廃止）、`使っているもの` 節を新設
+- **2026-09-20**: 掲載情報を Proxmox 実データ（`pvesh`）で再構築 — CT の改名・移設・新設・廃止を反映し、`infrastructure.json` のスキーマを構造化。`DGM_META` を廃止して構成図を JSON 駆動に
 - **2026-07-15**: 旧ドメイン `wc.f5.si` の参照を完全撤去 — OG / Twitter カードを `portfolio.warasugi.com` + PNG 画像（`og-image.png` を新規生成）に統一、canonical 追加、GitHub Pages 用 SPA リダイレクトスクリプトを削除。X リンクを新アカウント `@WARASUGI7` に更新
 - **2026-07-12**: Minecraft をベアメタル専用機へ移行（Kasm WS 廃止・ハード転用）— HP-2 CT100 に DriveBackupV2 バックアップサーバー + FileBrowser を新設し、インフラページへ反映。ZenNotes CT を廃止（メモ・ノートは Google Keep / Discord / GitHub / 物理へ移行）
 - **2026-07**: 全面刷新 — TypeScript 6.0 化・CLI 風デザイン洗練・モバイル対応・自宅鯖構成を実態（OPNsense 中核 / 隔離 Kasm WS）へ更新・GitHub Pages 廃止
