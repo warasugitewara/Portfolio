@@ -1,63 +1,93 @@
 /* =========================================================================
+   Fonts (self-hosted, see public/fonts/README.md)
+   Waras Console is a renamed subset of HackGen Console NF (OFL 1.1, RFN).
+   Japanese falls back to the system stack: no JP webfont is downloaded.
+   ========================================================================= */
+@font-face {
+  font-family: 'Waras Console';
+  src: url('/fonts/waras-console-regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Waras Console';
+  src: url('/fonts/waras-console-bold.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'IBM Plex Sans';
+  src: url('/fonts/ibm-plex-sans-latin-wght-normal.woff2') format('woff2-variations');
+  font-weight: 100 700;
+  font-style: normal;
+  font-display: swap;
+}
+/* =========================================================================
    Design tokens
    The 7 contract tokens (--color-bg, --color-surface, --color-text,
-   --color-text-secondary, --color-neon-green, --color-neon-cyan,
-   --color-accent) are consumed by other stylesheets and MUST keep their
+   --color-text-secondary, --color-accent, --color-signal,
+   --color-alert) are consumed by other stylesheets and MUST keep their
    names in both themes. Everything else below is additive.
    ========================================================================= */
 :root,
 [data-theme="dark"] {
   /* Contract colors */
-  --color-bg: #0a0e27;
-  --color-surface: #16213e;
-  --color-neon-green: #34d399;
-  --color-neon-cyan: #22d3ee;
-  --color-text: #e6e9f0;
-  --color-text-secondary: #97a1b8;
-  --color-accent: #f87171;
+  --color-bg: #0d1a22;
+  --color-surface: #13242e;
+  --color-accent: #d9761f;
+  --color-signal: #45b3a0;
+  --color-text: #e4eaee;
+  --color-text-secondary: #8fa3ae;
+  --color-alert: #e0625a;
 
   /* Derived surfaces & borders */
-  --color-surface-elev: rgba(22, 33, 62, 0.45);
-  --color-surface-hover: rgba(22, 33, 62, 0.7);
-  --color-border: rgba(52, 211, 153, 0.16);
-  --color-border-strong: rgba(52, 211, 153, 0.42);
-  --color-header-bg: rgba(10, 14, 39, 0.78);
-  --color-chip-bg: rgba(52, 211, 153, 0.08);
+  --color-surface-elev: rgba(19, 36, 46, 0.55);
+  --color-surface-hover: #182d38;
+  --color-border: #22373f;
+  --color-border-strong: #35525e;
+  --color-header-bg: rgba(13, 26, 34, 0.82);
+  --color-chip-bg: rgba(217, 118, 31, 0.1);
 
   /* Hero scrim (image background stays dark-toned in both themes) */
-  --hero-scrim: linear-gradient(180deg, rgba(10, 14, 39, 0.72) 0%, rgba(10, 14, 39, 0.88) 100%);
-  --hero-text: #e6e9f0;
-  --hero-text-muted: #b6c0d6;
+  --hero-scrim: linear-gradient(180deg, rgba(8, 18, 24, 0.7) 0%, rgba(8, 18, 24, 0.9) 100%);
+  --hero-text: #eaf0f3;
+  --hero-text-muted: #b7c6ce;
 
   /* Glow / shadow */
   --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.35);
   --shadow-md: 0 8px 28px rgba(0, 0, 0, 0.45);
-  --glow-green: 0 0 22px rgba(52, 211, 153, 0.28);
-  --glow-cyan: 0 0 22px rgba(34, 211, 238, 0.28);
+  --glow-accent: 0 0 20px rgba(217, 118, 31, 0.26);
+  --glow-signal: 0 0 20px rgba(69, 179, 160, 0.26);
 
   /* Focus ring */
-  --focus-ring: var(--color-neon-cyan);
+  --focus-ring: var(--color-signal);
+
+  /* Status colors. These describe machine state and are never used as decoration. */
+  --color-running: #45b3a0;
+  --color-stopped: #7d929c;
 
   color-scheme: dark;
 }
 
 [data-theme="light"] {
   /* Contract colors */
-  --color-bg: #f7f8fa;
+  --color-bg: #edf1f4;
   --color-surface: #ffffff;
-  --color-neon-green: #047857;
-  --color-neon-cyan: #0e7490;
-  --color-text: #14181f;
-  --color-text-secondary: #556070;
-  --color-accent: #dc2626;
+  --color-accent: #a9560f;
+  --color-signal: #0f766e;
+  --color-text: #16222a;
+  --color-text-secondary: #55666f;
+  --color-alert: #c4342c;
 
   /* Derived surfaces & borders */
   --color-surface-elev: #ffffff;
-  --color-surface-hover: #f2f5f7;
-  --color-border: rgba(4, 120, 87, 0.2);
-  --color-border-strong: rgba(4, 120, 87, 0.5);
-  --color-header-bg: rgba(247, 248, 250, 0.85);
-  --color-chip-bg: rgba(4, 120, 87, 0.07);
+  --color-surface-hover: #e4ebef;
+  --color-border: #c9d4db;
+  --color-border-strong: #9fb1bc;
+  --color-header-bg: rgba(237, 241, 244, 0.88);
+  --color-chip-bg: rgba(169, 86, 15, 0.08);
 
   /* Hero scrim */
   --hero-scrim: linear-gradient(180deg, rgba(8, 12, 30, 0.62) 0%, rgba(8, 12, 30, 0.82) 100%);
@@ -67,11 +97,15 @@
   /* Glow / shadow */
   --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.08);
   --shadow-md: 0 10px 30px rgba(15, 23, 42, 0.12);
-  --glow-green: 0 6px 18px rgba(4, 120, 87, 0.18);
-  --glow-cyan: 0 6px 18px rgba(14, 116, 144, 0.18);
+  --glow-accent: 0 6px 18px rgba(169, 86, 15, 0.16);
+  --glow-signal: 0 6px 18px rgba(15, 118, 110, 0.16);
 
   /* Focus ring */
-  --focus-ring: var(--color-neon-cyan);
+  --focus-ring: var(--color-signal);
+
+  /* Status colors */
+  --color-running: #0f766e;
+  --color-stopped: #6b7c85;
 
   color-scheme: light;
 }
@@ -87,6 +121,17 @@
   --space-7: 3rem;
   --space-8: 4rem;
 
+  /* Type scale */
+  --fs-display: clamp(2rem, 1.35rem + 2.6vw, 2.75rem);
+  --fs-h2: 1.5rem;
+  --fs-h3: 1.0625rem;
+  --fs-body: 0.9375rem;
+  --fs-meta: 0.8125rem;
+  --fs-data: 0.75rem;
+  --lh-tight: 1.2;
+  --lh-snug: 1.45;
+  --lh-body: 1.7;
+
   --radius-sm: 4px;
   --radius-md: 8px;
   --radius-lg: 14px;
@@ -94,14 +139,28 @@
   --transition-fast: 0.15s ease;
   --transition-base: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 
-  --content-max: 900px;
+  /* Wide enough that the architecture diagram is not scaled into
+     illegibility; prose is held to a readable measure separately. */
+  --content-max: 1120px;
 
-  --font-mono: 'JetBrains Mono', 'SF Mono', 'Courier New', monospace;
+  /* Instrument face: numbers, ids, node names, icons. */
+  --font-mono: 'Waras Console', 'Hiragino Kaku Gothic ProN', 'Yu Gothic', 'Noto Sans JP', ui-monospace, 'SF Mono', monospace;
+  /* Reading face: prose and headings. */
+  --font-sans: 'IBM Plex Sans', 'Waras Console', 'Hiragino Kaku Gothic ProN', 'Yu Gothic', 'Noto Sans JP', system-ui, sans-serif;
 }
 
 /* =========================================================================
    Reset & base
    ========================================================================= */
+/* Form controls do not inherit the family on their own, and the icon
+   glyphs live in the mono face. */
+button,
+input,
+select,
+textarea {
+  font-family: inherit;
+}
+
 * {
   margin: 0;
   padding: 0;
@@ -117,7 +176,7 @@ body {
   background-color: var(--color-bg);
   color: var(--color-text);
   font-family: var(--font-mono);
-  font-size: 15px;
+  font-size: var(--fs-body);
   line-height: 1.65;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
@@ -136,24 +195,30 @@ img {
 h1, h2, h3, h4, h5, h6 {
   font-weight: 600;
   letter-spacing: 0.2px;
-  line-height: 1.3;
+  line-height: var(--lh-snug);
 }
 
-h1 { font-size: 2rem; }
-h2 { font-size: 1.5rem; }
-h3 { font-size: 1rem; }
+/* Prose reads in the sans face; everything instrument-like stays mono. */
+p {
+  font-family: var(--font-sans);
+  max-width: 68ch;
+}
+
+h1 { font-size: var(--fs-display); line-height: var(--lh-tight); }
+h2 { font-size: var(--fs-h2); }
+h3 { font-size: var(--fs-h3); }
 
 /* =========================================================================
    Links
    ========================================================================= */
 a {
-  color: var(--color-neon-green);
+  color: var(--color-accent);
   text-decoration: none;
   transition: color var(--transition-fast);
 }
 
 a:hover {
-  color: var(--color-neon-cyan);
+  color: var(--color-signal);
 }
 
 /* =========================================================================
@@ -203,7 +268,7 @@ a:hover {
 
 .header-title {
   font-size: 1.3rem;
-  color: var(--color-neon-green);
+  color: var(--color-accent);
   flex-shrink: 0;
 }
 
@@ -235,12 +300,12 @@ a:hover {
   bottom: -2px;
   width: 0;
   height: 1.5px;
-  background: var(--color-neon-green);
+  background: var(--color-accent);
   transition: width var(--transition-base);
 }
 
 .nav-link:hover {
-  color: var(--color-neon-green);
+  color: var(--color-accent);
 }
 
 .nav-link:hover::after {
@@ -270,13 +335,13 @@ a:hover {
 }
 
 .lang-btn:hover {
-  border-color: var(--color-neon-green);
-  color: var(--color-neon-green);
+  border-color: var(--color-accent);
+  color: var(--color-accent);
 }
 
 .lang-btn.active {
-  border-color: var(--color-neon-green);
-  color: var(--color-neon-green);
+  border-color: var(--color-accent);
+  color: var(--color-accent);
   background: var(--color-chip-bg);
 }
 
@@ -322,10 +387,10 @@ a:hover {
 }
 
 .section-title {
-  color: var(--color-neon-green);
+  color: var(--color-accent);
   font-size: 1.3rem;
   margin-bottom: var(--space-5);
-  border-left: 3px solid var(--color-neon-green);
+  border-left: 3px solid var(--color-accent);
   padding-left: var(--space-3);
   animation: slideInLeft 0.5s ease-out;
 }
@@ -341,32 +406,20 @@ a:hover {
    ========================================================================= */
 .hero {
   position: relative;
-  min-height: 460px;
   display: flex;
-  align-items: center;
   justify-content: center;
-  background-image: url('/minecraft-city.webp');
-  background-size: cover;
-  background-position: center;
-  background-attachment: fixed;
   margin: 0 calc(-1 * var(--space-5));
-  padding: var(--space-8) var(--space-5) var(--space-6);
-  overflow: hidden;
+  padding: var(--space-7) var(--space-5) var(--space-6);
+  border-bottom: 1px solid var(--color-border);
+  background-color: var(--color-surface-elev);
 }
 
-.hero::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: var(--hero-scrim);
-  z-index: 1;
-}
 
 .hero-container {
   position: relative;
-  z-index: 2;
-  display: flex;
-  gap: var(--space-6);
+  display: grid;
+  grid-template-columns: auto 1fr minmax(320px, 0.9fr);
+  gap: var(--space-5) var(--space-6);
   align-items: center;
   max-width: var(--content-max);
   width: 100%;
@@ -381,41 +434,41 @@ a:hover {
   width: 104px;
   height: 104px;
   border-radius: var(--radius-md);
-  border: 2px solid var(--color-neon-green);
-  box-shadow: var(--glow-green);
+  border: 2px solid var(--color-accent);
+  box-shadow: var(--glow-accent);
   transition: transform 0.4s cubic-bezier(0.23, 1, 0.32, 1),
     border-color var(--transition-base), box-shadow var(--transition-base);
   display: block;
 }
 
 .hero-avatar:hover img {
-  border-color: var(--color-neon-cyan);
+  border-color: var(--color-signal);
   transform: scale(1.06) rotate(1.5deg);
-  box-shadow: var(--glow-cyan);
+  box-shadow: var(--glow-signal);
 }
 
 .hero-content h1 {
-  color: var(--color-neon-green);
+  color: var(--color-accent);
   margin-bottom: var(--space-2);
   text-shadow: 0 1px 12px rgba(0, 0, 0, 0.4);
 }
 
 .hero-subtitle {
-  color: var(--hero-text);
+  color: var(--color-text);
   margin-bottom: var(--space-2);
   font-size: 1.02rem;
 }
 
 .hero-location {
   font-size: 0.9rem;
-  color: var(--hero-text-muted);
+  color: var(--color-text-secondary);
 }
 
 .hero-stats {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-4);
-  margin-top: var(--space-4);
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-3) var(--space-5);
+  margin-top: var(--space-5);
 }
 
 .hero-stat {
@@ -426,7 +479,7 @@ a:hover {
 }
 
 .hero-stat__value {
-  color: var(--color-neon-green);
+  color: var(--color-accent);
   font-size: 1.4rem;
   font-weight: bold;
   line-height: 1.2;
@@ -487,7 +540,7 @@ a:hover {
 
 .skill-category-title {
   font-size: 1rem;
-  color: var(--color-neon-green);
+  color: var(--color-accent);
   margin-bottom: var(--space-3);
   border-bottom: 1px solid var(--color-border);
   padding-bottom: var(--space-2);
@@ -511,8 +564,8 @@ a:hover {
 }
 
 .skill-item:hover {
-  background: var(--color-neon-green);
-  border-color: var(--color-neon-green);
+  background: var(--color-accent);
+  border-color: var(--color-accent);
   color: var(--color-bg);
   transform: translateY(-2px);
 }
@@ -545,7 +598,7 @@ a:hover {
 }
 
 .principle-title {
-  color: var(--color-neon-green);
+  color: var(--color-accent);
   font-size: 0.95rem;
   margin-bottom: var(--space-2);
 }
@@ -573,7 +626,7 @@ a:hover {
 }
 
 .featured-title {
-  color: var(--color-neon-green);
+  color: var(--color-accent);
   font-size: 1.05rem;
 }
 
@@ -599,7 +652,7 @@ a:hover {
 
 .featured-points li::before {
   content: "▸ ";
-  color: var(--color-neon-green);
+  color: var(--color-accent);
 }
 
 .featured-footer {
@@ -624,7 +677,7 @@ a:hover {
 }
 
 .featured-link {
-  color: var(--color-accent);
+  color: var(--color-alert);
   font-size: 0.85rem;
   white-space: nowrap;
 }
@@ -669,7 +722,7 @@ a:hover {
 }
 
 .project-name {
-  color: var(--color-neon-green);
+  color: var(--color-accent);
   font-size: 1rem;
   margin-bottom: var(--space-1);
 }
@@ -696,7 +749,7 @@ a:hover {
   border: 1px solid var(--color-border);
   padding: 0.2rem 0.55rem;
   border-radius: var(--radius-sm);
-  color: var(--color-neon-green);
+  color: var(--color-accent);
 }
 
 .project-stars {
@@ -751,7 +804,7 @@ a:hover {
 .snake-placeholder p {
   margin: 0;
   font-size: 1rem;
-  color: var(--color-neon-green);
+  color: var(--color-accent);
 }
 
 /* =========================================================================
@@ -775,12 +828,12 @@ a:hover {
 }
 
 .contact-link .icon {
-  color: var(--color-neon-green);
+  color: var(--color-accent);
   transition: transform var(--transition-fast);
 }
 
 .contact-link:hover {
-  color: var(--color-neon-green);
+  color: var(--color-accent);
 }
 
 .contact-link:hover .icon {
@@ -799,58 +852,163 @@ a:hover {
 }
 
 /* =========================================================================
-   Boot animation
+   Setup — a two-column ledger of tools and gear
    ========================================================================= */
-.boot-animation {
-  position: fixed;
-  inset: 0;
-  background-color: var(--color-bg);
+.setup {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.setup__group {
+  display: grid;
+  grid-template-columns: 12rem 1fr;
+  gap: var(--space-3);
+  align-items: baseline;
+  padding-bottom: var(--space-3);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.setup__label {
+  font-size: var(--fs-meta);
+  color: var(--color-text-secondary);
+}
+
+.setup__items {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 9999;
-  padding: var(--space-5);
-  animation: bootFadeOut 0.5s ease-in-out 2s forwards;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-4);
+  margin: 0;
 }
 
-.boot-terminal {
-  font-family: var(--font-mono);
-  color: var(--color-neon-green);
-  width: 100%;
-  max-width: 600px;
-  padding: var(--space-6);
-  border: 1px solid var(--color-border-strong);
-  border-radius: var(--radius-md);
-  background-color: var(--color-surface-elev);
-  box-shadow: var(--glow-green);
-}
-
-.boot-line {
-  margin-bottom: var(--space-2);
-  line-height: 1.5;
-  animation: typewrite 0.3s steps(50, end) forwards;
-  opacity: 0;
-}
-
-.boot-prompt {
-  color: var(--color-neon-cyan);
-  font-weight: bold;
-}
-
-.boot-text {
-  color: var(--color-neon-green);
-}
-
-.boot-cursor {
-  display: inline-block;
-  color: var(--color-neon-green);
-  animation: blink 0.8s infinite;
-  font-weight: bold;
+.setup__item {
+  font-size: var(--fs-body);
 }
 
 /* =========================================================================
-   Keyframes
+   Cluster board (hero)
+   One cell per guest, grouped by node. Node identity comes from the layout
+   and its label; color is reserved for machine state.
    ========================================================================= */
+.board {
+  margin: 0;
+  padding: var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background-color: var(--color-surface);
+}
+
+.board__title {
+  font-size: var(--fs-meta);
+  color: var(--color-text-secondary);
+  margin-bottom: var(--space-3);
+}
+
+.board__nodes {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.board__node {
+  display: grid;
+  grid-template-columns: 4.5rem 1fr;
+  grid-template-areas: 'name cells' 'spec cells';
+  column-gap: var(--space-3);
+  align-items: center;
+  border-left: 2px solid var(--color-border-strong);
+  padding-left: var(--space-3);
+}
+
+.board__node-name {
+  grid-area: name;
+  font-size: var(--fs-meta);
+  font-weight: 700;
+}
+
+.board__node-spec {
+  grid-area: spec;
+  font-size: var(--fs-data);
+  color: var(--color-text-secondary);
+}
+
+.board__cells {
+  grid-area: cells;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px;
+  list-style: none;
+}
+
+.board__cell {
+  width: 2.4rem;
+  padding: 3px 0;
+  text-align: center;
+  border: 1px solid color-mix(in srgb, var(--color-running) 55%, transparent);
+  border-radius: 2px;
+  background-color: color-mix(in srgb, var(--color-running) 18%, transparent);
+  animation: boardCellIn 0.28s ease-out backwards;
+  animation-delay: calc(var(--cell-index) * 14ms);
+  cursor: default;
+}
+
+/* Stopped guests carry a dashed outline as well as the muted color, so the
+   state survives a colorblind reader and a black-and-white print. */
+.board__cell--stopped {
+  border-style: dashed;
+  border-color: var(--color-stopped);
+  background-color: transparent;
+}
+
+.board__cell-id {
+  font-size: var(--fs-data);
+  font-variant-numeric: tabular-nums;
+  color: var(--color-text);
+}
+
+.board__cell--stopped .board__cell-id {
+  color: var(--color-text-secondary);
+}
+
+.board__legend {
+  display: flex;
+  gap: var(--space-4);
+  margin-top: var(--space-3);
+  font-family: var(--font-mono);
+  font-size: var(--fs-data);
+  color: var(--color-text-secondary);
+}
+
+.board__key {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.board__swatch {
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  border: 1px solid color-mix(in srgb, var(--color-running) 55%, transparent);
+  background-color: color-mix(in srgb, var(--color-running) 18%, transparent);
+}
+
+.board__swatch--stopped {
+  border-style: dashed;
+  border-color: var(--color-stopped);
+  background-color: transparent;
+}
+
+@keyframes boardCellIn {
+  from {
+    opacity: 0;
+    transform: translateY(3px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
 @keyframes slideInLeft {
   from { opacity: 0; transform: translateX(-20px); }
   to { opacity: 1; transform: translateX(0); }
@@ -861,25 +1019,24 @@ a:hover {
   to { opacity: 1; transform: scale(1); }
 }
 
-@keyframes bootFadeOut {
-  from { opacity: 1; }
-  to { opacity: 0; pointer-events: none; }
-}
-
-@keyframes typewrite {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-@keyframes blink {
-  0%, 50% { opacity: 1; }
-  51%, 100% { opacity: 0; }
-}
-
 /* =========================================================================
    Responsive
    ========================================================================= */
 @media (max-width: 768px) {
+  .setup__group {
+    grid-template-columns: 1fr;
+    gap: var(--space-1);
+  }
+
+  .hero-container {
+    grid-template-columns: 1fr;
+    justify-items: start;
+  }
+
+  .board__node {
+    grid-template-columns: 3.5rem 1fr;
+  }
+
   .header {
     padding: var(--space-3) var(--space-4);
   }
@@ -931,7 +1088,7 @@ a:hover {
 
   .section-title {
     border-left: none;
-    border-bottom: 2px solid var(--color-neon-green);
+    border-bottom: 2px solid var(--color-accent);
     padding-left: 0;
     padding-bottom: var(--space-2);
   }
@@ -998,10 +1155,6 @@ a:hover {
     padding: 0 var(--space-3);
   }
 
-  .boot-terminal {
-    padding: var(--space-4);
-    font-size: 0.85rem;
-  }
 }
 
 /* =========================================================================
@@ -1020,7 +1173,4 @@ a:hover {
     transition-duration: 0.001ms !important;
   }
 
-  .boot-animation {
-    animation: bootFadeOut 0.5s ease-in-out 2s forwards;
-  }
 }

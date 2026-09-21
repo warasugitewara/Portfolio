@@ -3,6 +3,8 @@ export interface I18n {
   hero: Record<string, string>;
   about: Record<string, string>;
   skills: Record<string, string>;
+  /** Optional so a locale that predates this section cannot crash the page. */
+  setup?: Record<string, string>;
   projects: Record<string, string>;
   philosophy: Record<string, string>;
   contact: Record<string, string>;
@@ -30,8 +32,13 @@ export interface I18nInfrastructure {
 
 export type Language = "ja" | "en";
 
+export type ProfileStatSource = "pveNodes" | "runningGuests" | "credentials";
+
 export interface ProfileStat {
-  value: string;
+  /** Literal value. Used as-is, and as the fallback while derived data loads. */
+  value?: string;
+  /** When set, the value is derived at runtime instead of being maintained by hand. */
+  derive?: ProfileStatSource;
   label: string;
   label_ja?: string;
 }
@@ -72,6 +79,10 @@ export interface FeaturedProject {
   tech: string[];
   link?: string;
   link_internal?: boolean;
+  /** A place to actually use the thing, when one is published. */
+  demo?: string;
+  demo_label?: string;
+  demo_label_ja?: string;
   link_label?: string;
   link_label_ja?: string;
 }
@@ -86,24 +97,75 @@ export interface GitHubRepo {
   pinned: boolean;
 }
 
+export interface SetupGroup {
+  label: string;
+  label_en?: string;
+  items: string[];
+}
+
+export interface SetupData {
+  setup: { groups: SetupGroup[] };
+}
+
 /* ── Infrastructure page ───────────────────────────────────────────── */
 
-export interface InfraWorkload {
-  type: string;
+export type InfraWorkloadKind = "lxc" | "qemu" | "baremetal";
+
+export type InfraWorkloadStatus = "running" | "stopped";
+
+/** Diagram accent for a workload row. */
+export type InfraWorkloadVariant = "core" | "cf" | "warn";
+
+interface InfraWorkloadBase {
   name: string;
-  vmid?: number;
+  status: InfraWorkloadStatus;
+  /** Semantic icon name, resolved by src/utils/infraIcons.ts. */
+  icon: string;
+  variant?: InfraWorkloadVariant;
+  /** Short caption shown inside the architecture diagram. */
+  caption: string;
+  caption_en: string;
   os?: string;
   purpose?: string;
   purpose_en?: string;
   details?: string[];
   details_en?: string[];
+  cores?: number;
+  memMiB?: number;
+  diskGiB?: number;
+}
+
+/** A Proxmox guest: always has a vmid, and is drawn in the cluster diagram. */
+export interface InfraGuestWorkload extends InfraWorkloadBase {
+  kind: "lxc" | "qemu";
+  vmid: number;
+}
+
+/** A service running directly on bare metal: no vmid, never drawn in the cluster diagram. */
+export interface InfraBareMetalWorkload extends InfraWorkloadBase {
+  kind: "baremetal";
+  vmid?: undefined;
+}
+
+export type InfraWorkload = InfraGuestWorkload | InfraBareMetalWorkload;
+
+export interface InfraHardware {
+  /** Chassis or model name. Empty when the machine has no meaningful model name. */
+  model: string;
+  cpu: string;
+  /** Logical cores as reported by Proxmox. */
+  cores: number;
+  memGiB: number;
+  storage: string[];
 }
 
 export interface InfraNode {
   id: string;
+  /** pve nodes form the cluster; baremetal runs outside it. */
+  kind: "pve" | "baremetal";
   name: string;
   name_en?: string;
-  hardware: string;
+  hardware: InfraHardware;
   role: string;
   role_en?: string;
   purpose: string;
@@ -154,6 +216,13 @@ export interface InfraOperations {
   };
 }
 
+export interface InfraDiagramLegendRow {
+  /** Glyph shown at the start of the row; resolved by the icon font. */
+  icon: string;
+  text: string;
+  text_en: string;
+}
+
 export interface InfrastructureData {
   infrastructure: {
     title: string;
@@ -197,6 +266,10 @@ export interface InfrastructureData {
       philosophy_en?: string;
     };
     technology_stack: InfraTechnologyStack;
+    /** Notes restating the architecture, kept beside the data they describe. */
+    architecture_notes: string[];
+    architecture_notes_en?: string[];
+    diagram?: { legend: InfraDiagramLegendRow[] };
     learning_outcomes: string[];
     learning_outcomes_en?: string[];
     operational_practices?: {

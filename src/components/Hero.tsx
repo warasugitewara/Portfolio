@@ -1,17 +1,21 @@
-import type { Profile, I18n, Language } from "../types";
+import type { Profile, I18n, InfrastructureData, Language } from "../types";
 import { pickLang } from "../utils/pickLang";
+import { resolveStats } from "../utils/infraStats";
+import { ClusterBoard } from "./ClusterBoard";
 
 interface HeroProps {
   i18n: I18n | null;
   profile: Profile | null;
+  /** Live cluster data; the countable stats are derived from it. */
+  infra: InfrastructureData | null;
   lang: Language;
 }
 
-export const Hero = ({ i18n, profile, lang }: HeroProps) => {
+export const Hero = ({ i18n, profile, infra, lang }: HeroProps) => {
   if (!i18n) return null;
 
   const avatar = profile?.avatar ?? "";
-  const stats = profile?.stats ?? [];
+  const stats = resolveStats(profile, infra);
 
   return (
     <section className="hero">
@@ -28,7 +32,7 @@ export const Hero = ({ i18n, profile, lang }: HeroProps) => {
           <p className="hero-subtitle">{i18n.hero.subtitle}</p>
           {profile && (
             <p className="hero-location">
-              {"📍"} {profile.location}
+              {""} {profile.location}
             </p>
           )}
           {stats.length > 0 && (
@@ -44,6 +48,15 @@ export const Hero = ({ i18n, profile, lang }: HeroProps) => {
             </div>
           )}
         </div>
+
+        <ClusterBoard
+          infra={infra}
+          labels={{
+            title: i18n.hero.boardTitle,
+            running: i18n.hero.boardRunning,
+            stopped: i18n.hero.boardStopped,
+          }}
+        />
       </div>
     </section>
   );

@@ -5,10 +5,15 @@ import type {
   InfraNode,
   InfraRoadmapPhase,
   InfraWorkload,
+  InfraWorkloadStatus,
   Language,
 } from "../types";
 import { getDataUrl } from "../utils/path";
 import { pickLang } from "../utils/pickLang";
+import { formatHardware } from "../utils/infraHardware";
+import { iconFor } from "../utils/infraIcons";
+import { DGM_LAYOUT, computeDgmGeometry } from "../utils/dgmGeometry";
+import type { DgmGeometry } from "../utils/dgmGeometry";
 import { CollapsibleSection } from "../components/CollapsibleSection";
 import "../styles/infrastructure.css";
 
@@ -31,80 +36,46 @@ type DgmRow = {
   icon: string;
   name: string;
   id: string;
-  note: string;
-  /** English variant of `note`; used when `lang === "en"`. */
-  note_en: string;
+  /** Short caption shown under the workload name. */
+  caption: string;
+  /** English variant of `caption`; used when `lang === "en"`. */
+  caption_en: string;
   variant?: DgmVariant;
+  status: InfraWorkloadStatus;
 };
 
-type DgmMeta = { icon: string; note: string; note_en: string; variant?: DgmVariant };
+/** Human-facing label for a workload kind. `qemu` is an internal token, never shown. */
+const workloadKindLabel = (kind: InfraWorkload["kind"]): string =>
+  kind === "qemu" ? "VM" : kind === "lxc" ? "LXC" : "Bare-metal";
 
-const DGM_META: Record<string, DgmMeta> = {
-  // HP-1
-  CT101: { icon: "🎵", note: "Discord 音楽ボット", note_en: "Discord music bot" },
-  CT108: { icon: "🏠", note: "ダッシュボード (gethomepage)", note_en: "Dashboard (gethomepage)" },
-  CT304: { icon: "🔊", note: "読み上げ (VOICEVOX)", note_en: "TTS readout (VOICEVOX)" },
-  VM600: { icon: "🗣️", note: "TTS 音声合成エンジン", note_en: "TTS synthesis engine" },
-  // HP-2
-  VM500: {
-    icon: "🛡️",
-    note: "メイン FW・ルータ / 0.x·1.x 分離",
-    note_en: "Main FW / router · 0.x/1.x split",
-    variant: "core",
-  },
-  CT105: { icon: "🔐", note: "ゼロトラスト (1.x)", note_en: "Zero-trust (1.x)" },
-  CT106: { icon: "🛡️", note: "DNS フィルタ (1.x)", note_en: "DNS filter (1.x)" },
-  CT107: { icon: "🛡️", note: "DNS フィルタ (0.x 冗長)", note_en: "DNS filter (0.x redundant)" },
-  CT100: {
-    icon: "💾",
-    note: "DriveBackupV2 受け · FileBrowser",
-    note_en: "DriveBackupV2 sink · FileBrowser",
-  },
-  CT700: { icon: "🔀", note: "AI コンテキスト圧縮", note_en: "AI context compression" },
-  CT1000: { icon: "🔒", note: "非公開", note_en: "Private" },
-  // Dell
-  CT102: { icon: "🔐", note: "ゼロトラスト (0.x)", note_en: "Zero-trust (0.x)" },
-  CT103: {
-    icon: "🌐",
-    note: "Bun+Hono · CF Tunnel",
-    note_en: "Bun+Hono · CF Tunnel",
-    variant: "cf",
-  },
-  CT104: { icon: "📡", note: "BTC/ETH Discord 通知", note_en: "BTC/ETH Discord alerts" },
-  CT301: { icon: "🎮", note: "Minecraft プロキシ", note_en: "Minecraft proxy" },
-  CT302: { icon: "📺", note: "動画DL (yt-dlp)", note_en: "Video DL (yt-dlp)" },
-  CT400: { icon: "📊", note: "クラスター監視", note_en: "Cluster monitoring" },
-};
+/** Derive a diagram row id from a workload: e.g. LXC 101 -> "CT101", VM 500 -> "VM500". */
+const workloadRowId = (wl: InfraWorkload): string =>
+  `${wl.kind === "qemu" ? "VM" : "CT"}${wl.vmid}`;
 
-const DGM_META_FALLBACK: DgmMeta = { icon: "📦", note: "", note_en: "" };
-
-/** Derive a diagram row id from a workload: e.g. LXC 101 → "CT101", VM 500 → "VM500". */
-const workloadRowId = (wl: InfraWorkload): string => `${wl.type === "VM" ? "VM" : "CT"}${wl.vmid}`;
-
-/** Build the diagram rows for a node by merging its JSON workloads with DGM_META. */
+/**
+ * Build the diagram rows for a node straight from its JSON workloads.
+ *
+ * Bare-metal services have no vmid and live outside the cluster, so they are
+ * not drawn in the cluster diagram.
+ */
 const buildDgmRows = (node: InfraNode | undefined): DgmRow[] =>
   (node?.workloads ?? [])
-    .filter((wl) => wl.vmid !== undefined)
-    .map((wl) => {
-      const id = workloadRowId(wl);
-      const meta = DGM_META[id] ?? DGM_META_FALLBACK;
-      return {
-        icon: meta.icon,
-        name: wl.name,
-        id,
-        note: meta.note,
-        note_en: meta.note_en,
-        variant: meta.variant,
-      };
-    });
+    .filter((wl) => wl.kind !== "baremetal")
+    .map((wl) => ({
+      icon: iconFor(wl.icon),
+      name: wl.name,
+      id: workloadRowId(wl),
+      caption: wl.caption,
+      caption_en: wl.caption_en,
+      variant: wl.variant,
+      status: wl.status,
+    }));
 
-const DGM_ROW_Y0 = 283;
-const DGM_ROW_STEP = 46;
-const DGM_COL_W = 370;
+const DGM_COL_W = DGM_LAYOUT.colW;
 
-const renderNodeRows = (colX: number, rows: DgmRow[], lang: Language) =>
+const renderNodeRows = (colX: number, rows: DgmRow[], lang: Language, geo: DgmGeometry) =>
   rows.map((row, i) => {
-    const y = DGM_ROW_Y0 + i * DGM_ROW_STEP;
+    const y = geo.rowY(i);
     const rectClass =
       row.variant === "core"
         ? "dgm-row-rect dgm-row-rect--core"
@@ -113,17 +84,30 @@ const renderNodeRows = (colX: number, rows: DgmRow[], lang: Language) =>
           : row.variant === "warn"
             ? "dgm-row-rect dgm-row-rect--warn"
             : "dgm-row-rect";
+    // A powered-off guest reads as an outline rather than a filled row.
+    const stoppedClass = row.status === "stopped" ? " dgm-row-rect--stopped" : "";
     return (
       <g key={`${row.id}-${row.name}`}>
-        <rect x={colX + 10} y={y} width={DGM_COL_W - 20} height={40} rx={3} className={rectClass} />
-        <text x={colX + 22} y={y + 17} className="dgm-row-name">
+        <rect
+          x={colX + 10}
+          y={y}
+          width={DGM_COL_W - 20}
+          height={40}
+          rx={3}
+          className={`${rectClass}${stoppedClass}`}
+        />
+        <text
+          x={colX + 22}
+          y={y + 17}
+          className={`dgm-row-name${row.status === "stopped" ? " dgm-row-name--stopped" : ""}`}
+        >
           {row.icon} {row.name}
         </text>
         <text x={colX + DGM_COL_W - 22} y={y + 17} textAnchor="end" className="dgm-row-id">
           {row.id}
         </text>
         <text x={colX + 22} y={y + 33} className="dgm-row-note">
-          {pickLang(lang, row.note_en, row.note)}
+          {pickLang(lang, row.caption_en, row.caption)}
         </text>
       </g>
     );
@@ -156,6 +140,11 @@ export const InfrastructurePage = ({ i18n, lang }: InfrastructurePageProps) => {
   const hp1Rows = buildDgmRows(data.nodes.find((n) => n.id === "hp1"));
   const hp2Rows = buildDgmRows(data.nodes.find((n) => n.id === "hp2"));
   const dellRows = buildDgmRows(data.nodes.find((n) => n.id === "dell"));
+  const legendRows = data.diagram?.legend ?? [];
+  const geo = computeDgmGeometry(
+    Math.max(hp1Rows.length, hp2Rows.length, dellRows.length),
+    legendRows.length,
+  );
 
   /** Resolve an infrastructure UI label; both locales define every key. */
   const t = (key: string): string => labels?.[key] ?? "";
@@ -202,7 +191,7 @@ export const InfrastructurePage = ({ i18n, lang }: InfrastructurePageProps) => {
       <meta name="description" content={t("metaDescription")} />
       <div className="section-container">
         {/* Title */}
-        <h1 className="infra-title">🖧 {pickLang(lang, data.title_en ?? data.title, data.title)}</h1>
+        <h1 className="infra-title"> {pickLang(lang, data.title_en ?? data.title, data.title)}</h1>
         <p className="infra-subtitle">
           {pickLang(lang, data.subtitle_en ?? data.subtitle, data.subtitle)}
         </p>
@@ -216,12 +205,7 @@ export const InfrastructurePage = ({ i18n, lang }: InfrastructurePageProps) => {
         <CollapsibleSection title={t("secArchitecture")} defaultOpen>
           <div className="infra-diagram-wrap">
             <div className="infra-diagram-canvas">
-              <svg
-                viewBox="0 0 1200 1150"
-                className="infra-svg"
-                role="img"
-                aria-label={t("dgmAria")}
-              >
+              <svg viewBox={geo.viewBox} className="infra-svg" role="img" aria-label={t("dgmAria")}>
                 <text x="600" y="34" textAnchor="middle" className="dgm-title">
                   {t("dgmTitle")}
                 </text>
@@ -232,7 +216,7 @@ export const InfrastructurePage = ({ i18n, lang }: InfrastructurePageProps) => {
                 </text>
                 <rect x="20" y="74" width="175" height="56" rx="4" className="dgm-node-rect" />
                 <text x="107" y="100" textAnchor="middle" className="dgm-node-text">
-                  🌐 au one net
+                   au one net
                 </text>
                 <text x="107" y="118" textAnchor="middle" className="dgm-label">
                   1Gbps / ONU
@@ -243,7 +227,7 @@ export const InfrastructurePage = ({ i18n, lang }: InfrastructurePageProps) => {
 
                 <rect x="245" y="74" width="250" height="56" rx="4" className="dgm-core-rect" />
                 <text x="370" y="98" textAnchor="middle" className="dgm-node-text">
-                  🛡️ OPNsense
+                   OPNsense
                 </text>
                 <text x="370" y="116" textAnchor="middle" className="dgm-label">
                   {t("dgmOpnRouter")}
@@ -263,7 +247,7 @@ export const InfrastructurePage = ({ i18n, lang }: InfrastructurePageProps) => {
 
                 <rect x="815" y="74" width="365" height="56" rx="4" className="dgm-node-rect" />
                 <text x="997" y="98" textAnchor="middle" className="dgm-node-text">
-                  🔒 Twingate ZT + ☁️ Cloudflare Tunnel
+                   Twingate ZT +  Cloudflare Tunnel
                 </text>
                 <text x="997" y="116" textAnchor="middle" className="dgm-label">
                   {t("dgmZeroInbound")}
@@ -272,156 +256,178 @@ export const InfrastructurePage = ({ i18n, lang }: InfrastructurePageProps) => {
                 {/* ── Cluster ── */}
                 <rect
                   x="15"
-                  y="185"
+                  y={geo.clusterY}
                   width="1170"
-                  height="490"
+                  height={geo.clusterH}
                   rx="6"
                   className="dgm-cluster-rect"
                 />
-                <text x="600" y="210" textAnchor="middle" className="dgm-node-text">
+                <text x="600" y={geo.clusterTitleY} textAnchor="middle" className="dgm-node-text">
                   {t("dgmCluster")}
                 </text>
 
                 {/* HP-1 */}
                 <rect
                   x="25"
-                  y="220"
+                  y={geo.nodeY}
                   width="370"
-                  height="445"
+                  height={geo.nodeH}
                   rx="4"
                   className="dgm-node-inner-rect"
                 />
-                <text x="210" y="246" textAnchor="middle" className="dgm-node-text">
-                  🖥️ HP-1
+                <text x="210" y={geo.nodeTitleY} textAnchor="middle" className="dgm-node-text">
+                   HP-1
                 </text>
-                <text x="210" y="265" textAnchor="middle" className="dgm-label">
+                <text x="210" y={geo.nodeHwY} textAnchor="middle" className="dgm-label">
                   HP Z240 SFF · Xeon E3-1225 · 16GB
                 </text>
-                {renderNodeRows(25, hp1Rows, lang)}
+                {renderNodeRows(geo.colX(0), hp1Rows, lang, geo)}
 
                 {/* HP-2 */}
                 <rect
                   x="415"
-                  y="220"
+                  y={geo.nodeY}
                   width="370"
-                  height="445"
+                  height={geo.nodeH}
                   rx="4"
                   className="dgm-node-inner-rect"
                 />
-                <text x="600" y="246" textAnchor="middle" className="dgm-node-text">
+                <text x="600" y={geo.nodeTitleY} textAnchor="middle" className="dgm-node-text">
                   {t("dgmHp2Core")}
                 </text>
-                <text x="600" y="265" textAnchor="middle" className="dgm-label">
+                <text x="600" y={geo.nodeHwY} textAnchor="middle" className="dgm-label">
                   HP Z240 SFF · Xeon E3-1245 v5 · 16GB
                 </text>
-                {renderNodeRows(415, hp2Rows, lang)}
+                {renderNodeRows(geo.colX(1), hp2Rows, lang, geo)}
 
                 {/* Dell */}
                 <rect
                   x="805"
-                  y="220"
+                  y={geo.nodeY}
                   width="370"
-                  height="445"
+                  height={geo.nodeH}
                   rx="4"
                   className="dgm-node-inner-rect"
                 />
-                <text x="990" y="246" textAnchor="middle" className="dgm-node-text">
-                  🖥️ Dell
+                <text x="990" y={geo.nodeTitleY} textAnchor="middle" className="dgm-node-text">
+                   Dell
                 </text>
-                <text x="990" y="265" textAnchor="middle" className="dgm-label">
+                <text x="990" y={geo.nodeHwY} textAnchor="middle" className="dgm-label">
                   OptiPlex 7040 SFF · i3-6100 · 8GB
                 </text>
-                {renderNodeRows(805, dellRows, lang)}
+                {renderNodeRows(geo.colX(2), dellRows, lang, geo)}
 
                 {/* ── Summary boxes ── */}
-                <rect x="15" y="695" width="282" height="118" rx="4" className="dgm-node-rect" />
-                <text x="156" y="723" textAnchor="middle" className="dgm-node-text">
+                <rect
+                  x="15"
+                  y={geo.summaryY}
+                  width="282"
+                  height="118"
+                  rx="4"
+                  className="dgm-node-rect"
+                />
+                <text x="156" y={geo.summaryLineY[0]} textAnchor="middle" className="dgm-node-text">
                   {t("dgmStorage")}
                 </text>
-                <text x="30" y="748" className="dgm-label dgm-label--sm">
+                <text x="30" y={geo.summaryLineY[1]} className="dgm-label dgm-label--sm">
                   • HP-1: HDD / HP-2: SSD+HDD
                 </text>
-                <text x="30" y="766" className="dgm-label dgm-label--sm">
+                <text x="30" y={geo.summaryLineY[2]} className="dgm-label dgm-label--sm">
                   • Dell: SSD 128GB + Toshiba HDD
                 </text>
-                <text x="30" y="784" className="dgm-label dgm-label--sm">
+                <text x="30" y={geo.summaryLineY[3]} className="dgm-label dgm-label--sm">
                   {t("dgmStorage3")}
                 </text>
 
-                <rect x="311" y="695" width="282" height="118" rx="4" className="dgm-node-rect" />
-                <text x="452" y="723" textAnchor="middle" className="dgm-node-text">
+                <rect
+                  x="311"
+                  y={geo.summaryY}
+                  width="282"
+                  height="118"
+                  rx="4"
+                  className="dgm-node-rect"
+                />
+                <text x="452" y={geo.summaryLineY[0]} textAnchor="middle" className="dgm-node-text">
                   {t("dgmBackup")}
                 </text>
-                <text x="326" y="748" className="dgm-label dgm-label--sm">
+                <text x="326" y={geo.summaryLineY[1]} className="dgm-label dgm-label--sm">
                   {t("dgmBackup1")}
                 </text>
-                <text x="326" y="766" className="dgm-label dgm-label--sm">
+                <text x="326" y={geo.summaryLineY[2]} className="dgm-label dgm-label--sm">
                   {t("dgmBackup2")}
                 </text>
-                <text x="326" y="784" className="dgm-label dgm-label--sm">
+                <text x="326" y={geo.summaryLineY[3]} className="dgm-label dgm-label--sm">
                   {t("dgmBackup3")}
                 </text>
-                <text x="326" y="802" className="dgm-label dgm-label--sm">
+                <text x="326" y={geo.summaryLineY[4]} className="dgm-label dgm-label--sm">
                   {t("dgmBackup4")}
                 </text>
 
-                <rect x="607" y="695" width="282" height="118" rx="4" className="dgm-node-rect" />
-                <text x="748" y="723" textAnchor="middle" className="dgm-node-text">
+                <rect
+                  x="607"
+                  y={geo.summaryY}
+                  width="282"
+                  height="118"
+                  rx="4"
+                  className="dgm-node-rect"
+                />
+                <text x="748" y={geo.summaryLineY[0]} textAnchor="middle" className="dgm-node-text">
                   {t("dgmSecurity")}
                 </text>
-                <text x="622" y="748" className="dgm-label dgm-label--sm">
+                <text x="622" y={geo.summaryLineY[1]} className="dgm-label dgm-label--sm">
                   {t("dgmSecurity1")}
                 </text>
-                <text x="622" y="766" className="dgm-label dgm-label--sm">
+                <text x="622" y={geo.summaryLineY[2]} className="dgm-label dgm-label--sm">
                   {t("dgmSecurity2")}
                 </text>
-                <text x="622" y="784" className="dgm-label dgm-label--sm">
+                <text x="622" y={geo.summaryLineY[3]} className="dgm-label dgm-label--sm">
                   • TOTP 2FA + Anubis
                 </text>
 
-                <rect x="903" y="695" width="282" height="118" rx="4" className="dgm-node-rect" />
-                <text x="1044" y="723" textAnchor="middle" className="dgm-node-text">
+                <rect
+                  x="903"
+                  y={geo.summaryY}
+                  width="282"
+                  height="118"
+                  rx="4"
+                  className="dgm-node-rect"
+                />
+                <text
+                  x="1044"
+                  y={geo.summaryLineY[0]}
+                  textAnchor="middle"
+                  className="dgm-node-text"
+                >
                   {t("dgmMonitor")}
                 </text>
-                <text x="918" y="748" className="dgm-label dgm-label--sm">
+                <text x="918" y={geo.summaryLineY[1]} className="dgm-label dgm-label--sm">
                   • Zabbix (Dell CT400)
                 </text>
-                <text x="918" y="766" className="dgm-label dgm-label--sm">
-                  • pote-monitor (CT104)
+                <text x="918" y={geo.summaryLineY[2]} className="dgm-label dgm-label--sm">
+                  • Discord-Pin-Service (CT104)
                 </text>
-                <text x="918" y="784" className="dgm-label dgm-label--sm">
+                <text x="918" y={geo.summaryLineY[3]} className="dgm-label dgm-label--sm">
                   • Proxmox Web UI
                 </text>
 
                 {/* ── Legend ── */}
-                <rect x="15" y="833" width="1170" height="300" rx="4" className="dgm-node-rect" />
-                <text x="600" y="865" textAnchor="middle" className="dgm-legend-title">
+                <rect
+                  x="15"
+                  y={geo.legendY}
+                  width="1170"
+                  height={geo.legendH}
+                  rx="4"
+                  className="dgm-node-rect"
+                />
+                <text x="600" y={geo.legendTitleY} textAnchor="middle" className="dgm-legend-title">
                   {t("dgmLegendTitle")}
                 </text>
-                <text x="35" y="900" className="dgm-legend-text">
-                  <tspan className="dgm-legend-icon">🖧</tspan> {t("dgmLegend1")}
-                </text>
-                <text x="35" y="930" className="dgm-legend-text">
-                  <tspan className="dgm-legend-icon">🛡️</tspan> {t("dgmLegend2")}
-                </text>
-                <text x="35" y="960" className="dgm-legend-text">
-                  <tspan className="dgm-legend-icon">🔐</tspan> {t("dgmLegend3")}
-                </text>
-                <text x="35" y="990" className="dgm-legend-text">
-                  <tspan className="dgm-legend-icon">🛡️</tspan> {t("dgmLegend4")}
-                </text>
-                <text x="35" y="1020" className="dgm-legend-text">
-                  <tspan className="dgm-legend-icon">☁️</tspan> {t("dgmLegend5")}
-                </text>
-                <text x="35" y="1050" className="dgm-legend-text">
-                  <tspan className="dgm-legend-icon">📊</tspan> {t("dgmLegend6")}
-                </text>
-                <text x="35" y="1080" className="dgm-legend-text">
-                  <tspan className="dgm-legend-icon">🎮</tspan> {t("dgmLegend7")}
-                </text>
-                <text x="35" y="1110" className="dgm-legend-text">
-                  <tspan className="dgm-legend-icon">💾</tspan> {t("dgmLegend8")}
-                </text>
+                {legendRows.map((row, i) => (
+                  <text key={row.text_en} x="35" y={geo.legendRowY(i)} className="dgm-legend-text">
+                    <tspan className="dgm-legend-icon">{row.icon}</tspan>{" "}
+                    {pickLang(lang, row.text_en, row.text)}
+                  </text>
+                ))}
               </svg>
             </div>
             <p className="infra-diagram-hint" aria-hidden="true">
@@ -432,13 +438,9 @@ export const InfrastructurePage = ({ i18n, lang }: InfrastructurePageProps) => {
             <div className="infra-notes">
               <h4 className="infra-notes__title">{t("notesTitle")}</h4>
               <ul className="infra-notes__list">
-                <li>✓ {t("notes1")}</li>
-                <li>✓ {t("notes2")}</li>
-                <li>✓ {t("notes3")}</li>
-                <li>✓ {t("notes4")}</li>
-                <li>✓ {t("notes5")}</li>
-                <li>✓ {t("notes6")}</li>
-                <li>✓ {t("notes7")}</li>
+                {pickArr(data.architecture_notes_en, data.architecture_notes).map((note) => (
+                  <li key={note}>✓ {note}</li>
+                ))}
               </ul>
             </div>
           </div>
@@ -490,7 +492,7 @@ export const InfrastructurePage = ({ i18n, lang }: InfrastructurePageProps) => {
                 {/* ── Internet ── */}
                 <rect x="350" y="16" width="300" height="50" rx="5" className="net-ft" />
                 <text x="500" y="46" textAnchor="middle" className="net-tl">
-                  🌐 Internet — au one net 1Gbps
+                   Internet — au one net 1Gbps
                 </text>
 
                 {/* Internet → routes */}
@@ -520,7 +522,7 @@ export const InfrastructurePage = ({ i18n, lang }: InfrastructurePageProps) => {
                 {/* ── ① Cloudflare (public) ── */}
                 <rect x="350" y="100" width="300" height="112" rx="5" className="net-ft-cf" />
                 <text x="500" y="120" textAnchor="middle" className="net-cl">
-                  ☁️ Cloudflare Tunnel
+                   Cloudflare Tunnel
                 </text>
                 <line x1="350" y1="128" x2="650" y2="128" className="net-divider-cf" />
                 <text x="500" y="145" textAnchor="middle" className="net-rt-cf">
@@ -589,7 +591,7 @@ export const InfrastructurePage = ({ i18n, lang }: InfrastructurePageProps) => {
                   {t("netSeg0Row3")}
                 </text>
                 <text x="48" y="462" className="net-seg-row">
-                  📡 pote-monitor · 🎮 Velocity · 📺 MeTube · 📊 Zabbix (Dell)
+                   Discord-Pin-Service ·  MeTube ·  Zabbix ·  media-server (Dell)
                 </text>
                 <text x="48" y="482" className="net-warn-txt">
                   {t("netSeg0Row5")}
@@ -612,7 +614,7 @@ export const InfrastructurePage = ({ i18n, lang }: InfrastructurePageProps) => {
                 </text>
                 <line x1="535" y1="382" x2="955" y2="382" className="net-divider-cf" />
                 <text x="538" y="402" className="net-seg-row">
-                  🛡️ adguard-1.x [CT106 · HP-2] — AdGuard Home DNS
+                   adguard-1.x [CT106 · HP-2] — AdGuard Home DNS
                 </text>
                 <text x="538" y="422" className="net-seg-row">
                   {t("netSeg1Row2")}
@@ -621,7 +623,7 @@ export const InfrastructurePage = ({ i18n, lang }: InfrastructurePageProps) => {
                   {t("netSeg1Row3")}
                 </text>
                 <text x="538" y="462" className="net-seg-row">
-                  🔀 Headroom-Proxy · 🔒 secrets1 (HP-2)
+                   Pens-Uptime-kuma ·  Uir-bot (HP-2)
                 </text>
                 <text x="538" y="482" className="net-sl">
                   {t("netUpstreamDns")}
@@ -675,7 +677,7 @@ export const InfrastructurePage = ({ i18n, lang }: InfrastructurePageProps) => {
         </CollapsibleSection>
 
         {/* Hypervisor */}
-        <CollapsibleSection title={`🖥️ ${labels?.hypervisor || "Proxmox VE"}`} defaultOpen>
+        <CollapsibleSection title={` ${labels?.hypervisor || "Proxmox VE"}`} defaultOpen>
           <div className="infra-panel">
             <h3 className="infra-hypervisor__platform">{data.hypervisor.platform}</h3>
             <p className="infra-hypervisor__purpose">
@@ -712,7 +714,7 @@ export const InfrastructurePage = ({ i18n, lang }: InfrastructurePageProps) => {
                     {pickLang(lang, node.role_en ?? node.role, node.role)}
                   </span>
                   <span className="infra-node__hw">
-                    <strong>{t("lblHardware")}</strong> {node.hardware}
+                    <strong>{t("lblHardware")}</strong> {formatHardware(node.hardware)}
                   </span>
                 </span>
               }
@@ -727,7 +729,7 @@ export const InfrastructurePage = ({ i18n, lang }: InfrastructurePageProps) => {
                 {node.workloads.map((wl, idx) => (
                   <li key={idx} className="infra-node__wl">
                     <span className="infra-bullet">→</span>
-                    <strong>{wl.name}</strong> ({wl.type}
+                    <strong>{wl.name}</strong> ({workloadKindLabel(wl.kind)}
                     {wl.vmid ? ` VMID:${wl.vmid}` : ""}){wl.os && ` - ${wl.os}`}
                     {wl.purpose && (
                       <p className="infra-node__wl-purpose">
@@ -784,7 +786,7 @@ export const InfrastructurePage = ({ i18n, lang }: InfrastructurePageProps) => {
         </CollapsibleSection>
 
         {/* Security Model */}
-        <CollapsibleSection title={`🔐 ${labels?.securityModel || "セキュリティモデル"}`}>
+        <CollapsibleSection title={` ${labels?.securityModel || "セキュリティモデル"}`}>
           <div className="infra-grid">
             <div className="infra-card">
               <h4 className="infra-card__title">{t("cardSshConfig")}</h4>
@@ -971,7 +973,7 @@ export const InfrastructurePage = ({ i18n, lang }: InfrastructurePageProps) => {
         </CollapsibleSection>
 
         {/* Learning Outcomes */}
-        <CollapsibleSection title={`📚 ${labels?.learningOutcomes || "学習成果"}`}>
+        <CollapsibleSection title={` ${labels?.learningOutcomes || "学習成果"}`}>
           <div className="infra-panel">
             <ul className="infra-list">
               {pickArr(data.learning_outcomes_en, data.learning_outcomes).map((outcome, idx) => (

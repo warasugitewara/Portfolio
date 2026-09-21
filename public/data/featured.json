@@ -84,7 +84,10 @@
         "Vitest"
       ],
       "link": "https://github.com/warasugitewara/easy-cities-2d",
-      "link_internal": false
+      "link_internal": false,
+      "demo": "https://ec2.warasugi.com",
+      "demo_label": "Play it",
+      "demo_label_ja": "遊んでみる"
     },
     {
       "id": "portfolio",
@@ -138,7 +141,8 @@
         "Paper API",
         "Javalin",
         "SQLite"
-      ]
+      ],
+      "link": "https://github.com/warasugitewara/Waras-Admin-Runtime-Panel-plugin"
     },
     {
       "id": "jp-museheart",

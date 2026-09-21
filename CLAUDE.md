@@ -17,7 +17,7 @@ npm run start        # 本番サーバー (bun run server.ts, dist/ を配信)
 
 - **ビルドツールは素の Vite ではなく `vite-plus`（`vp` コマンド）**。`package.json` の `overrides` で `vite` / `vitest` を `@voidzero-dev/vite-plus-*`（Vite 8 + Rolldown + Oxc）に差し替えている。CLI は `vp` を使う。
 - **Lint は ESLint ではなく oxlint ベース**。ルールは `vite.config.ts` の `lint` セクションにインラインで定義（`.eslintrc` は無い）。ステージ時 `src/**/*.{ts,tsx,js,jsx}` に `vp check --fix` が走る。
-- **パッケージマネージャは npm**（`package-lock.json`）だが、`bun.lock` も存在し本番起動は Bun。テストランナーは未設定。
+- **パッケージマネージャは npm**（`package-lock.json`）だが、`bun.lock` も存在し本番起動は Bun。テストは vitest（`npm run test` = `vp test`）。純関数は `src/utils/*.test.ts` にソースと併置する。
 
 ## アーキテクチャ
 
@@ -31,13 +31,13 @@ React 19 SPA を、**開発時は `vp dev`、本番時は Bun + Hono (`server.ts
 - **テーマ**: `useTheme` が `<html>` の `data-theme` を切り替え、CSS カスタムプロパティ（`--color-*`）で表現。スタイルは `src/styles/main.css` に集約（CSS-in-JS / フレームワーク無し）。
 
 ### バックエンド（本番配信）
-`server.ts` は Bun ランタイムの Hono サーバー（port 3000）。`dist/` の静的配信と SPA フォールバック（`notFound` → `dist/index.html`）を担当。大きい画像（`minecraft-city.png`）や OG 画像は個別ルートでキャッシュヘッダーを設定している。
+`server.ts` は Bun ランタイムの Hono サーバー（port 3000）。`dist/` の静的配信と SPA フォールバック（`notFound` → `dist/index.html`）を担当。OG 画像は個別ルートでキャッシュヘッダーを設定している。
 
 ## 規約・注意点
 
 - **`public/data/` へのアクセスは必ず `getDataUrl()`（`src/utils/path.ts`）経由**。`BASE_URL` を前置してパスを解決するため、直書きしない。
 - **コンポーネントは名前付きエクスポートの関数コンポーネント**。Props は各ファイルで interface / type 定義。
-- TypeScript strict（`noUnusedLocals` / `noUnusedParameters` 有効）。CLAUDE 全体規約どおり `any` / `@ts-ignore` は使わない（既存 `HomePageProps` の `i18n: any` は例外的な既存箇所）。
+- TypeScript strict（`noUnusedLocals` / `noUnusedParameters` 有効）。CLAUDE 全体規約どおり `any` / `@ts-ignore` は使わない（リポジトリ全体で `any` は 0 件。oxlint が `no-explicit-any` をエラーにしている）。
 
 ## 既知の技術的負債（変更時に注意）
 

@@ -50,61 +50,150 @@
     "nodes": [
       {
         "id": "hp1",
+        "kind": "pve",
         "name": "HP-1",
-        "hardware": "HP Z240 SFF — Xeon E3-1225 + RAM 16GB + HDD",
+        "hardware": {
+          "model": "HP Z240 SFF",
+          "cpu": "Xeon E3-1225",
+          "cores": 4,
+          "memGiB": 16,
+          "storage": [
+            "HDD"
+          ]
+        },
         "role": "メディア・Discord ボットノード",
         "role_en": "Media & Discord bot node",
         "purpose": "waras-nw クラスターの第1ノード。Discord ボット群と VOICEVOX 音声合成エンジン、個人ホームページを担当。",
         "purpose_en": "The first node of the waras-nw cluster. Handles the fleet of Discord bots, the VOICEVOX speech-synthesis engine, and the personal homepage.",
         "workloads": [
           {
-            "type": "LXC",
+            "kind": "lxc",
             "vmid": 101,
-            "os": "Debian",
             "name": "Music-Bot",
+            "status": "running",
+            "cores": 2,
+            "memMiB": 3072,
+            "diskGiB": 31.5,
+            "icon": "music",
+            "caption": "Discord 音楽ボット",
+            "caption_en": "Discord music bot",
+            "os": "Debian",
             "purpose": "Discord 音楽ボット（JP-MuseHeart-MusicBot — 既存 OSS の日本語化フォークを運用）",
             "purpose_en": "Discord music bot (JP-MuseHeart-MusicBot — running a Japanese-localized fork of an existing OSS project)"
           },
           {
-            "type": "LXC",
-            "vmid": 108,
+            "kind": "lxc",
+            "vmid": 301,
+            "name": "Velocity",
+            "status": "running",
+            "cores": 2,
+            "memMiB": 2048,
+            "diskGiB": 8.4,
+            "icon": "game",
+            "caption": "Minecraft プロキシ",
+            "caption_en": "Minecraft proxy",
             "os": "Debian",
-            "name": "homepage",
-            "purpose": "Homepage — セルフホスト型アプリケーションダッシュボード（gethomepage.dev）",
-            "purpose_en": "Homepage — a self-hosted application dashboard (gethomepage.dev)"
+            "purpose": "ベアメタル Minecraft サーバーの Velocity プロキシ。外部公開は東京の Velocity 経由で、自宅は受信接続ゼロ。",
+            "purpose_en": "Velocity proxy for the bare-metal Minecraft server. External exposure goes through the Velocity in Tokyo, keeping zero inbound at home."
           },
           {
-            "type": "LXC",
+            "kind": "lxc",
             "vmid": 304,
-            "os": "Debian",
             "name": "Yomiage-Bot",
+            "status": "running",
+            "cores": 4,
+            "memMiB": 4096,
+            "diskGiB": 33.5,
+            "icon": "speaker",
+            "caption": "読み上げ (VOICEVOX)",
+            "caption_en": "TTS readout (VOICEVOX)",
+            "os": "Debian",
             "purpose": "自作 Discord 読み上げボット Waras-Yomiage-Bot（VOICEVOX 連携・ローカル完結 TTS）",
             "purpose_en": "Waras-Yomiage-Bot, a self-made Discord text-to-speech bot (VOICEVOX integration · fully local TTS)"
           },
           {
-            "type": "VM",
+            "kind": "qemu",
             "vmid": 600,
-            "os": "Linux (VM)",
             "name": "Voicevox-Engine",
-            "purpose": "VOICEVOX 音声合成エンジン（読み上げ / AI Podcast 用 TTS）",
-            "purpose_en": "VOICEVOX speech-synthesis engine (TTS for readout / AI podcasts)"
+            "status": "running",
+            "cores": 2,
+            "memMiB": 4096,
+            "diskGiB": 20,
+            "icon": "tts",
+            "caption": "TTS 音声合成エンジン",
+            "caption_en": "TTS synthesis engine",
+            "os": "Linux (VM)",
+            "purpose": "VOICEVOX 音声合成エンジン。読み上げボットから演算部分を分離し、読み上げ以外のサービスからも使えるよう VM として独立させている。",
+            "purpose_en": "VOICEVOX speech synthesis engine. Split out from the readout bot into its own VM so other services can use it too."
+          },
+          {
+            "kind": "lxc",
+            "vmid": 601,
+            "name": "tango",
+            "status": "running",
+            "cores": 2,
+            "memMiB": 4096,
+            "diskGiB": 67,
+            "icon": "app",
+            "caption": "単語暗記アプリ デモ",
+            "caption_en": "Vocabulary app demo",
+            "os": "Debian",
+            "purpose": "開発中の単語暗記 Web アプリ tango-web（TypeScript）のデモ環境。",
+            "purpose_en": "Demo environment for tango-web, a vocabulary-drill web app in development (TypeScript).",
+            "details": [
+              "github.com/warasugitewara/tango-web"
+            ],
+            "details_en": [
+              "github.com/warasugitewara/tango-web"
+            ]
+          },
+          {
+            "kind": "qemu",
+            "vmid": 1001,
+            "name": "mochi-OS",
+            "status": "stopped",
+            "cores": 1,
+            "memMiB": 2048,
+            "icon": "os",
+            "caption": "MochiOS 検証 (必要時のみ)",
+            "caption_en": "MochiOS testbed (on demand)",
+            "purpose": "注目している MochiOS project を追うための検証用 VM。進捗を手で触って確認したいときだけ起動する。",
+            "purpose_en": "A testbed VM for the MochiOS project I follow. Powered on only when I want to try the latest progress by hand."
           }
         ]
       },
       {
         "id": "hp2",
+        "kind": "pve",
         "name": "HP-2",
-        "hardware": "HP Z240 SFF — Xeon E3-1245 v5 (8 threads) + RAM 16GB",
+        "hardware": {
+          "model": "HP Z240 SFF",
+          "cpu": "Xeon E3-1245 v5",
+          "cores": 8,
+          "memGiB": 16,
+          "storage": [
+            "SSD",
+            "HDD"
+          ]
+        },
         "role": "ネットワーク中核 / サービスノード",
         "role_en": "Network core / service node",
         "purpose": "OPNsense をメイン FW/ルータとして稼働させるネットワークの中核ノード。AdGuard・Twingate（1.x 側）や Minecraft ワールドのバックアップ受けなど主要サービスを集約。",
         "purpose_en": "The network-core node that runs OPNsense as the main FW/router. It consolidates key services such as AdGuard, Twingate (1.x side), and the Minecraft world backup sink.",
         "workloads": [
           {
-            "type": "VM",
+            "kind": "qemu",
             "vmid": 500,
-            "os": "OPNsense (FreeBSD)",
             "name": "OPNsense",
+            "status": "running",
+            "cores": 8,
+            "memMiB": 3072,
+            "diskGiB": 32,
+            "icon": "shield",
+            "variant": "core",
+            "caption": "メイン FW・ルータ / 0.x·1.x 分離",
+            "caption_en": "Main FW / router · 0.x/1.x split",
+            "os": "OPNsense (FreeBSD)",
             "purpose": "メインファイアウォール / ルータ。192.168.0.x と 192.168.1.x のセグメント分離を担当。",
             "purpose_en": "Main firewall / router. Responsible for segmenting 192.168.0.x and 192.168.1.x.",
             "details": [
@@ -119,34 +208,17 @@
             ]
           },
           {
-            "type": "LXC",
-            "vmid": 105,
-            "os": "Debian",
-            "name": "twingate-1.x",
-            "purpose": "Twingate コネクタ（1.x 隔離セグメント側）ゼロトラストトンネル",
-            "purpose_en": "Twingate connector (1.x isolated segment) — zero-trust tunnel"
-          },
-          {
-            "type": "LXC",
-            "vmid": 106,
-            "os": "Debian",
-            "name": "adguard-1.x",
-            "purpose": "AdGuard Home DNS（1.x セグメント）— 広告 / トラッカーフィルタ",
-            "purpose_en": "AdGuard Home DNS (1.x segment) — ad / tracker filtering"
-          },
-          {
-            "type": "LXC",
-            "vmid": 107,
-            "os": "Debian",
-            "name": "adguard-0.x",
-            "purpose": "AdGuard Home DNS（0.x セグメント）— 冗長化",
-            "purpose_en": "AdGuard Home DNS (0.x segment) — redundancy"
-          },
-          {
-            "type": "LXC",
+            "kind": "lxc",
             "vmid": 100,
+            "name": "mc-backup",
+            "status": "running",
+            "cores": 2,
+            "memMiB": 512,
+            "diskGiB": 8.4,
+            "icon": "backup",
+            "caption": "DriveBackupV2 受け · FileBrowser",
+            "caption_en": "DriveBackupV2 sink · FileBrowser",
             "os": "Debian 12",
-            "name": "MC-Backup",
             "purpose": "ベアメタル Minecraft サーバーのバックアップ CT。DriveBackupV2 経由でワールドデータを1週間分保管し、FileBrowser で取り出しを提供。",
             "purpose_en": "Backup CT for the bare-metal Minecraft server. Retains one week of world data via DriveBackupV2 and provides retrieval through FileBrowser.",
             "details": [
@@ -161,104 +233,221 @@
             ]
           },
           {
-            "type": "LXC",
-            "vmid": 700,
+            "kind": "lxc",
+            "vmid": 105,
+            "name": "twingate-1",
+            "status": "running",
+            "cores": 2,
+            "memMiB": 1024,
+            "diskGiB": 3.1,
+            "icon": "lock",
+            "caption": "ゼロトラスト (1.x)",
+            "caption_en": "Zero-trust (1.x)",
             "os": "Debian",
-            "name": "Headroom-Proxy",
-            "purpose": "Headroom — AI エージェント向けコンテキスト圧縮レイヤ（LLM トークン削減プロキシ / MCP）",
-            "purpose_en": "Headroom — a context-compression layer for AI agents (LLM token-reduction proxy / MCP)"
+            "purpose": "Twingate コネクタ（1.x 隔離セグメント側）ゼロトラストトンネル",
+            "purpose_en": "Twingate connector (1.x isolated segment) — zero-trust tunnel"
           },
           {
-            "type": "LXC",
-            "vmid": 1000,
+            "kind": "lxc",
+            "vmid": 106,
+            "name": "adguard-1.x",
+            "status": "running",
+            "cores": 4,
+            "memMiB": 1536,
+            "diskGiB": 4.2,
+            "icon": "dns",
+            "caption": "DNS フィルタ (1.x)",
+            "caption_en": "DNS filter (1.x)",
             "os": "Debian",
-            "name": "secrets1",
-            "purpose": "非公開プロジェクト（詳細非公開）",
-            "purpose_en": "Private project (details undisclosed)"
+            "purpose": "AdGuard Home DNS（1.x セグメント）— 広告 / トラッカーフィルタ",
+            "purpose_en": "AdGuard Home DNS (1.x segment) — ad / tracker filtering"
+          },
+          {
+            "kind": "lxc",
+            "vmid": 107,
+            "name": "adguard-0.x",
+            "status": "running",
+            "cores": 4,
+            "memMiB": 768,
+            "diskGiB": 4.2,
+            "icon": "dns",
+            "caption": "DNS フィルタ (0.x 冗長)",
+            "caption_en": "DNS filter (0.x redundant)",
+            "os": "Debian",
+            "purpose": "AdGuard Home DNS（0.x セグメント）— 冗長化",
+            "purpose_en": "AdGuard Home DNS (0.x segment) — redundancy"
+          },
+          {
+            "kind": "lxc",
+            "vmid": 108,
+            "name": "Pens-Uptime-kuma",
+            "status": "running",
+            "cores": 1,
+            "memMiB": 1024,
+            "diskGiB": 4.1,
+            "icon": "monitor",
+            "caption": "友人との相互監視",
+            "caption_en": "Mutual uptime monitoring",
+            "os": "Debian",
+            "purpose": "友人と相互に監視し合うための Uptime Kuma。相手側のインスタンスを自分のクラスターでホストしている（自分用の監視は友人の Proxmox 上にあり uptime.warasugi.com で公開）。",
+            "purpose_en": "An Uptime Kuma instance for mutual monitoring with a friend — their instance, hosted on my cluster. My own status page runs on their Proxmox at uptime.warasugi.com."
+          },
+          {
+            "kind": "lxc",
+            "vmid": 109,
+            "name": "Uir-bot",
+            "status": "running",
+            "cores": 1,
+            "memMiB": 512,
+            "diskGiB": 8.4,
+            "icon": "bot",
+            "caption": "友人鯖の管理 bot (受託)",
+            "caption_en": "Admin bot run for a friend",
+            "os": "Debian",
+            "purpose": "友人の Discord サーバーの管理ボットを、期限付きで受託して動かしている CT。",
+            "purpose_en": "Runs the Discord server management bot of a friend under a fixed-term arrangement."
           }
         ]
       },
       {
         "id": "dell",
+        "kind": "pve",
         "name": "Dell",
-        "hardware": "Dell OptiPlex 7040 SFF — Intel Core i3-6100 (4 threads) + RAM 8GB + SSD 128GB + HDD (Toshiba)",
+        "hardware": {
+          "model": "Dell OptiPlex 7040 SFF",
+          "cpu": "Core i3-6100",
+          "cores": 4,
+          "memGiB": 8,
+          "storage": [
+            "SSD 128GB",
+            "HDD (Toshiba)"
+          ]
+        },
         "role": "Web公開 / 監視ノード",
         "role_en": "Web-exposure / monitoring node",
         "purpose": "ポートフォリオ公開・監視・0.x 側ゼロトラストアクセスを担当するノード。Minecraft プロキシや各種セルフホストサービスも稼働。",
         "purpose_en": "The node responsible for portfolio exposure, monitoring, and 0.x-side zero-trust access. Also runs the Minecraft proxy and various self-hosted services.",
         "workloads": [
           {
-            "type": "LXC",
+            "kind": "lxc",
             "vmid": 102,
+            "name": "twingate-0",
+            "status": "running",
+            "cores": 2,
+            "memMiB": 1024,
+            "diskGiB": 4.1,
+            "icon": "lock",
+            "caption": "ゼロトラスト (0.x)",
+            "caption_en": "Zero-trust (0.x)",
             "os": "Debian",
-            "name": "twingate-0.x",
             "purpose": "Twingate コネクタ（0.x セグメント側）ゼロトラストトンネル",
             "purpose_en": "Twingate connector (0.x segment) — zero-trust tunnel"
           },
           {
-            "type": "LXC",
+            "kind": "lxc",
             "vmid": 103,
-            "os": "Debian",
             "name": "portfolio",
+            "status": "running",
+            "cores": 2,
+            "memMiB": 2048,
+            "diskGiB": 33.5,
+            "icon": "web",
+            "variant": "cf",
+            "caption": "Bun+Hono · CF Tunnel",
+            "caption_en": "Bun+Hono · CF Tunnel",
+            "os": "Debian",
             "purpose": "Bun + Hono で稼働中のポートフォリオサイト（portfolio.warasugi.com / Cloudflare Tunnel 公開）",
             "purpose_en": "The portfolio site running on Bun + Hono (portfolio.warasugi.com / exposed via Cloudflare Tunnel)"
           },
           {
-            "type": "LXC",
+            "kind": "lxc",
             "vmid": 104,
+            "name": "Discord-Pin-Service",
+            "status": "running",
+            "cores": 1,
+            "memMiB": 512,
+            "diskGiB": 4.1,
+            "icon": "webhook",
+            "caption": "Webhook 通知の集約",
+            "caption_en": "Webhook notification hub",
             "os": "Debian",
-            "name": "pote-monitor",
-            "purpose": "BTC/ETH 価格変動を1時間ごとに Discord Webhook で通知するモニタリングツール",
-            "purpose_en": "A monitoring tool that reports BTC/ETH price movements to a Discord webhook every hour",
-            "details": [
-              "github.com/Poteto-Groove/poteto-monitor",
-              "1時間ごとに Discord へ価格通知"
-            ],
-            "details_en": [
-              "github.com/Poteto-Groove/poteto-monitor",
-              "Hourly price notifications to Discord"
-            ]
+            "purpose": "各種通知を担う webhook 向けの処理を統合した CT。旧名 pote-monitor はパッと見で用途が分からないため改名した。",
+            "purpose_en": "Consolidates the webhook-driven notification jobs. Renamed from pote-monitor, a name that gave no hint of what it did."
           },
           {
-            "type": "LXC",
-            "vmid": 301,
-            "os": "Debian",
-            "name": "Velocity",
-            "purpose": "ベアメタル Minecraft サーバーの Velocity プロキシ。外部公開は東京の Velocity 経由で、自宅は受信接続ゼロ。",
-            "purpose_en": "Velocity proxy for the bare-metal Minecraft server. External exposure goes through the Velocity in Tokyo, keeping zero inbound at home."
-          },
-          {
-            "type": "LXC",
+            "kind": "lxc",
             "vmid": 302,
-            "os": "Debian",
             "name": "MeTube",
+            "status": "running",
+            "cores": 1,
+            "memMiB": 2048,
+            "diskGiB": 33.7,
+            "icon": "video",
+            "caption": "動画DL (yt-dlp)",
+            "caption_en": "Video DL (yt-dlp)",
+            "os": "Debian",
             "purpose": "セルフホスト動画ダウンローダ（yt-dlp Web UI）",
             "purpose_en": "Self-hosted video downloader (yt-dlp web UI)"
           },
           {
-            "type": "LXC",
+            "kind": "lxc",
             "vmid": 400,
-            "os": "Debian",
             "name": "Zabbix-Server",
+            "status": "running",
+            "cores": 2,
+            "memMiB": 2048,
+            "diskGiB": 33.5,
+            "icon": "chart",
+            "caption": "クラスター監視",
+            "caption_en": "Cluster monitoring",
+            "os": "Debian",
             "purpose": "Zabbix サーバー — クラスター全体のインフラメトリクス収集・アラート管理",
             "purpose_en": "Zabbix server — cluster-wide infrastructure metrics collection and alert management"
+          },
+          {
+            "kind": "lxc",
+            "vmid": 701,
+            "name": "media-server",
+            "status": "running",
+            "cores": 2,
+            "memMiB": 1024,
+            "diskGiB": 16.7,
+            "icon": "storage",
+            "caption": "Samba 共有 · バックアップ",
+            "caption_en": "Samba share · backup",
+            "os": "Debian",
+            "purpose": "NAS 兼 backup-nfs のディスク領域を SMB でローカルに流す Samba。名前は Jellyfin 用途で作った頃の由来で、いまはバックアップ・音楽ファイル置き場・共有フォルダとして使っている。",
+            "purpose_en": "Samba that re-exports the NAS / backup-nfs storage over SMB on the LAN. The name is a leftover from its Jellyfin days; today it is backup, music storage and a shared folder."
           }
         ]
       },
       {
         "id": "minecraft-bm",
+        "kind": "baremetal",
         "name": "Minecraft鯖",
         "name_en": "Minecraft Server",
-        "hardware": "Intel Core i7-3770 + RAM 16GB DDR3 + SATA SSD 256GB",
+        "hardware": {
+          "model": "",
+          "cpu": "Core i7-3770",
+          "cores": 8,
+          "memGiB": 16,
+          "storage": [
+            "Kingston SQ500S37240G 240GB"
+          ]
+        },
         "role": "スタンドアロン ベアメタル ゲームサーバー（Minecraft / Terraria・クラスター外・0.x 配下）",
         "role_en": "Standalone bare-metal game server (Minecraft / Terraria · outside the cluster · under 0.x)",
         "purpose": "旧 Kasm WS 機を転用したベアメタル ゲーム専用機（Kasm Workspaces は廃止・スペックは当時のまま）。Proxmox クラスター waras-nw には参加せず、192.168.0.x セグメント配下で単体稼働。仮想化オーバーヘッドの排除・ゲーム鯖としての明確な分離・クラスターのクォーラムを4台にしない判断から、あえてベアメタル運用を選択した。Minecraft（Purpur）に加え、身内用の Terraria サバイバル鯖も同一機で稼働。リソースに余裕があるため他用途への活用余地も残している。Minecraft へのアクセスは別拠点（東京）の Velocity プロキシ経由のみで、Terraria は LAN 内限定。いずれも直接の外部露出はゼロ。",
         "purpose_en": "A dedicated bare-metal game box repurposed from the former Kasm WS machine (Kasm Workspaces retired; the specs are unchanged from then). It does not join the Proxmox cluster waras-nw and runs standalone under the 192.168.0.x segment. Bare-metal operation was chosen deliberately to eliminate virtualization overhead, keep the game servers cleanly separated, and avoid pushing the cluster quorum to four nodes. Alongside Minecraft (Purpur), it also hosts a Terraria survival server for close friends on the same box. With resources to spare, headroom is left for other uses. Minecraft access is only via the Velocity proxy at an off-site location (Tokyo), while Terraria is LAN-only — neither has any direct external exposure.",
         "workloads": [
           {
-            "type": "Bare-metal",
-            "os": "Debian 13",
+            "kind": "baremetal",
             "name": "Minecraft (Purpur)",
+            "status": "running",
+            "icon": "game",
+            "caption": "Purpur サバイバル",
+            "caption_en": "Purpur survival server",
+            "os": "Debian 13",
             "purpose": "常時稼働の Purpur サバイバルサーバー（Java Edition）",
             "purpose_en": "An always-on Purpur survival server (Java Edition)",
             "details": [
@@ -277,9 +466,13 @@
             ]
           },
           {
-            "type": "Bare-metal",
-            "os": "Debian 13",
+            "kind": "baremetal",
             "name": "Terraria",
+            "status": "running",
+            "icon": "game",
+            "caption": "身内用サバイバル",
+            "caption_en": "Private survival server",
+            "os": "Debian 13",
             "purpose": "身内用のサバイバルサーバー（LAN 内限定・外部公開なし）",
             "purpose_en": "A survival server for close friends (LAN-only · no external exposure)"
           }
@@ -340,8 +533,8 @@
     },
     "future_roadmap": {
       "phase_1_current": {
-        "status": "✅ 完了",
-        "status_en": "✅ Complete",
+        "status": "✓ 完了",
+        "status_en": "✓ Complete",
         "components": [
           "Proxmox 単一ノード（Dell）",
           "Twingate リモートアクセス",
@@ -356,8 +549,8 @@
         ]
       },
       "phase_2_planned": {
-        "status": "✅ 完了",
-        "status_en": "✅ Complete",
+        "status": "✓ 完了",
+        "status_en": "✓ Complete",
         "components": [
           "HP Z240 SFF × 2 台追加",
           "Proxmox クラスター構築（waras-nw 3ノード）",
@@ -450,14 +643,14 @@
       ],
       "applications": [
         "Zabbix",
+        "Uptime Kuma",
         "Minecraft (Purpur)",
         "Terraria",
         "GraalVM",
         "Velocity",
         "VOICEVOX",
         "Discord Bot",
-        "Homepage",
-        "Headroom",
+        "Samba",
         "MeTube",
         "DriveBackupV2",
         "FileBrowser",
@@ -476,17 +669,17 @@
       "ベアメタル Minecraft サーバー運用（Purpur + GraalVM）と DriveBackupV2 による世代バックアップ設計（深夜転送 + 帯域制限で帯域圧迫を防止）"
     ],
     "operational_practices": {
-      "monitoring": "Zabbix サーバー (VMID 400) + pote-monitor (BTC/ETH Discord 通知) + Proxmox Web UI",
+      "monitoring": "Zabbix サーバー (CT400) + Discord-Pin-Service (CT104) による webhook 通知 + Proxmox Web UI",
       "backups": "手動 + Google Drive クラウドバックアップ + DriveBackupV2（Minecraft ワールド・1週間分）",
       "updates": "定期更新 + 手動確認",
-      "documentation": "メモは Google Keep、ノートは Discord・GitHub・物理で管理（ZenNotes は廃止 — AI 主導の運用に移行し、本人は閲覧中心）"
+      "documentation": "メモは Google Keep、ノートは Discord・GitHub・物理で管理。ZenNotes はローカル運用で足りるため CT を廃止した"
     },
     "operations": {
       "monitoring": {
         "tool": "Zabbix",
-        "server": "VMID:400 LXC（Dell ノード）",
+        "server": "CT400（Dell ノード）",
         "coverage": "全ノード・全 CT/VM を監視対象。CPU・メモリ・ディスク使用率・プロセス死活・ネットワーク帯域をリアルタイム計測",
-        "alerting": "pote-monitor (CT:104) が価格アラートを Discord 通知に統合。Zabbix アラートと併用"
+        "alerting": "Zabbix のアラートに加え、Discord-Pin-Service (CT104) が各種通知の webhook 処理を引き受けている"
       },
       "access_management": {
         "internal": "Twingate VPN 経由でのみ Proxmox WebUI・SSH にアクセス可能",
@@ -496,8 +689,70 @@
       "reliability": {
         "uptime_target": "ホームラボとして合理的な稼働率を維持",
         "restart_policy": "Proxmox の自動起動設定で CT/VM はホスト再起動後に自動復旧",
-        "backup": "Proxmox Backup Server による定期スナップショット（計画中）。Minecraft ワールドは DriveBackupV2 で毎晩 MC-Backup CT へ保管済み"
+        "backup": "Proxmox Backup Server による定期スナップショット（計画中）。Minecraft ワールドは DriveBackupV2 で毎晩 MC-Backup CT (CT100) へ保管済み"
       }
+    },
+    "architecture_notes": [
+      "ネットワーク中核 — OPNsense (HP-2 VM500) が 192.168.0.x / 192.168.1.x を分離しルーティング",
+      "DNS 冗長 — AdGuard Home を各セグメントに配置 (1.x: CT106 / 0.x: CT107)",
+      "ゼロトラスト冗長 — Twingate を 2 セグメントに配置 (1.x: HP-2 CT105 / 0.x: Dell CT102)",
+      "公開は Cloudflare Tunnel のみ — portfolio.warasugi.com (Dell CT103) を受信ゼロで公開",
+      "Minecraft はベアメタル専用機（Debian 13 · 0.x 配下 · 旧 Kasm WS 転用）で Purpur サバイバルを常時稼働 — アクセスは別拠点（東京）の Velocity 経由のみで直接露出ゼロ（HP-1 CT301 連携）。GraalVM 17/21/25.1 併用・webmap は Cloudflare Tunnel 公開。同一機で身内用の Terraria サバイバル鯖（LAN 内限定・外部公開なし）も稼働",
+      "ワールドバックアップ — DriveBackupV2 が深夜4時に HP-2 MC-Backup (CT100) へ転送（40MB/s 帯域制限・1週間分保持）。取り出しは FileBrowser（Cloudflare Tunnel 公開）",
+      "監視・多層防御 — Zabbix (Dell CT400) + Ed25519 SSH鍵 + TOTP 2FA + Anubis"
+    ],
+    "architecture_notes_en": [
+      "Network core — OPNsense (HP-2 VM500) separates and routes 192.168.0.x / 192.168.1.x",
+      "DNS redundancy — AdGuard Home deployed per segment (1.x: CT106 / 0.x: CT107)",
+      "Zero-trust redundancy — Twingate deployed across 2 segments (1.x: HP-2 CT105 / 0.x: Dell CT102)",
+      "Public exposure via Cloudflare Tunnel only — portfolio.warasugi.com (Dell CT103) served with zero inbound",
+      "Minecraft runs on a dedicated bare-metal box (Debian 13 · under 0.x · repurposed Kasm WS) hosting an always-on Purpur survival server — access only via off-site (Tokyo) Velocity with zero direct exposure (linked to HP-1 CT301). GraalVM 17/21/25.1 in use; webmap exposed via Cloudflare Tunnel. The same box also runs a LAN-only Terraria survival server for close friends (no external exposure)",
+      "World backup — DriveBackupV2 transfers to HP-2 MC-Backup (CT100) at 4 AM (40MB/s bandwidth cap · 1-week retention). Retrieval via FileBrowser (exposed over Cloudflare Tunnel)",
+      "Monitoring & defense-in-depth — Zabbix (Dell CT400) + Ed25519 SSH keys + TOTP 2FA + Anubis"
+    ],
+    "diagram": {
+      "legend": [
+        {
+          "icon": "",
+          "text": "waras-nw — Proxmox VE 9.x 3ノード (HP-1 / HP-2 / Dell)",
+          "text_en": "waras-nw — Proxmox VE 9.x, 3 nodes (HP-1 / HP-2 / Dell)"
+        },
+        {
+          "icon": "",
+          "text": "ネットワーク中核 — OPNsense (HP-2 VM500) が 192.168.0.x / 192.168.1.x を分離",
+          "text_en": "Network core — OPNsense (HP-2 VM500) separates 192.168.0.x / 192.168.1.x"
+        },
+        {
+          "icon": "",
+          "text": "ゼロトラスト — Twingate を各セグメントに冗長 (1.x: CT105 / 0.x: CT102)",
+          "text_en": "Zero-trust — Twingate redundant per segment (1.x: CT105 / 0.x: CT102)"
+        },
+        {
+          "icon": "",
+          "text": "DNS フィルタ — AdGuard Home を各セグメントに冗長 (1.x: CT106 / 0.x: CT107)",
+          "text_en": "DNS filtering — AdGuard Home redundant per segment (1.x: CT106 / 0.x: CT107)"
+        },
+        {
+          "icon": "",
+          "text": "公開 — Cloudflare Tunnel で portfolio.warasugi.com を受信ゼロ公開 / 外部ポート開放なし",
+          "text_en": "Public — portfolio.warasugi.com served via Cloudflare Tunnel with zero inbound / no external ports"
+        },
+        {
+          "icon": "",
+          "text": "監視 — Zabbix (Dell CT400) + Discord-Pin-Service (CT104)",
+          "text_en": "Monitoring — Zabbix (Dell CT400) + Discord-Pin-Service (CT104)"
+        },
+        {
+          "icon": "",
+          "text": "ベアメタルMC — Purpur サバイバル常時稼働 (i7-3770 / 16GB / SSD 240GB · Debian 13 · 旧 Kasm WS 転用) クラスター外・0.x 配下",
+          "text_en": "Bare-metal MC — always-on Purpur survival (i7-3770 / 16GB / SSD 240GB · Debian 13 · repurposed Kasm WS), outside cluster, under 0.x"
+        },
+        {
+          "icon": "",
+          "text": "ワールドバックアップ — DriveBackupV2 → HP-2 MC-Backup (CT100)。深夜4時・40MB/s 制限・1週間分保持",
+          "text_en": "World backup — DriveBackupV2 → HP-2 MC-Backup (CT100). 4 AM · 40MB/s cap · 1-week retention"
+        }
+      ]
     }
   }
 }

@@ -1,0 +1,42 @@
+{
+  "setup": {
+    "groups": [
+      {
+        "label": "端末・シェル",
+        "label_en": "Terminal & shell",
+        "items": ["WezTerm", "Nushell", "Starship", "Neovim (LazyVim)"]
+      },
+      {
+        "label": "OS",
+        "label_en": "OS",
+        "items": ["Windows 11", "Proxmox VE", "Debian 12 / 13", "Arch Linux"]
+      },
+      {
+        "label": "書く・記録する",
+        "label_en": "Writing & notes",
+        "items": ["ZenNotes", "Obsidian 形式の Markdown vault", "chezmoi (dotfiles)"]
+      },
+      {
+        "label": "AI",
+        "label_en": "AI",
+        "items": ["Claude Pro", "Claude Code", "Google AI Plus", "MCP サーバー自作"]
+      },
+      {
+        "label": "キーボード・3D プリンタ",
+        "label_en": "Keyboards & 3D printing",
+        "items": ["Mint60", "A75", "Ender 3"]
+      },
+      {
+        "label": "音・VR",
+        "label_en": "Audio & VR",
+        "items": [
+          "qdc SUPERIOR",
+          "ACTIVO SCOOP",
+          "Moondrop Golden Ages 2",
+          "FiiO KA13",
+          "Meta Quest 2"
+        ]
+      }
+    ]
+  }
+}
