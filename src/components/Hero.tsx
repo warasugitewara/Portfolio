@@ -1,6 +1,7 @@
 import type { Profile, I18n, InfrastructureData, Language } from "../types";
 import { pickLang } from "../utils/pickLang";
 import { resolveStats } from "../utils/infraStats";
+import { ClusterBoard } from "./ClusterBoard";
 
 interface HeroProps {
   i18n: I18n | null;
@@ -47,6 +48,15 @@ export const Hero = ({ i18n, profile, infra, lang }: HeroProps) => {
             </div>
           )}
         </div>
+
+        <ClusterBoard
+          infra={infra}
+          labels={{
+            title: i18n.hero.boardTitle,
+            running: i18n.hero.boardRunning,
+            stopped: i18n.hero.boardStopped,
+          }}
+        />
       </div>
     </section>
   );

@@ -9,7 +9,10 @@
   },
   "hero": {
     "title": "warasugi",
-    "subtitle": "CLI-focused engineer | Paper plugins · Discord bots · Android | Homelab"
+    "subtitle": "CLI-focused engineer | Paper plugins · Discord bots · Android | Homelab",
+    "boardTitle": "Cluster at a glance",
+    "boardRunning": "running",
+    "boardStopped": "stopped"
   },
   "about": {
     "title": "About",

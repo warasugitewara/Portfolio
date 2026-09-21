@@ -403,32 +403,20 @@ a:hover {
    ========================================================================= */
 .hero {
   position: relative;
-  min-height: 460px;
   display: flex;
-  align-items: center;
   justify-content: center;
-  background-image: url('/minecraft-city.webp');
-  background-size: cover;
-  background-position: center;
-  background-attachment: fixed;
   margin: 0 calc(-1 * var(--space-5));
-  padding: var(--space-8) var(--space-5) var(--space-6);
-  overflow: hidden;
+  padding: var(--space-7) var(--space-5) var(--space-6);
+  border-bottom: 1px solid var(--color-border);
+  background-color: var(--color-surface-elev);
 }
 
-.hero::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: var(--hero-scrim);
-  z-index: 1;
-}
 
 .hero-container {
   position: relative;
-  z-index: 2;
-  display: flex;
-  gap: var(--space-6);
+  display: grid;
+  grid-template-columns: auto 1fr minmax(320px, 0.9fr);
+  gap: var(--space-5) var(--space-6);
   align-items: center;
   max-width: var(--content-max);
   width: 100%;
@@ -463,21 +451,21 @@ a:hover {
 }
 
 .hero-subtitle {
-  color: var(--hero-text);
+  color: var(--color-text);
   margin-bottom: var(--space-2);
   font-size: 1.02rem;
 }
 
 .hero-location {
   font-size: 0.9rem;
-  color: var(--hero-text-muted);
+  color: var(--color-text-secondary);
 }
 
 .hero-stats {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-4);
-  margin-top: var(--space-4);
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-3) var(--space-5);
+  margin-top: var(--space-5);
 }
 
 .hero-stat {
@@ -861,58 +849,130 @@ a:hover {
 }
 
 /* =========================================================================
-   Boot animation
+   Cluster board (hero)
+   One cell per guest, grouped by node. Node identity comes from the layout
+   and its label; color is reserved for machine state.
    ========================================================================= */
-.boot-animation {
-  position: fixed;
-  inset: 0;
-  background-color: var(--color-bg);
+.board {
+  margin: 0;
+  padding: var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background-color: var(--color-surface);
+}
+
+.board__title {
+  font-size: var(--fs-meta);
+  color: var(--color-text-secondary);
+  margin-bottom: var(--space-3);
+}
+
+.board__nodes {
   display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.board__node {
+  display: grid;
+  grid-template-columns: 4.5rem 1fr;
+  grid-template-areas: 'name cells' 'spec cells';
+  column-gap: var(--space-3);
   align-items: center;
-  justify-content: center;
-  z-index: 9999;
-  padding: var(--space-5);
-  animation: bootFadeOut 0.5s ease-in-out 2s forwards;
+  border-left: 2px solid var(--color-border-strong);
+  padding-left: var(--space-3);
 }
 
-.boot-terminal {
+.board__node-name {
+  grid-area: name;
+  font-size: var(--fs-meta);
+  font-weight: 700;
+}
+
+.board__node-spec {
+  grid-area: spec;
+  font-size: var(--fs-data);
+  color: var(--color-text-secondary);
+}
+
+.board__cells {
+  grid-area: cells;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px;
+  list-style: none;
+}
+
+.board__cell {
+  width: 2.4rem;
+  padding: 3px 0;
+  text-align: center;
+  border: 1px solid color-mix(in srgb, var(--color-running) 55%, transparent);
+  border-radius: 2px;
+  background-color: color-mix(in srgb, var(--color-running) 18%, transparent);
+  animation: boardCellIn 0.28s ease-out backwards;
+  animation-delay: calc(var(--cell-index) * 14ms);
+  cursor: default;
+}
+
+/* Stopped guests carry a dashed outline as well as the muted color, so the
+   state survives a colorblind reader and a black-and-white print. */
+.board__cell--stopped {
+  border-style: dashed;
+  border-color: var(--color-stopped);
+  background-color: transparent;
+}
+
+.board__cell-id {
+  font-size: var(--fs-data);
+  font-variant-numeric: tabular-nums;
+  color: var(--color-text);
+}
+
+.board__cell--stopped .board__cell-id {
+  color: var(--color-text-secondary);
+}
+
+.board__legend {
+  display: flex;
+  gap: var(--space-4);
+  margin-top: var(--space-3);
   font-family: var(--font-mono);
-  color: var(--color-accent);
-  width: 100%;
-  max-width: 600px;
-  padding: var(--space-6);
-  border: 1px solid var(--color-border-strong);
-  border-radius: var(--radius-md);
-  background-color: var(--color-surface-elev);
-  box-shadow: var(--glow-accent);
+  font-size: var(--fs-data);
+  color: var(--color-text-secondary);
 }
 
-.boot-line {
-  margin-bottom: var(--space-2);
-  line-height: 1.5;
-  animation: typewrite 0.3s steps(50, end) forwards;
-  opacity: 0;
+.board__key {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
 }
 
-.boot-prompt {
-  color: var(--color-signal);
-  font-weight: bold;
+.board__swatch {
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  border: 1px solid color-mix(in srgb, var(--color-running) 55%, transparent);
+  background-color: color-mix(in srgb, var(--color-running) 18%, transparent);
 }
 
-.boot-text {
-  color: var(--color-accent);
+.board__swatch--stopped {
+  border-style: dashed;
+  border-color: var(--color-stopped);
+  background-color: transparent;
 }
 
-.boot-cursor {
-  display: inline-block;
-  color: var(--color-accent);
-  animation: blink 0.8s infinite;
-  font-weight: bold;
+@keyframes boardCellIn {
+  from {
+    opacity: 0;
+    transform: translateY(3px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
 }
 
-/* =========================================================================
-   Keyframes
-   ========================================================================= */
 @keyframes slideInLeft {
   from { opacity: 0; transform: translateX(-20px); }
   to { opacity: 1; transform: translateX(0); }
@@ -923,25 +983,19 @@ a:hover {
   to { opacity: 1; transform: scale(1); }
 }
 
-@keyframes bootFadeOut {
-  from { opacity: 1; }
-  to { opacity: 0; pointer-events: none; }
-}
-
-@keyframes typewrite {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-@keyframes blink {
-  0%, 50% { opacity: 1; }
-  51%, 100% { opacity: 0; }
-}
-
 /* =========================================================================
    Responsive
    ========================================================================= */
 @media (max-width: 768px) {
+  .hero-container {
+    grid-template-columns: 1fr;
+    justify-items: start;
+  }
+
+  .board__node {
+    grid-template-columns: 3.5rem 1fr;
+  }
+
   .header {
     padding: var(--space-3) var(--space-4);
   }
@@ -1060,10 +1114,6 @@ a:hover {
     padding: 0 var(--space-3);
   }
 
-  .boot-terminal {
-    padding: var(--space-4);
-    font-size: 0.85rem;
-  }
 }
 
 /* =========================================================================
@@ -1082,7 +1132,4 @@ a:hover {
     transition-duration: 0.001ms !important;
   }
 
-  .boot-animation {
-    animation: bootFadeOut 0.5s ease-in-out 2s forwards;
-  }
 }

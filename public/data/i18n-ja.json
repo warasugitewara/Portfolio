@@ -9,7 +9,10 @@
   },
   "hero": {
     "title": "warasugi",
-    "subtitle": "CLI志向エンジニア | Paper Plugin・Discord Bot・Android | ホームラボ"
+    "subtitle": "CLI志向エンジニア | Paper Plugin・Discord Bot・Android | ホームラボ",
+    "boardTitle": "クラスターの稼働状況",
+    "boardRunning": "稼働",
+    "boardStopped": "停止"
   },
   "about": {
     "title": "プロフィール",

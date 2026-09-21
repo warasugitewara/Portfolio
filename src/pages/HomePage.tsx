@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { BootAnimation } from "../components/BootAnimation";
 import { Hero } from "../components/Hero";
 import { About } from "../components/About";
 import { Snake } from "../components/Snake";
@@ -17,22 +16,8 @@ interface HomePageProps {
 }
 
 export const HomePage = ({ i18n, lang }: HomePageProps) => {
-  const [showBoot, setShowBoot] = useState(() => {
-    if (typeof window !== "undefined") {
-      const shown = localStorage.getItem("bootAnimationShown");
-      return !shown;
-    }
-    return true;
-  });
-
   const [profile, setProfile] = useState<Profile | null>(null);
   const [infra, setInfra] = useState<InfrastructureData | null>(null);
-
-  useEffect(() => {
-    if (showBoot === false) {
-      localStorage.setItem("bootAnimationShown", "true");
-    }
-  }, [showBoot]);
 
   useEffect(() => {
     const load = async (file: string, apply: (data: unknown) => void) => {
@@ -56,7 +41,6 @@ export const HomePage = ({ i18n, lang }: HomePageProps) => {
     <>
       <title>{`${i18n.hero.title} - Portfolio`}</title>
       <meta name="description" content={metaDescription} />
-      {showBoot && <BootAnimation onComplete={() => setShowBoot(false)} />}
       <Hero i18n={i18n} profile={profile} infra={infra} lang={lang} />
       <About i18n={i18n} profile={profile} />
       <Snake i18n={i18n} />
