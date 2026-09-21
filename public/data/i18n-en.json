@@ -150,7 +150,8 @@
     "netLeg2": "② Management route — Twingate zero-trust → SSH / Proxmox / internal services",
     "netLeg3": "③ Minecraft (bare-metal · under 0.x) — exposed via off-site (Tokyo) Velocity (zero inbound at home)",
     "metaTitle": "Self-Hosted Infrastructure — warasugi",
-    "metaDescription": "waras-nw — a 3-node Proxmox VE cluster segmented by OPNsense, plus a bare-metal Minecraft server: a home-lab infrastructure overview."
+    "metaDescription": "waras-nw — a 3-node Proxmox VE cluster segmented by OPNsense, plus a bare-metal Minecraft server: a home-lab infrastructure overview.",
+    "lblEdgeDevices": "Line & edge devices"
   },
   "setup": {
     "title": "What I use"

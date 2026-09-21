@@ -771,6 +771,23 @@ export const InfrastructurePage = ({ i18n, lang }: InfrastructurePageProps) => {
                 data.network_design.dns,
               )}
             </p>
+            <p className="infra-subhead">{t("lblEdgeDevices")}</p>
+            <ul className="infra-list">
+              {(data.network_design.edge_devices ?? []).map((device) => (
+                <li key={device.name} className="infra-device">
+                  <span className="infra-device__icon" aria-hidden="true">
+                    {device.icon}
+                  </span>
+                  <strong>{device.name}</strong>
+                  <span className="infra-device__addr">{device.address}</span>
+                  <span>{pickLang(lang, device.role_en ?? device.role, device.role)}</span>
+                  <p className="infra-muted">
+                    {pickLang(lang, device.note_en ?? device.note, device.note)}
+                  </p>
+                </li>
+              ))}
+            </ul>
+
             <p className="infra-subhead">{t("lblSecurityMeasures")}</p>
             <ul className="infra-list">
               {pickArr(data.network_design.security_en, data.network_design.security).map(

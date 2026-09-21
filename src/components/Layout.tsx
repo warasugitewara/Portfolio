@@ -1,6 +1,7 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import type { I18n, Language } from "../types";
+import type { I18n, Language, Profile } from "../types";
+import { getDataUrl } from "../utils/path";
 
 interface HeaderProps {
   lang: Language;
@@ -11,6 +12,22 @@ interface HeaderProps {
 }
 
 export const Header = ({ lang, i18n, onLanguageSwitch, onThemeToggle, theme }: HeaderProps) => {
+  const [socials, setSocials] = useState<Profile["socials"] | null>(null);
+
+  useEffect(() => {
+    const load = async () => {
+      try {
+        const response = await fetch(getDataUrl("profile.json"));
+        if (!response.ok) throw new Error(`Failed to load profile: ${response.status}`);
+        const profile = (await response.json()) as Profile;
+        setSocials(profile.socials);
+      } catch (error) {
+        console.error("Failed to load profile:", error);
+      }
+    };
+    void load();
+  }, []);
+
   return (
     <header className="header">
       <div className="header-wrapper">
@@ -34,6 +51,30 @@ export const Header = ({ lang, i18n, onLanguageSwitch, onThemeToggle, theme }: H
             {i18n.nav.contact}
           </Link>
           <div className="lang-switcher">
+            {socials?.github && (
+              <a
+                className="social-link"
+                href={socials.github}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="GitHub"
+                title="GitHub"
+              >
+                
+              </a>
+            )}
+            {socials?.twitter && (
+              <a
+                className="social-link social-link--x"
+                href={socials.twitter}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="X"
+                title="X"
+              >
+                X
+              </a>
+            )}
             <button
               className={`lang-btn ${lang === "ja" ? "active" : ""}`}
               onClick={() => onLanguageSwitch("ja")}

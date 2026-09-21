@@ -503,7 +503,45 @@
         "TOTP 2FA — two-factor authentication required for the Proxmox WebUI"
       ],
       "dns": "AdGuard Home（各セグメントに冗長配置）でフィルタリング。上流は Cloudflare DNS (1.1.1.1 / 1.0.0.1)。",
-      "dns_en": "Filtering by AdGuard Home (deployed redundantly per segment). Upstream is Cloudflare DNS (1.1.1.1 / 1.0.0.1)."
+      "dns_en": "Filtering by AdGuard Home (deployed redundantly per segment). Upstream is Cloudflare DNS (1.1.1.1 / 1.0.0.1).",
+      "edge_devices": [
+        {
+          "icon": "",
+          "name": "HGW (Aterm)",
+          "address": "192.168.0.1",
+          "role": "回線終端 / ONU",
+          "role_en": "Line termination / ONU",
+          "note": "au one net 1Gbps。ここから OPNsense へ渡す。",
+          "note_en": "au one net, 1Gbps. Hands off to OPNsense."
+        },
+        {
+          "icon": "",
+          "name": "Archer BE3600",
+          "address": "192.168.0.3",
+          "role": "AP（VR・IoT 用）",
+          "role_en": "Access point (VR & IoT)",
+          "note": "AP モード。VLAN は未導入で SSID による分離もしていない。OPNsense が落ちても Wi-Fi が死なないよう、あえてメインセグメント側に置いている。家族用の Wi-Fi とは別系統なので負荷は軽い。",
+          "note_en": "Runs in AP mode. No VLANs, no SSID split. Deliberately parked on the main segment so Wi-Fi survives an OPNsense outage. Separate from the household Wi-Fi, so it stays lightly loaded."
+        },
+        {
+          "icon": "",
+          "name": "中継機 (Aterm)",
+          "address": "192.168.0.2",
+          "role": "ゲーム機用の中継",
+          "role_en": "Repeater for game consoles",
+          "note": "PS5 / Nintendo Switch 2 / Android TV を収容する。",
+          "note_en": "Serves the PS5, Nintendo Switch 2 and Android TV."
+        },
+        {
+          "icon": "",
+          "name": "NEC IX2105",
+          "address": "192.168.1.3",
+          "role": "拠点間 VPN",
+          "role_en": "Site-to-site VPN",
+          "note": "Uptime Kuma で相互監視している相手拠点との間を結ぶ。隔離セグメント側に置いている。",
+          "note_en": "Links the site I run mutual Uptime Kuma monitoring with. Sits on the isolated segment."
+        }
+      ]
     },
     "security_model": {
       "ssh": {

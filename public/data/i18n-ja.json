@@ -150,7 +150,8 @@
     "netLeg2": "② 管理ルート — Twingate ゼロトラスト → SSH / Proxmox / 内部サービス",
     "netLeg3": "③ Minecraft (ベアメタル機 · 0.x 配下) — 別拠点(東京) Velocity 経由で公開 (自宅受信ゼロ)",
     "metaTitle": "自作鯖構成 — warasugi",
-    "metaDescription": "waras-nw — OPNsense でセグメント分離した3ノード Proxmox VE クラスターと、ベアメタル Minecraft サーバーのホームラボ構成。"
+    "metaDescription": "waras-nw — OPNsense でセグメント分離した3ノード Proxmox VE クラスターと、ベアメタル Minecraft サーバーのホームラボ構成。",
+    "lblEdgeDevices": "回線と物理機器"
   },
   "setup": {
     "title": "使っているもの"

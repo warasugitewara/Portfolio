@@ -159,6 +159,17 @@ export interface InfraHardware {
   storage: string[];
 }
 
+/** Physical kit between the line and the cluster: HGW, APs, the VPN router. */
+export interface InfraEdgeDevice {
+  icon: string;
+  name: string;
+  address: string;
+  role: string;
+  role_en?: string;
+  note: string;
+  note_en?: string;
+}
+
 export interface InfraNode {
   id: string;
   /** pve nodes form the cluster; baremetal runs outside it. */
@@ -248,6 +259,7 @@ export interface InfrastructureData {
       security_en?: string[];
       dns: string;
       dns_en?: string;
+      edge_devices?: InfraEdgeDevice[];
     };
     security_model: {
       ssh: {
