@@ -3,6 +3,8 @@ export interface I18n {
   hero: Record<string, string>;
   about: Record<string, string>;
   skills: Record<string, string>;
+  /** Optional so a locale that predates this section cannot crash the page. */
+  setup?: Record<string, string>;
   projects: Record<string, string>;
   philosophy: Record<string, string>;
   contact: Record<string, string>;
@@ -89,6 +91,16 @@ export interface GitHubRepo {
   stars: number;
   updated: string;
   pinned: boolean;
+}
+
+export interface SetupGroup {
+  label: string;
+  label_en?: string;
+  items: string[];
+}
+
+export interface SetupData {
+  setup: { groups: SetupGroup[] };
 }
 
 /* ── Infrastructure page ───────────────────────────────────────────── */

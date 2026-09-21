@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Hero } from "../components/Hero";
 import { About } from "../components/About";
 import { Snake } from "../components/Snake";
+import { Setup } from "../components/Setup";
 import { Skills } from "../components/Skills";
 import { Philosophy } from "../components/Philosophy";
 import { FeaturedProjects } from "../components/FeaturedProjects";
@@ -44,6 +45,7 @@ export const HomePage = ({ i18n, lang }: HomePageProps) => {
       <Hero i18n={i18n} profile={profile} infra={infra} lang={lang} />
       <About i18n={i18n} profile={profile} />
       <Snake i18n={i18n} />
+      <Setup i18n={i18n} lang={lang} />
       <Skills i18n={i18n} />
       <Philosophy i18n={i18n} lang={lang} />
       <FeaturedProjects i18n={i18n} lang={lang} />
