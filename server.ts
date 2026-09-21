@@ -22,20 +22,6 @@ app.use(
 const githubReposProxy = createGitHubReposProxy()
 app.get('/api/github/repos', () => githubReposProxy.get())
 
-// Hero background — resized WebP (was a 5.9MB PNG). Long-lived immutable cache.
-app.get('/minecraft-city.webp', async (c) => {
-  try {
-    const fileBuffer = await readFile('./dist/minecraft-city.webp')
-    c.header('Content-Type', 'image/webp')
-    c.header('Cache-Control', 'public, max-age=2592000, immutable')
-    c.header('Content-Length', fileBuffer.length.toString())
-    return c.body(fileBuffer)
-  } catch (error) {
-    console.error('Error serving minecraft-city.webp:', error)
-    return c.notFound()
-  }
-})
-
 // OG card image — fetched by social crawlers on every link unfurl
 app.get('/og-image.png', async (c) => {
   try {
