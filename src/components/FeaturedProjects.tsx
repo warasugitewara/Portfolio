@@ -67,6 +67,16 @@ export const FeaturedProjects = ({ i18n, lang }: FeaturedProjectsProps) => {
                       </span>
                     ))}
                   </div>
+                  {project.demo && (
+                    <a
+                      href={project.demo}
+                      className="featured-link featured-link--demo"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      {pickLang(lang, project.demo_label ?? "Live demo", project.demo_label_ja)}
+                    </a>
+                  )}
                   {project.link &&
                     (project.link_internal ? (
                       <Link to={project.link} className="featured-link">

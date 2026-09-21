@@ -79,6 +79,10 @@ export interface FeaturedProject {
   tech: string[];
   link?: string;
   link_internal?: boolean;
+  /** A place to actually use the thing, when one is published. */
+  demo?: string;
+  demo_label?: string;
+  demo_label_ja?: string;
   link_label?: string;
   link_label_ja?: string;
 }
