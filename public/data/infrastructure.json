@@ -691,6 +691,68 @@
         "restart_policy": "Proxmox の自動起動設定で CT/VM はホスト再起動後に自動復旧",
         "backup": "Proxmox Backup Server による定期スナップショット（計画中）。Minecraft ワールドは DriveBackupV2 で毎晩 MC-Backup CT (CT100) へ保管済み"
       }
+    },
+    "architecture_notes": [
+      "ネットワーク中核 — OPNsense (HP-2 VM500) が 192.168.0.x / 192.168.1.x を分離しルーティング",
+      "DNS 冗長 — AdGuard Home を各セグメントに配置 (1.x: CT106 / 0.x: CT107)",
+      "ゼロトラスト冗長 — Twingate を 2 セグメントに配置 (1.x: HP-2 CT105 / 0.x: Dell CT102)",
+      "公開は Cloudflare Tunnel のみ — portfolio.warasugi.com (Dell CT103) を受信ゼロで公開",
+      "Minecraft はベアメタル専用機（Debian 13 · 0.x 配下 · 旧 Kasm WS 転用）で Purpur サバイバルを常時稼働 — アクセスは別拠点（東京）の Velocity 経由のみで直接露出ゼロ（HP-1 CT301 連携）。GraalVM 17/21/25.1 併用・webmap は Cloudflare Tunnel 公開。同一機で身内用の Terraria サバイバル鯖（LAN 内限定・外部公開なし）も稼働",
+      "ワールドバックアップ — DriveBackupV2 が深夜4時に HP-2 MC-Backup (CT100) へ転送（40MB/s 帯域制限・1週間分保持）。取り出しは FileBrowser（Cloudflare Tunnel 公開）",
+      "監視・多層防御 — Zabbix (Dell CT400) + Ed25519 SSH鍵 + TOTP 2FA + Anubis"
+    ],
+    "architecture_notes_en": [
+      "Network core — OPNsense (HP-2 VM500) separates and routes 192.168.0.x / 192.168.1.x",
+      "DNS redundancy — AdGuard Home deployed per segment (1.x: CT106 / 0.x: CT107)",
+      "Zero-trust redundancy — Twingate deployed across 2 segments (1.x: HP-2 CT105 / 0.x: Dell CT102)",
+      "Public exposure via Cloudflare Tunnel only — portfolio.warasugi.com (Dell CT103) served with zero inbound",
+      "Minecraft runs on a dedicated bare-metal box (Debian 13 · under 0.x · repurposed Kasm WS) hosting an always-on Purpur survival server — access only via off-site (Tokyo) Velocity with zero direct exposure (linked to HP-1 CT301). GraalVM 17/21/25.1 in use; webmap exposed via Cloudflare Tunnel. The same box also runs a LAN-only Terraria survival server for close friends (no external exposure)",
+      "World backup — DriveBackupV2 transfers to HP-2 MC-Backup (CT100) at 4 AM (40MB/s bandwidth cap · 1-week retention). Retrieval via FileBrowser (exposed over Cloudflare Tunnel)",
+      "Monitoring & defense-in-depth — Zabbix (Dell CT400) + Ed25519 SSH keys + TOTP 2FA + Anubis"
+    ],
+    "diagram": {
+      "legend": [
+        {
+          "icon": "",
+          "text": "waras-nw — Proxmox VE 9.x 3ノード (HP-1 / HP-2 / Dell)",
+          "text_en": "waras-nw — Proxmox VE 9.x, 3 nodes (HP-1 / HP-2 / Dell)"
+        },
+        {
+          "icon": "",
+          "text": "ネットワーク中核 — OPNsense (HP-2 VM500) が 192.168.0.x / 192.168.1.x を分離",
+          "text_en": "Network core — OPNsense (HP-2 VM500) separates 192.168.0.x / 192.168.1.x"
+        },
+        {
+          "icon": "",
+          "text": "ゼロトラスト — Twingate を各セグメントに冗長 (1.x: CT105 / 0.x: CT102)",
+          "text_en": "Zero-trust — Twingate redundant per segment (1.x: CT105 / 0.x: CT102)"
+        },
+        {
+          "icon": "",
+          "text": "DNS フィルタ — AdGuard Home を各セグメントに冗長 (1.x: CT106 / 0.x: CT107)",
+          "text_en": "DNS filtering — AdGuard Home redundant per segment (1.x: CT106 / 0.x: CT107)"
+        },
+        {
+          "icon": "",
+          "text": "公開 — Cloudflare Tunnel で portfolio.warasugi.com を受信ゼロ公開 / 外部ポート開放なし",
+          "text_en": "Public — portfolio.warasugi.com served via Cloudflare Tunnel with zero inbound / no external ports"
+        },
+        {
+          "icon": "",
+          "text": "監視 — Zabbix (Dell CT400) + Discord-Pin-Service (CT104)",
+          "text_en": "Monitoring — Zabbix (Dell CT400) + Discord-Pin-Service (CT104)"
+        },
+        {
+          "icon": "",
+          "text": "ベアメタルMC — Purpur サバイバル常時稼働 (i7-3770 / 16GB / SSD 240GB · Debian 13 · 旧 Kasm WS 転用) クラスター外・0.x 配下",
+          "text_en": "Bare-metal MC — always-on Purpur survival (i7-3770 / 16GB / SSD 240GB · Debian 13 · repurposed Kasm WS), outside cluster, under 0.x"
+        },
+        {
+          "icon": "",
+          "text": "ワールドバックアップ — DriveBackupV2 → HP-2 MC-Backup (CT100)。深夜4時・40MB/s 制限・1週間分保持",
+          "text_en": "World backup — DriveBackupV2 → HP-2 MC-Backup (CT100). 4 AM · 40MB/s cap · 1-week retention"
+        }
+      ]
     }
   }
 }

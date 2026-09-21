@@ -200,6 +200,13 @@ export interface InfraOperations {
   };
 }
 
+export interface InfraDiagramLegendRow {
+  /** Glyph shown at the start of the row; resolved by the icon font. */
+  icon: string;
+  text: string;
+  text_en: string;
+}
+
 export interface InfrastructureData {
   infrastructure: {
     title: string;
@@ -243,6 +250,10 @@ export interface InfrastructureData {
       philosophy_en?: string;
     };
     technology_stack: InfraTechnologyStack;
+    /** Notes restating the architecture, kept beside the data they describe. */
+    architecture_notes: string[];
+    architecture_notes_en?: string[];
+    diagram?: { legend: InfraDiagramLegendRow[] };
     learning_outcomes: string[];
     learning_outcomes_en?: string[];
     operational_practices?: {

@@ -73,9 +73,6 @@ const buildDgmRows = (node: InfraNode | undefined): DgmRow[] =>
 
 const DGM_COL_W = DGM_LAYOUT.colW;
 
-/** Legend entries rendered below the summary boxes (dgmLegend1..8). */
-const DGM_LEGEND_ROWS = 8;
-
 const renderNodeRows = (colX: number, rows: DgmRow[], lang: Language, geo: DgmGeometry) =>
   rows.map((row, i) => {
     const y = geo.rowY(i);
@@ -143,9 +140,10 @@ export const InfrastructurePage = ({ i18n, lang }: InfrastructurePageProps) => {
   const hp1Rows = buildDgmRows(data.nodes.find((n) => n.id === "hp1"));
   const hp2Rows = buildDgmRows(data.nodes.find((n) => n.id === "hp2"));
   const dellRows = buildDgmRows(data.nodes.find((n) => n.id === "dell"));
+  const legendRows = data.diagram?.legend ?? [];
   const geo = computeDgmGeometry(
     Math.max(hp1Rows.length, hp2Rows.length, dellRows.length),
-    DGM_LEGEND_ROWS,
+    legendRows.length,
   );
 
   /** Resolve an infrastructure UI label; both locales define every key. */
@@ -424,30 +422,12 @@ export const InfrastructurePage = ({ i18n, lang }: InfrastructurePageProps) => {
                 <text x="600" y={geo.legendTitleY} textAnchor="middle" className="dgm-legend-title">
                   {t("dgmLegendTitle")}
                 </text>
-                <text x="35" y={geo.legendRowY(0)} className="dgm-legend-text">
-                  <tspan className="dgm-legend-icon"></tspan> {t("dgmLegend1")}
-                </text>
-                <text x="35" y={geo.legendRowY(1)} className="dgm-legend-text">
-                  <tspan className="dgm-legend-icon"></tspan> {t("dgmLegend2")}
-                </text>
-                <text x="35" y={geo.legendRowY(2)} className="dgm-legend-text">
-                  <tspan className="dgm-legend-icon"></tspan> {t("dgmLegend3")}
-                </text>
-                <text x="35" y={geo.legendRowY(3)} className="dgm-legend-text">
-                  <tspan className="dgm-legend-icon"></tspan> {t("dgmLegend4")}
-                </text>
-                <text x="35" y={geo.legendRowY(4)} className="dgm-legend-text">
-                  <tspan className="dgm-legend-icon"></tspan> {t("dgmLegend5")}
-                </text>
-                <text x="35" y={geo.legendRowY(5)} className="dgm-legend-text">
-                  <tspan className="dgm-legend-icon"></tspan> {t("dgmLegend6")}
-                </text>
-                <text x="35" y={geo.legendRowY(6)} className="dgm-legend-text">
-                  <tspan className="dgm-legend-icon"></tspan> {t("dgmLegend7")}
-                </text>
-                <text x="35" y={geo.legendRowY(7)} className="dgm-legend-text">
-                  <tspan className="dgm-legend-icon"></tspan> {t("dgmLegend8")}
-                </text>
+                {legendRows.map((row, i) => (
+                  <text key={row.text_en} x="35" y={geo.legendRowY(i)} className="dgm-legend-text">
+                    <tspan className="dgm-legend-icon">{row.icon}</tspan>{" "}
+                    {pickLang(lang, row.text_en, row.text)}
+                  </text>
+                ))}
               </svg>
             </div>
             <p className="infra-diagram-hint" aria-hidden="true">
@@ -458,13 +438,9 @@ export const InfrastructurePage = ({ i18n, lang }: InfrastructurePageProps) => {
             <div className="infra-notes">
               <h4 className="infra-notes__title">{t("notesTitle")}</h4>
               <ul className="infra-notes__list">
-                <li>✓ {t("notes1")}</li>
-                <li>✓ {t("notes2")}</li>
-                <li>✓ {t("notes3")}</li>
-                <li>✓ {t("notes4")}</li>
-                <li>✓ {t("notes5")}</li>
-                <li>✓ {t("notes6")}</li>
-                <li>✓ {t("notes7")}</li>
+                {pickArr(data.architecture_notes_en, data.architecture_notes).map((note) => (
+                  <li key={note}>✓ {note}</li>
+                ))}
               </ul>
             </div>
           </div>
