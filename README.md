@@ -92,8 +92,8 @@ npm run dev      # 開発開始
 
 ## 🗒 変更履歴
 
-- **2026-10-24**: インフラ情報を更新 — MeTube（CT302）・media-server（CT701）を HP-1 へ移設、隔離した検証用 VM とログ集約 CT を追加、mc-backup（CT100）を停止中として再掲、IX2105 の L2TP 廃止を反映。公開経路から Caddy を外した
-- **2026-10-14**: インフラ情報を更新 — Minecraft 一式（ベアメタル鯖・Velocity CT301・mc-backup CT100）を撤去し、ベアメタル機を Arch Linux 開発機 W-dev-pc として掲載。homepage ダッシュボード（CT110）・UPS（NUT）・VPN（WireGuard / IX2105 IPsec）を追加。開放ポート数の記載をやめ、Hero のスタッツを差し替え
+- **2026-10-24**: インフラ情報を更新 — MeTube（CT302）・media-server（CT701）を HP-1 へ移設、隔離した検証用 VM とログ集約 CT を追加、mc-backup（CT100）を停止中として再掲、拠点間 VPN ルーターの L2TP 廃止を反映。公開経路から Caddy を外した
+- **2026-10-14**: インフラ情報を更新 — Minecraft 一式（ベアメタル鯖・Velocity CT301・mc-backup CT100）を撤去し、ベアメタル機を Arch Linux 開発機 W-dev-pc として掲載。homepage ダッシュボード（CT110）・UPS（NUT）・VPN（WireGuard / IPsec）を追加。開放ポート数の記載をやめ、Hero のスタッツを差し替え
 - **2026-09-21**: デザイン刷新 — 配色を銅アクセントの「図面と計器盤」へ変更、タイポスケール導入、アイコンを絵文字から Nerd Font グリフへ統一、ヒーローを写真からクラスター盤面へ置換（起動アニメーションは廃止）、`使っているもの` 節を新設
 - **2026-09-20**: 掲載情報を Proxmox 実データ（`pvesh`）で再構築 — CT の改名・移設・新設・廃止を反映し、`infrastructure.json` のスキーマを構造化。`DGM_META` を廃止して構成図を JSON 駆動に
 - **2026-07-15**: 旧ドメイン `wc.f5.si` の参照を完全撤去 — OG / Twitter カードを `portfolio.warasugi.com` + PNG 画像（`og-image.png` を新規生成）に統一、canonical 追加、GitHub Pages 用 SPA リダイレクトスクリプトを削除。X リンクを新アカウント `@WARASUGI7` に更新

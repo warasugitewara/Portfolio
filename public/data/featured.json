@@ -10,12 +10,12 @@
       "background_ja": "中古 PC 3台で構築した Proxmox VE クラスター。ネットワーク設計・セキュリティ・バックアップ・監視まで全て自分で設計し、Discord ボットや本サイトなどの実サービスを常時運用している。",
       "points": [
         "OPNsense network segmentation; web services published only via Cloudflare Tunnel, remote management only via Twingate / VPN",
-        "Redundant AdGuard Home + Twingate across two segments, with a site-to-site IPsec VPN on an IX2105",
+        "Redundant AdGuard Home + Twingate across two segments, with a site-to-site IPsec VPN to an off-site location",
         "A homepage dashboard with a self-built Bun + Hono extension, and UPS-driven shutdown via NUT"
       ],
       "points_ja": [
         "OPNsense でセグメント分離。Web の公開は Cloudflare Tunnel のみ、外からの管理は Twingate / VPN のみ",
-        "AdGuard Home・Twingate を2セグメントに冗長配置し、IX2105 で別拠点と IPsec 接続",
+        "AdGuard Home・Twingate を2セグメントに冗長配置し、別拠点と IPsec の拠点間 VPN で接続",
         "自作拡張（Bun + Hono）付きの homepage ダッシュボードと、NUT による UPS 連動シャットダウン"
       ],
       "tech": [

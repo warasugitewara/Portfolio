@@ -4,8 +4,8 @@
     "title_en": "Self-Hosted Infrastructure",
     "subtitle": "waras-nw — 3ノード Proxmox VE クラスター（OPNsense ルーティング）",
     "subtitle_en": "waras-nw — 3-node Proxmox VE cluster (OPNsense routing)",
-    "overview": "HP Z240 SFF × 2台と Dell OptiPlex 7040 SFF で構成する 3ノード Proxmox VE クラスター（waras-nw）。OPNsense をメインファイアウォール/ルータとしてネットワークを 192.168.0.x（メイン）と 192.168.1.x（隔離セグメント）に分離し、AdGuard Home（DNS フィルタ）と Twingate（ゼロトラスト）を各セグメントに冗長配置。Web サービスの公開は Cloudflare Tunnel 経由のみで、外からの管理アクセスは Twingate と VPN（OPNsense 終端の WireGuard）に限定し、別拠点とは IX2105 の IPsec でつないでいる。Discord ボット群・VOICEVOX 音声合成・各種セルフホストサービスを稼働し、散らばった管理画面は自作拡張付きの homepage ダッシュボードに集約。UPS は NUT で監視し、停電時はノードを停止させる。クラスターの外には、旧ゲーム鯖を転用した Arch Linux の開発機があり、Wake-on-LAN で起動して Moonlight / SSH で遠隔操作している（Minecraft は外部のサーバーへ統合し、自宅からは撤去した）。",
-    "overview_en": "A 3-node Proxmox VE cluster (waras-nw) built from two HP Z240 SFF machines and a Dell OptiPlex 7040 SFF. OPNsense acts as the main firewall/router, splitting the network into 192.168.0.x (main) and 192.168.1.x (isolated segment), with AdGuard Home (DNS filtering) and Twingate (zero-trust) deployed redundantly across both segments. Web services are published only through Cloudflare Tunnel; remote management goes through Twingate or a VPN (WireGuard terminated on OPNsense), and an off-site location is linked over IPsec on an IX2105. It runs a fleet of Discord bots, VOICEVOX speech synthesis, and various self-hosted services, and the scattered admin UIs are gathered into a homepage dashboard with a self-built extension. The UPS is watched with NUT so the nodes shut down on a power cut. Outside the cluster sits an Arch Linux dev box repurposed from the former game server; it is woken with Wake-on-LAN and driven remotely over Moonlight / SSH (Minecraft was consolidated onto an external server and removed from home).",
+    "overview": "HP Z240 SFF × 2台と Dell OptiPlex 7040 SFF で構成する 3ノード Proxmox VE クラスター（waras-nw）。OPNsense をメインファイアウォール/ルータとしてネットワークを 192.168.0.x（メイン）と 192.168.1.x（隔離セグメント）に分離し、AdGuard Home（DNS フィルタ）と Twingate（ゼロトラスト）を各セグメントに冗長配置。Web サービスの公開は Cloudflare Tunnel 経由のみで、外からの管理アクセスは Twingate と VPN（OPNsense 終端の WireGuard）に限定し、別拠点とは IPsec の拠点間 VPN でつないでいる。Discord ボット群・VOICEVOX 音声合成・各種セルフホストサービスを稼働し、散らばった管理画面は自作拡張付きの homepage ダッシュボードに集約。UPS は NUT で監視し、停電時はノードを停止させる。クラスターの外には、旧ゲーム鯖を転用した Arch Linux の開発機があり、Wake-on-LAN で起動して Moonlight / SSH で遠隔操作している（Minecraft は外部のサーバーへ統合し、自宅からは撤去した）。",
+    "overview_en": "A 3-node Proxmox VE cluster (waras-nw) built from two HP Z240 SFF machines and a Dell OptiPlex 7040 SFF. OPNsense acts as the main firewall/router, splitting the network into 192.168.0.x (main) and 192.168.1.x (isolated segment), with AdGuard Home (DNS filtering) and Twingate (zero-trust) deployed redundantly across both segments. Web services are published only through Cloudflare Tunnel; remote management goes through Twingate or a VPN (WireGuard terminated on OPNsense), and an off-site location is linked over a site-to-site IPsec VPN. It runs a fleet of Discord bots, VOICEVOX speech synthesis, and various self-hosted services, and the scattered admin UIs are gathered into a homepage dashboard with a self-built extension. The UPS is watched with NUT so the nodes shut down on a power cut. Outside the cluster sits an Arch Linux dev box repurposed from the former game server; it is woken with Wake-on-LAN and driven remotely over Moonlight / SSH (Minecraft was consolidated onto an external server and removed from home).",
     "design_philosophy": [
       "OPNsense をメイン FW/ルータとし、192.168.0.x / 192.168.1.x のネットワークセグメント分離",
       "AdGuard Home による DNS フィルタリング（セグメント別に冗長化）",
@@ -438,18 +438,16 @@
             "caption": "管理ダッシュボード",
             "caption_en": "Admin dashboard",
             "os": "Debian 13",
-            "purpose": "散らばった管理画面（Proxmox ×3 / OPNsense / AdGuard ×2 / IX2105 / Zabbix / Uptime Kuma）の入口と状態表示を 1 画面にまとめた gethomepage。標準ウィジェットで足りない値は自作の拡張で補っている。",
-            "purpose_en": "gethomepage gathering the entry points and status of the scattered admin UIs (Proxmox ×3 / OPNsense / AdGuard ×2 / IX2105 / Zabbix / Uptime Kuma) onto one screen. A self-built extension fills in what the stock widgets cannot show.",
+            "purpose": "管理画面の入口と状態表示を 1 画面にまとめた内部ダッシュボード（gethomepage）。標準ウィジェットで足りない値は自作の拡張で補っている。",
+            "purpose_en": "An internal dashboard (gethomepage) gathering the entry points and status of the admin UIs onto one screen. A self-built extension fills in what the stock widgets cannot show.",
             "details": [
-              "自作の homepage-ext（Bun + Hono）— IX2105 の SNMP（CPU・温度・VPN 状態）、OPNsense WAN のリアルタイム速度、UPS の状態を取得",
-              "OPNsense に登録した Wake-on-LAN の起動ボタンをそのまま表示",
-              "各サービスには読み取り専用の専用アカウントで接続し、資格情報は CT 内の環境変数ファイルにのみ置く",
+              "自作の拡張（Bun + Hono）で、標準ウィジェットに無い値や操作を補う",
+              "各サービスには読み取り専用の専用アカウントで接続する",
               "LAN 内からのみ到達でき、外部には公開していない"
             ],
             "details_en": [
-              "Self-built homepage-ext (Bun + Hono) — pulls the IX2105 over SNMP (CPU, temperature, VPN state), OPNsense WAN throughput in real time, and the UPS status",
-              "Shows the Wake-on-LAN buttons registered in OPNsense as-is",
-              "Connects to every service with a dedicated read-only account; credentials live only in env files inside the CT",
+              "A self-built extension (Bun + Hono) adds values and actions the stock widgets lack",
+              "Connects to every service with a dedicated read-only account",
               "Reachable only from the LAN, not published externally"
             ]
           },
@@ -517,15 +515,15 @@
       }
     ],
     "network_design": {
-      "topology": "OPNsense（HP-2 VM:500）をメインファイアウォール/ルータとして、LAN を 192.168.0.x（メイン）と 192.168.1.x（OPNsense で分離した隔離セグメント）に分割する。各セグメントに Twingate コネクタと AdGuard Home を冗長配置する。Web の公開は Cloudflare Tunnel 経由のみ。外からの管理アクセスは Twingate と、OPNsense 終端の WireGuard（許可したホストだけに届くスプリットトンネル）に限る。別拠点とは IX2105 の IPsec でつなぐ。",
-      "topology_en": "With OPNsense (HP-2 VM:500) as the main firewall/router, the LAN is split into 192.168.0.x (main) and 192.168.1.x (an isolated segment separated by OPNsense). A Twingate connector and AdGuard Home are deployed redundantly on each segment. Web publishing goes only through Cloudflare Tunnel. Remote management is limited to Twingate and WireGuard terminated on OPNsense (a split tunnel that reaches only allow-listed hosts). An off-site location is linked over IPsec on the IX2105.",
+      "topology": "OPNsense（HP-2 VM:500）をメインファイアウォール/ルータとして、LAN を 192.168.0.x（メイン）と 192.168.1.x（OPNsense で分離した隔離セグメント）に分割する。各セグメントに Twingate コネクタと AdGuard Home を冗長配置する。Web の公開は Cloudflare Tunnel 経由のみ。外からの管理アクセスは Twingate と、OPNsense 終端の WireGuard（許可したホストだけに届くスプリットトンネル）に限る。別拠点とは IPsec の拠点間 VPN でつなぐ。",
+      "topology_en": "With OPNsense (HP-2 VM:500) as the main firewall/router, the LAN is split into 192.168.0.x (main) and 192.168.1.x (an isolated segment separated by OPNsense). A Twingate connector and AdGuard Home are deployed redundantly on each segment. Web publishing goes only through Cloudflare Tunnel. Remote management is limited to Twingate and WireGuard terminated on OPNsense (a split tunnel that reaches only allow-listed hosts). An off-site location is linked over a site-to-site IPsec VPN.",
       "security": [
         "OPNsense メイン FW/ルータ — 192.168.0.x / 192.168.1.x のセグメント分離とファイアウォール制御",
         "AdGuard Home — 各セグメントに冗長配置し DNS フィルタリング（広告 / トラッカー / マルウェア）",
         "Cloudflare Tunnel — ポートフォワード不要。CF Edge が TLS 終端、Anycast で DDoS 軽減（Web 公開サービス共通）",
         "Twingate ゼロトラスト — SSH・Proxmox WebUI・内部サービスへの外からのアクセスは Twingate か VPN 経由に限定（2セグメント冗長）",
         "VPN — OPNsense 終端の WireGuard は公開鍵認証で、届く宛先は OPNsense のエイリアスで許可したホストだけ。管理画面には入れない",
-        "拠点間 VPN（IX2105・IPsec IKEv2）— 相手拠点に見せるのは 1 ホストだけで、ACL で通信を絞り込んでいる",
+        "拠点間 VPN（IPsec）— 相手拠点に見せるのは 1 ホストだけで、ACL で通信を絞り込んでいる",
         "Anubis Bot Protection — portfolio への自動スクレイパー・DDoS をCloudflare Tunnel の直後でフィルタ",
         "Ed25519 SSH鍵 + パスワード認証無効 — 全サーバーで鍵認証のみ許可",
         "TOTP 2FA — Proxmox WebUI への2段階認証必須"
@@ -536,7 +534,7 @@
         "Cloudflare Tunnel — no port forwarding. The CF edge terminates TLS and mitigates DDoS with Anycast (shared across all published web services)",
         "Twingate zero-trust — remote access to SSH, Proxmox WebUI, and internal services only through Twingate or the VPN (2-segment redundancy)",
         "VPN — WireGuard terminated on OPNsense uses public-key auth, and reaches only hosts allow-listed in an OPNsense alias. The admin UI is not reachable",
-        "Site-to-site VPN (IX2105 · IPsec IKEv2) — only one host is exposed to the remote site, with traffic narrowed by ACLs",
+        "Site-to-site VPN (IPsec) — only one host is exposed to the remote site, with traffic narrowed by ACLs",
         "Anubis bot protection — filters automated scrapers and DDoS against the portfolio right behind Cloudflare Tunnel",
         "Ed25519 SSH keys + password auth disabled — key auth only on every server",
         "TOTP 2FA — two-factor authentication required for the Proxmox WebUI"
@@ -573,12 +571,12 @@
         },
         {
           "icon": "",
-          "name": "NEC IX2105",
+          "name": "VPN ルーター",
           "address": "192.168.1.3",
           "role": "拠点間 VPN",
           "role_en": "Site-to-site VPN",
-          "note": "Uptime Kuma で相互監視している別拠点と IPsec IKEv2 でつなぐ。相手拠点に見せるのは 1 ホストだけで、管理画面は接続元を絞っている。隔離セグメント側に置いている。",
-          "note_en": "Links the site I run mutual Uptime Kuma monitoring with over IPsec IKEv2. Only one host is exposed to the remote site, and the admin UI is restricted by source. Sits on the isolated segment."
+          "note": "Uptime Kuma で相互監視している別拠点と IPsec でつなぐ。相手拠点に見せるのは 1 ホストだけで、管理画面は接続元を絞っている。隔離セグメント側に置いている。",
+          "note_en": "Links the site I run mutual Uptime Kuma monitoring with over IPsec. Only one host is exposed to the remote site, and the admin UI is restricted by source. Sits on the isolated segment."
         },
         {
           "icon": "",
@@ -655,7 +653,7 @@
           "ベアメタル機を Arch Linux のリモート開発機へ転用（Quadro P600・Wake-on-LAN・Sunshine）",
           "homepage ダッシュボード（CT110）+ 自作拡張（Bun + Hono）",
           "UPS（OMRON BY50S）+ NUT による停電時シャットダウン",
-          "拠点間 VPN（IX2105・IPsec IKEv2）と WireGuard リモートアクセス",
+          "拠点間 VPN（IPsec）と WireGuard リモートアクセス",
           "隔離した検証用 VM とログ集約 CT を追加"
         ],
         "components_en": [
@@ -676,7 +674,7 @@
           "Repurposed the bare-metal box as a remote Arch Linux dev machine (Quadro P600 · Wake-on-LAN · Sunshine)",
           "homepage dashboard (CT110) + self-built extension (Bun + Hono)",
           "Shutdown on power loss with a UPS (OMRON BY50S) + NUT",
-          "Site-to-site VPN (IX2105 · IPsec IKEv2) and WireGuard remote access",
+          "Site-to-site VPN (IPsec) and WireGuard remote access",
           "Added an isolated lab VM and a log-aggregation CT"
         ]
       },
@@ -729,8 +727,7 @@
         "Cloudflare Tunnel",
         "Linux networking",
         "WireGuard",
-        "IPsec (IKEv2)",
-        "NEC IX2105"
+        "IPsec"
       ],
       "storage": [
         "Ext4",
@@ -768,7 +765,7 @@
       "Zabbix によるインフラ監視",
       "Cloudflare Tunnel + Anubis による公開設計（リバースプロキシを挟まない構成）",
       "Linux VM / LXC コンテナ管理",
-      "IPsec IKEv2 の拠点間 VPN と WireGuard リモートアクセスの設計（非対称経路で TCP だけが落ちる問題の切り分け）",
+      "IPsec の拠点間 VPN と WireGuard リモートアクセスの設計（非対称経路で TCP だけが落ちる問題の切り分け）",
       "NUT による UPS 監視と停電時シャットダウンの設計",
       "SNMP / 各種 API を使った自作ダッシュボード拡張（Bun + Hono）",
       "Arch Linux + Hyprland のヘッドレス リモート開発環境（Sunshine NVENC・Wake-on-LAN・BIOS 更新）"
@@ -802,8 +799,8 @@
       "DNS 冗長 — AdGuard Home を各セグメントに配置 (1.x: CT106 / 0.x: CT107)",
       "ゼロトラスト冗長 — Twingate を 2 セグメントに配置 (1.x: HP-2 CT105 / 0.x: Dell CT102)",
       "Web 公開は Cloudflare Tunnel のみ — portfolio.warasugi.com (Dell CT103) を Web 用の受信ポートを開けずに公開",
-      "リモートアクセス — Twingate に加えて OPNsense 終端の WireGuard。別拠点とは IX2105 の IPsec IKEv2 で接続",
-      "管理画面の集約 — homepage (Dell CT110) に Proxmox・OPNsense・AdGuard・IX2105・UPS の状態と WoL ボタンを集約。標準ウィジェットに無い値は自作の Bun + Hono 拡張で補う",
+      "リモートアクセス — Twingate に加えて OPNsense 終端の WireGuard。別拠点とは IPsec の拠点間 VPN で接続",
+      "管理画面の集約 — homepage (Dell CT110) に各ノード・ネットワーク機器・UPS の状態を集約。標準ウィジェットに無い値は自作の Bun + Hono 拡張で補う",
       "電源 — UPS (OMRON BY50S) を Dell の NUT で監視し、HP-2 も追従して停止",
       "監視・多層防御 — Zabbix (Dell CT400) + Ed25519 SSH鍵 + TOTP 2FA + Anubis",
       "クラスター外 — 旧ゲーム鯖を Arch Linux の開発機 W-dev-pc に転用。WoL で起動し Moonlight / SSH で操作"
@@ -813,8 +810,8 @@
       "DNS redundancy — AdGuard Home deployed per segment (1.x: CT106 / 0.x: CT107)",
       "Zero-trust redundancy — Twingate deployed across 2 segments (1.x: HP-2 CT105 / 0.x: Dell CT102)",
       "Web publishing via Cloudflare Tunnel only — portfolio.warasugi.com (Dell CT103) served without opening any inbound web port",
-      "Remote access — Twingate plus WireGuard terminated on OPNsense. The off-site location is linked over IPsec IKEv2 on the IX2105",
-      "Single admin dashboard — homepage (Dell CT110) gathers Proxmox, OPNsense, AdGuard, IX2105 and UPS status plus WoL buttons; a self-built Bun + Hono extension fills the gaps in the stock widgets",
+      "Remote access — Twingate plus WireGuard terminated on OPNsense. The off-site location is linked over a site-to-site IPsec VPN",
+      "Single admin dashboard — homepage (Dell CT110) gathers the status of the nodes, network gear and UPS; a self-built Bun + Hono extension fills the gaps in the stock widgets",
       "Power — the UPS (OMRON BY50S) is watched by NUT on the Dell, and HP-2 follows it down",
       "Monitoring & defense-in-depth — Zabbix (Dell CT400) + Ed25519 SSH keys + TOTP 2FA + Anubis",
       "Outside the cluster — the former game server is now W-dev-pc, an Arch Linux dev box woken via WoL and driven over Moonlight / SSH"

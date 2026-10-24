@@ -130,7 +130,7 @@
     "netVpnTitle": " VPN",
     "netRoute3": "③ VPN Route (remote / site-to-site)",
     "netVpnWg": "WireGuard — split tunnel terminated on OPNsense",
-    "netVpnIpsec": "IPsec IKEv2 — off-site link on the IX2105",
+    "netVpnIpsec": "IPsec — off-site link on a site-to-site VPN router",
     "netVpnLimit": "Key auth + reaches allow-listed hosts only",
     "netOpnTitle": " OPNsense — Main FW / Router (HP-2 VM500)",
     "netOpnDesc": "192.168.0.x ⇄ 192.168.1.x segmentation / NAT / DNS control",
@@ -148,7 +148,7 @@
     "netLegendLabel": "Legend",
     "netLeg1": "① Public route — Internet → Cloudflare Tunnel → portfolio.warasugi.com (zero inbound)",
     "netLeg2": "② Management route — Twingate zero-trust → SSH / Proxmox / internal services",
-    "netLeg3": "③ VPN route — WireGuard (OPNsense) / IPsec (IX2105) → allow-listed hosts only",
+    "netLeg3": "③ VPN route — WireGuard (OPNsense) / IPsec (site-to-site) → allow-listed hosts only",
     "metaTitle": "Self-Hosted Infrastructure — warasugi",
     "metaDescription": "waras-nw — a 3-node Proxmox VE cluster segmented by OPNsense: a home-lab infrastructure overview.",
     "lblEdgeDevices": "Line & edge devices"
