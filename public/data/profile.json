@@ -25,9 +25,9 @@
       "label_ja": "常時稼働 CT・VM"
     },
     {
-      "value": "0",
-      "label": "open inbound ports",
-      "label_ja": "外部開放ポート"
+      "value": "3",
+      "label": "Discord bots running",
+      "label_ja": "稼働中の Discord ボット"
     },
     {
       "derive": "credentials",

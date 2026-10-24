@@ -21,13 +21,13 @@ describe("deriveInfraStats", () => {
     expect(stats?.runningGuests).toBeLessThanOrEqual(stats!.totalGuests);
   });
 
-  it("matches the live cluster as measured on 2026-09-20", () => {
+  it("matches the live cluster as measured on 2026-10-24", () => {
     expect(deriveInfraStats(infra)).toEqual({
       pveNodes: 3,
-      totalGuests: 19,
-      runningGuests: 18,
-      lxc: 16,
-      vm: 3,
+      totalGuests: 21,
+      runningGuests: 19,
+      lxc: 17,
+      vm: 4,
     });
   });
 
@@ -39,12 +39,12 @@ describe("deriveInfraStats", () => {
 describe("resolveStats", () => {
   it("derives the countable stats", () => {
     const stats = resolveStats(profile, infra);
-    expect(stats.map((s) => s.value)).toEqual(["3", "18", "0", "4"]);
+    expect(stats.map((s) => s.value)).toEqual(["3", "19", "3", "4"]);
   });
 
   it("falls back to the literal value while infra is loading", () => {
     const stats = resolveStats(profile, null);
-    expect(stats.find((s) => s.label === "open inbound ports")?.value).toBe("0");
+    expect(stats.find((s) => s.label === "Discord bots running")?.value).toBe("3");
     expect(stats.find((s) => s.derive === "pveNodes")?.value).toBe("");
   });
 

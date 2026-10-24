@@ -535,26 +535,26 @@ export const InfrastructurePage = ({ i18n, lang }: InfrastructurePageProps) => {
                   {t("netCfInbound")}
                 </text>
                 <text x="500" y="197" textAnchor="middle" className="net-sl">
-                  → portfolio (Dell CT103) / FileBrowser (HP-2 CT100)
+                  → portfolio (Dell CT103)
                 </text>
 
-                {/* ── ③ Minecraft (exception) ── */}
+                {/* ── ③ VPN (remote / site-to-site) ── */}
                 <rect x="670" y="100" width="300" height="112" rx="5" className="net-ft-warn" />
                 <text x="820" y="120" textAnchor="middle" className="net-warn-tl">
-                  {t("netMcTitle")}
+                  {t("netVpnTitle")}
                 </text>
                 <line x1="670" y1="128" x2="970" y2="128" className="net-divider" />
                 <text x="820" y="145" textAnchor="middle" className="net-warn-txt">
                   {t("netRoute3")}
                 </text>
                 <text x="820" y="163" textAnchor="middle" className="net-sl">
-                  {t("netMcBaremetal")}
+                  {t("netVpnWg")}
                 </text>
                 <text x="820" y="180" textAnchor="middle" className="net-sl">
-                  {t("netMcVia")}
+                  {t("netVpnIpsec")}
                 </text>
                 <text x="820" y="197" textAnchor="middle" className="net-sl">
-                  {t("netMcZero")}
+                  {t("netVpnLimit")}
                 </text>
 
                 {/* routes → OPNsense */}
@@ -591,7 +591,7 @@ export const InfrastructurePage = ({ i18n, lang }: InfrastructurePageProps) => {
                   {t("netSeg0Row3")}
                 </text>
                 <text x="48" y="462" className="net-seg-row">
-                   Discord-Pin-Service ·  MeTube ·  Zabbix ·  media-server (Dell)
+                   Discord-Pin-Service ·  MeTube ·  Zabbix ·  media-server (Dell / HP-1)
                 </text>
                 <text x="48" y="482" className="net-warn-txt">
                   {t("netSeg0Row5")}

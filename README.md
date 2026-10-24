@@ -37,7 +37,7 @@ CLI / ターミナル風デザインの個人ポートフォリオ。React 19 + 
 | i18n | カスタムフック（`localStorage` で言語保持） |
 | ランタイム | Bun |
 | サーバー | Hono（静的配信 + SPA フォールバック） |
-| リバースプロキシ | Caddy（Anubis 経由のボット対策付き） |
+| ボット対策 | Anubis（Cloudflare Tunnel の直後に配置） |
 | 公開 | Cloudflare Tunnel（TLS 終端） |
 | ホスティング | 自宅 Proxmox VE（systemd `portfolio.service`） |
 
@@ -68,8 +68,8 @@ npm run dev      # 開発開始
 **本番は自宅サーバーのみ**（GitHub Pages は不使用）。
 
 - **サービス**: `portfolio.service`（systemd）— `bun run start` で Hono サーバーを起動（port 3000）
-- **リバースプロキシ**: Caddy がリクエストを受け、静的ファイルは直接 port 3000 へ、それ以外は Anubis（port 3001）経由で配信
-  - `portfolio.warasugi.com` は Cloudflare Tunnel 経由（CF 側で TLS 終端、Caddy は HTTP のみ受信）
+- **公開経路**: Cloudflare Tunnel → Anubis（port 3001）→ Hono（port 3000）。リバースプロキシは挟まない
+  - TLS は Cloudflare 側で終端。Anubis は `CF-Connecting-IP` を接続元 IP として読む
 - **反映手順**: `git pull` → `npm ci` → `npm run build` → `systemctl restart portfolio.service`
 - **Snake SVG**: contribution snake はプロフィールリポジトリ（warasugitewara/warasugitewara）で生成された SVG の raw URL を直接表示（本リポジトリでの生成は廃止）。
 
@@ -83,7 +83,7 @@ npm run dev      # 開発開始
 
 2026-07 のコードレビューで確認済みの改善項目。対応時はこの項目を削除すること。
 
-- [x] ~~**インフラ構成図のデータ一元化**~~ — 対応済み。`InfrastructurePage.tsx` は `infrastructure.json` の `nodes[*].workloads` から図の行を導出し、アイコン／短キャプションのみ `DGM_META`（ID キー）に保持。CT/VM の増減・改名は図に自動反映される。
+- [x] ~~**インフラ構成図のデータ一元化**~~ — 対応済み。`InfrastructurePage.tsx` は `infrastructure.json` の `nodes[*].workloads` から図の行を導出する（アイコン名と短キャプションも各 workload の `icon` / `caption` に持つ）。CT/VM の増減・改名は図に自動反映される。
 - [x] ~~**`*_ja` 言語フォールバックの共通化**~~ — 対応済み。`src/utils/pickLang.ts` に統一。
 - [x] ~~**Hero スタッツの自動算出**~~ — 対応済み。`profile.json` の `stats` は `derive` キーで `infrastructure.json` から導出する（`src/utils/infraStats.ts`）。
 - [x] ~~**構成図の座標が固定リテラル**~~ — 対応済み。`src/utils/dgmGeometry.ts` がワークロード件数から縦位置を算出する。
@@ -92,6 +92,8 @@ npm run dev      # 開発開始
 
 ## 🗒 変更履歴
 
+- **2026-10-24**: インフラ情報を更新 — MeTube（CT302）・media-server（CT701）を HP-1 へ移設、隔離した検証用 VM とログ集約 CT を追加、mc-backup（CT100）を停止中として再掲、IX2105 の L2TP 廃止を反映。公開経路から Caddy を外した
+- **2026-10-14**: インフラ情報を更新 — Minecraft 一式（ベアメタル鯖・Velocity CT301・mc-backup CT100）を撤去し、ベアメタル機を Arch Linux 開発機 W-dev-pc として掲載。homepage ダッシュボード（CT110）・UPS（NUT）・VPN（WireGuard / IX2105 IPsec）を追加。開放ポート数の記載をやめ、Hero のスタッツを差し替え
 - **2026-09-21**: デザイン刷新 — 配色を銅アクセントの「図面と計器盤」へ変更、タイポスケール導入、アイコンを絵文字から Nerd Font グリフへ統一、ヒーローを写真からクラスター盤面へ置換（起動アニメーションは廃止）、`使っているもの` 節を新設
 - **2026-09-20**: 掲載情報を Proxmox 実データ（`pvesh`）で再構築 — CT の改名・移設・新設・廃止を反映し、`infrastructure.json` のスキーマを構造化。`DGM_META` を廃止して構成図を JSON 駆動に
 - **2026-07-15**: 旧ドメイン `wc.f5.si` の参照を完全撤去 — OG / Twitter カードを `portfolio.warasugi.com` + PNG 画像（`og-image.png` を新規生成）に統一、canonical 追加、GitHub Pages 用 SPA リダイレクトスクリプトを削除。X リンクを新アカウント `@WARASUGI7` に更新
