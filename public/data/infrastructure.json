@@ -4,28 +4,32 @@
     "title_en": "Self-Hosted Infrastructure",
     "subtitle": "waras-nw — 3ノード Proxmox VE クラスター（OPNsense ルーティング）",
     "subtitle_en": "waras-nw — 3-node Proxmox VE cluster (OPNsense routing)",
-    "overview": "HP Z240 SFF × 2台と Dell OptiPlex 7040 SFF で構成する 3ノード Proxmox VE クラスター（waras-nw）。OPNsense をメインファイアウォール/ルータとしてネットワークを 192.168.0.x（メイン）と 192.168.1.x（隔離セグメント）に分離し、AdGuard Home（DNS フィルタ）と Twingate（ゼロトラスト）を各セグメントに冗長配置。ポートフォリオは Cloudflare Tunnel 経由で公開し、Minecraft も東京の Velocity プロキシ経由で公開するため、自宅からのインターネット直接ポート開放はゼロ。Discord ボット群・VOICEVOX 音声合成・各種セルフホストサービスを稼働し、Zabbix で全体を監視している。加えて、0.x セグメント配下の単体機（旧 Kasm WS ハードを転用・Debian 13）をベアメタル Minecraft サーバーとして運用し、Purpur サバイバル鯖を常時稼働。加えて同一機で身内用の Terraria サバイバル鯖（LAN 内限定・外部公開なし）も稼働させている。ワールドデータは DriveBackupV2 経由で HP-2 上の専用バックアップ CT に1週間分を自動保管している（深夜4時転送・40MB/s 帯域制限で帯域圧迫を防止）。取り出し用の FileBrowser も同 CT で稼働し、既存サービス同様 Cloudflare Tunnel 経由でアクセスする。",
-    "overview_en": "A 3-node Proxmox VE cluster (waras-nw) built from two HP Z240 SFF machines and a Dell OptiPlex 7040 SFF. OPNsense acts as the main firewall/router, splitting the network into 192.168.0.x (main) and 192.168.1.x (isolated segment), with AdGuard Home (DNS filtering) and Twingate (zero-trust) deployed redundantly across both segments. The portfolio is served through Cloudflare Tunnel and Minecraft is exposed via a Velocity proxy in Tokyo, so there are zero direct inbound ports opened from home. It runs a fleet of Discord bots, VOICEVOX speech synthesis, and various self-hosted services, all monitored by Zabbix. In addition, a standalone box under the 0.x segment (repurposed former Kasm WS hardware, Debian 13) serves as a bare-metal Minecraft server running an always-on Purpur survival world. The same box also hosts a LAN-only Terraria survival server for close friends (no external exposure). World data is automatically kept for one week on a dedicated backup CT on HP-2 via DriveBackupV2 (transferred at 4 AM with a 40MB/s bandwidth cap to avoid saturating the link). A FileBrowser instance for retrieval runs on the same CT and, like the other services, is accessed through Cloudflare Tunnel.",
+    "overview": "HP Z240 SFF × 2台と Dell OptiPlex 7040 SFF で構成する 3ノード Proxmox VE クラスター（waras-nw）。OPNsense をメインファイアウォール/ルータとしてネットワークを 192.168.0.x（メイン）と 192.168.1.x（隔離セグメント）に分離し、AdGuard Home（DNS フィルタ）と Twingate（ゼロトラスト）を各セグメントに冗長配置。Web サービスの公開は Cloudflare Tunnel 経由のみで、外からの管理アクセスは Twingate と VPN（OPNsense 終端の WireGuard）に限定し、別拠点とは IPsec の拠点間 VPN でつないでいる。Discord ボット群・VOICEVOX 音声合成・各種セルフホストサービスを稼働し、散らばった管理画面は自作拡張付きの homepage ダッシュボードに集約。UPS は NUT で監視し、停電時はノードを停止させる。クラスターの外には、旧ゲーム鯖を転用した Arch Linux の開発機があり、Wake-on-LAN で起動して Moonlight / SSH で遠隔操作している（Minecraft は外部のサーバーへ統合し、自宅からは撤去した）。",
+    "overview_en": "A 3-node Proxmox VE cluster (waras-nw) built from two HP Z240 SFF machines and a Dell OptiPlex 7040 SFF. OPNsense acts as the main firewall/router, splitting the network into 192.168.0.x (main) and 192.168.1.x (isolated segment), with AdGuard Home (DNS filtering) and Twingate (zero-trust) deployed redundantly across both segments. Web services are published only through Cloudflare Tunnel; remote management goes through Twingate or a VPN (WireGuard terminated on OPNsense), and an off-site location is linked over a site-to-site IPsec VPN. It runs a fleet of Discord bots, VOICEVOX speech synthesis, and various self-hosted services, and the scattered admin UIs are gathered into a homepage dashboard with a self-built extension. The UPS is watched with NUT so the nodes shut down on a power cut. Outside the cluster sits an Arch Linux dev box repurposed from the former game server; it is woken with Wake-on-LAN and driven remotely over Moonlight / SSH (Minecraft was consolidated onto an external server and removed from home).",
     "design_philosophy": [
       "OPNsense をメイン FW/ルータとし、192.168.0.x / 192.168.1.x のネットワークセグメント分離",
       "AdGuard Home による DNS フィルタリング（セグメント別に冗長化）",
-      "Twingate ゼロトラストアクセス（2セグメント冗長）— インターネットへのポート開放はゼロ",
+      "Twingate ゼロトラストアクセス（2セグメント冗長）",
+      "外からの経路は Cloudflare Tunnel（Web 公開）と Twingate / VPN（管理）に限定",
       "3ノード Proxmox VE クラスターによる分散ワークロード構成",
       "Ed25519 SSH鍵認証 + パスワード認証無効化",
-      "複数メディアへのバックアップ（USB + クラウド + 専用バックアップ CT）",
-      "Minecraft ワールドは DriveBackupV2 で専用バックアップ CT へ毎晩保管（深夜4時・40MB/s 帯域制限・1週間分保持）",
+      "複数メディアへのバックアップ（USB + クラウド + Proxmox バックアップ）",
       "Zabbix によるインフラメトリクス監視",
+      "homepage ダッシュボードで管理画面と状態表示を一元化",
+      "UPS + NUT による停電時の自動シャットダウン",
       "Cloudflare Tunnel 経由の安全なサービス公開（portfolio.warasugi.com）"
     ],
     "design_philosophy_en": [
       "OPNsense as the main FW/router, with network segmentation of 192.168.0.x / 192.168.1.x",
       "DNS filtering via AdGuard Home (redundant per segment)",
-      "Twingate zero-trust access (2-segment redundancy) — zero ports opened to the internet",
+      "Twingate zero-trust access (2-segment redundancy)",
+      "External paths limited to Cloudflare Tunnel (web publishing) and Twingate / VPN (management)",
       "Distributed workloads across a 3-node Proxmox VE cluster",
       "Ed25519 SSH key authentication + password auth disabled",
-      "Backups across multiple media (USB + cloud + dedicated backup CT)",
-      "Minecraft worlds backed up nightly to a dedicated backup CT via DriveBackupV2 (4 AM · 40MB/s cap · 1-week retention)",
+      "Backups across multiple media (USB + cloud + Proxmox backups)",
       "Infrastructure metrics monitored with Zabbix",
+      "Admin UIs and status gathered into a single homepage dashboard",
+      "Automatic shutdown on power loss via UPS + NUT",
       "Secure service exposure via Cloudflare Tunnel (portfolio.warasugi.com)"
     ],
     "hypervisor": {
@@ -63,8 +67,8 @@
         },
         "role": "メディア・Discord ボットノード",
         "role_en": "Media & Discord bot node",
-        "purpose": "waras-nw クラスターの第1ノード。Discord ボット群と VOICEVOX 音声合成エンジン、個人ホームページを担当。",
-        "purpose_en": "The first node of the waras-nw cluster. Handles the fleet of Discord bots, the VOICEVOX speech-synthesis engine, and the personal homepage.",
+        "purpose": "waras-nw クラスターの第1ノード。Discord ボット群と VOICEVOX 音声合成エンジンのほか、開発中アプリのデモ・動画ダウンローダ・Samba 共有を担当。UPS の外にある。",
+        "purpose_en": "The first node of the waras-nw cluster. Besides the fleet of Discord bots and the VOICEVOX speech-synthesis engine, it hosts an app demo, a video downloader and the Samba share. It is not on the UPS.",
         "workloads": [
           {
             "kind": "lxc",
@@ -83,26 +87,11 @@
           },
           {
             "kind": "lxc",
-            "vmid": 301,
-            "name": "Velocity",
-            "status": "running",
-            "cores": 2,
-            "memMiB": 2048,
-            "diskGiB": 8.4,
-            "icon": "game",
-            "caption": "Minecraft プロキシ",
-            "caption_en": "Minecraft proxy",
-            "os": "Debian",
-            "purpose": "ベアメタル Minecraft サーバーの Velocity プロキシ。外部公開は東京の Velocity 経由で、自宅は受信接続ゼロ。",
-            "purpose_en": "Velocity proxy for the bare-metal Minecraft server. External exposure goes through the Velocity in Tokyo, keeping zero inbound at home."
-          },
-          {
-            "kind": "lxc",
             "vmid": 304,
             "name": "Yomiage-Bot",
             "status": "running",
-            "cores": 4,
-            "memMiB": 4096,
+            "cores": 2,
+            "memMiB": 2048,
             "diskGiB": 33.5,
             "icon": "speaker",
             "caption": "読み上げ (VOICEVOX)",
@@ -148,6 +137,36 @@
             ]
           },
           {
+            "kind": "lxc",
+            "vmid": 302,
+            "name": "MeTube",
+            "status": "running",
+            "cores": 1,
+            "memMiB": 1024,
+            "diskGiB": 31.4,
+            "icon": "video",
+            "caption": "動画DL (yt-dlp)",
+            "caption_en": "Video DL (yt-dlp)",
+            "os": "Debian",
+            "purpose": "セルフホスト動画ダウンローダ（yt-dlp Web UI）",
+            "purpose_en": "Self-hosted video downloader (yt-dlp web UI)"
+          },
+          {
+            "kind": "lxc",
+            "vmid": 701,
+            "name": "media-server",
+            "status": "running",
+            "cores": 2,
+            "memMiB": 1024,
+            "diskGiB": 15.6,
+            "icon": "storage",
+            "caption": "Samba 共有 · バックアップ",
+            "caption_en": "Samba share · backup",
+            "os": "Debian",
+            "purpose": "NAS 兼 backup-nfs のディスク領域を SMB でローカルに流す Samba。名前は Jellyfin 用途で作った頃の由来で、いまはバックアップ・音楽ファイル置き場・共有フォルダとして使っている。",
+            "purpose_en": "Samba that re-exports the NAS / backup-nfs storage over SMB on the LAN. The name is a leftover from its Jellyfin days; today it is backup, music storage and a shared folder."
+          },
+          {
             "kind": "qemu",
             "vmid": 1001,
             "name": "mochi-OS",
@@ -178,8 +197,8 @@
         },
         "role": "ネットワーク中核 / サービスノード",
         "role_en": "Network core / service node",
-        "purpose": "OPNsense をメイン FW/ルータとして稼働させるネットワークの中核ノード。AdGuard・Twingate（1.x 側）や Minecraft ワールドのバックアップ受けなど主要サービスを集約。",
-        "purpose_en": "The network-core node that runs OPNsense as the main FW/router. It consolidates key services such as AdGuard, Twingate (1.x side), and the Minecraft world backup sink.",
+        "purpose": "OPNsense をメイン FW/ルータとして稼働させるネットワークの中核ノード。AdGuard・Twingate（1.x 側）や、友人向けに預かっている監視・ボット、隔離した検証用 VM などを集約。UPS の給電対象で、停電時は Dell に追従して停止する。",
+        "purpose_en": "The network-core node that runs OPNsense as the main FW/router. It consolidates AdGuard, Twingate (1.x side), the monitoring / bot containers hosted for friends, and an isolated lab VM. It is on the UPS and shuts down following the Dell on a power cut.",
         "workloads": [
           {
             "kind": "qemu",
@@ -205,31 +224,6 @@
               "The 1.x segment is separated and isolated by OPNsense",
               "Firewall / routing / NAT",
               "DNS control integrated with AdGuard Home"
-            ]
-          },
-          {
-            "kind": "lxc",
-            "vmid": 100,
-            "name": "mc-backup",
-            "status": "running",
-            "cores": 2,
-            "memMiB": 512,
-            "diskGiB": 8.4,
-            "icon": "backup",
-            "caption": "DriveBackupV2 受け · FileBrowser",
-            "caption_en": "DriveBackupV2 sink · FileBrowser",
-            "os": "Debian 12",
-            "purpose": "ベアメタル Minecraft サーバーのバックアップ CT。DriveBackupV2 経由でワールドデータを1週間分保管し、FileBrowser で取り出しを提供。",
-            "purpose_en": "Backup CT for the bare-metal Minecraft server. Retains one week of world data via DriveBackupV2 and provides retrieval through FileBrowser.",
-            "details": [
-              "2コア / システム SSD 8GB + データ用 128GB（1回 約20GB → 圧縮後 約12GB で1週間分を格納）",
-              "深夜4時に転送・40MB/s の帯域制限で帯域圧迫を防止",
-              "FileBrowser 同居 — バックアップの取り出し用（Cloudflare Tunnel 経由で公開）"
-            ],
-            "details_en": [
-              "2 cores / 8GB system SSD + 128GB data (about 20GB per run → about 12GB compressed, storing one week)",
-              "Transferred at 4 AM with a 40MB/s bandwidth cap to avoid saturating the link",
-              "FileBrowser co-located — for retrieving backups (exposed via Cloudflare Tunnel)"
             ]
           },
           {
@@ -306,6 +300,64 @@
             "os": "Debian",
             "purpose": "友人の Discord サーバーの管理ボットを、期限付きで受託して動かしている CT。",
             "purpose_en": "Runs the Discord server management bot of a friend under a fixed-term arrangement."
+          },
+          {
+            "kind": "lxc",
+            "vmid": 410,
+            "name": "collector",
+            "status": "running",
+            "cores": 1,
+            "memMiB": 512,
+            "diskGiB": 3.9,
+            "icon": "chart",
+            "caption": "ログ集約",
+            "caption_en": "Log aggregation",
+            "os": "Debian 13",
+            "purpose": "隔離した検証用 VM のログを集約する CT。",
+            "purpose_en": "Aggregates logs from the isolated lab VM.",
+            "details": [
+              "Proxmox ファイアウォールで、受ける接続・出ていく接続とも必要な相手だけに絞っている"
+            ],
+            "details_en": [
+              "The Proxmox firewall limits both inbound and outbound connections to the peers it actually needs"
+            ]
+          },
+          {
+            "kind": "qemu",
+            "vmid": 510,
+            "name": "sensor",
+            "status": "running",
+            "cores": 1,
+            "memMiB": 1536,
+            "diskGiB": 16,
+            "icon": "monitor",
+            "variant": "warn",
+            "caption": "検証用 VM (隔離)",
+            "caption_en": "Lab VM (isolated)",
+            "os": "Linux (VM)",
+            "purpose": "検証用の VM。専用のセグメントに隔離し、LAN 側へは届かないようにしている。",
+            "purpose_en": "A lab VM, isolated on its own segment so it cannot reach the LAN.",
+            "details": [
+              "LAN・管理画面への通信は OPNsense で遮断"
+            ],
+            "details_en": [
+              "Traffic to the LAN and admin UIs is blocked on OPNsense"
+            ]
+          },
+          {
+            "kind": "lxc",
+            "vmid": 100,
+            "name": "mc-backup",
+            "status": "stopped",
+            "cores": 2,
+            "memMiB": 512,
+            "diskGiB": 8,
+            "icon": "backup",
+            "caption": "旧 MC バックアップ (停止中)",
+            "caption_en": "Former MC backup (stopped)",
+            "os": "Debian 12",
+            "purpose": "旧ベアメタル Minecraft サーバーのバックアップを受けていた CT。Minecraft を外部のサーバーへ統合したため役目を終え、現在は停止している。",
+            "purpose_en": "The CT that used to receive backups from the former bare-metal Minecraft server. Minecraft has since been consolidated onto an external server, so it is retired and currently stopped."
           }
         ]
       },
@@ -325,8 +377,8 @@
         },
         "role": "Web公開 / 監視ノード",
         "role_en": "Web-exposure / monitoring node",
-        "purpose": "ポートフォリオ公開・監視・0.x 側ゼロトラストアクセスを担当するノード。Minecraft プロキシや各種セルフホストサービスも稼働。",
-        "purpose_en": "The node responsible for portfolio exposure, monitoring, and 0.x-side zero-trust access. Also runs the Minecraft proxy and various self-hosted services.",
+        "purpose": "ポートフォリオ公開・監視・管理ダッシュボード・0.x 側ゼロトラストアクセスを担当するノード。UPS を USB で接続し、NUT サーバーとして他ノードへ停電を知らせる。",
+        "purpose_en": "The node responsible for portfolio exposure, monitoring, the admin dashboard, and 0.x-side zero-trust access. The UPS is attached over USB, and it acts as the NUT server that tells the other nodes about a power cut.",
         "workloads": [
           {
             "kind": "lxc",
@@ -376,18 +428,28 @@
           },
           {
             "kind": "lxc",
-            "vmid": 302,
-            "name": "MeTube",
+            "vmid": 110,
+            "name": "Homepage",
             "status": "running",
             "cores": 1,
-            "memMiB": 2048,
-            "diskGiB": 33.7,
-            "icon": "video",
-            "caption": "動画DL (yt-dlp)",
-            "caption_en": "Video DL (yt-dlp)",
-            "os": "Debian",
-            "purpose": "セルフホスト動画ダウンローダ（yt-dlp Web UI）",
-            "purpose_en": "Self-hosted video downloader (yt-dlp web UI)"
+            "memMiB": 1024,
+            "diskGiB": 8.4,
+            "icon": "dashboard",
+            "caption": "管理ダッシュボード",
+            "caption_en": "Admin dashboard",
+            "os": "Debian 13",
+            "purpose": "管理画面の入口と状態表示を 1 画面にまとめた内部ダッシュボード（gethomepage）。標準ウィジェットで足りない値は自作の拡張で補っている。",
+            "purpose_en": "An internal dashboard (gethomepage) gathering the entry points and status of the admin UIs onto one screen. A self-built extension fills in what the stock widgets cannot show.",
+            "details": [
+              "自作の拡張（Bun + Hono）で、標準ウィジェットに無い値や操作を補う",
+              "各サービスには読み取り専用の専用アカウントで接続する",
+              "LAN 内からのみ到達でき、外部には公開していない"
+            ],
+            "details_en": [
+              "A self-built extension (Bun + Hono) adds values and actions the stock widgets lack",
+              "Connects to every service with a dedicated read-only account",
+              "Reachable only from the LAN, not published externally"
+            ]
           },
           {
             "kind": "lxc",
@@ -403,102 +465,77 @@
             "os": "Debian",
             "purpose": "Zabbix サーバー — クラスター全体のインフラメトリクス収集・アラート管理",
             "purpose_en": "Zabbix server — cluster-wide infrastructure metrics collection and alert management"
-          },
-          {
-            "kind": "lxc",
-            "vmid": 701,
-            "name": "media-server",
-            "status": "running",
-            "cores": 2,
-            "memMiB": 1024,
-            "diskGiB": 16.7,
-            "icon": "storage",
-            "caption": "Samba 共有 · バックアップ",
-            "caption_en": "Samba share · backup",
-            "os": "Debian",
-            "purpose": "NAS 兼 backup-nfs のディスク領域を SMB でローカルに流す Samba。名前は Jellyfin 用途で作った頃の由来で、いまはバックアップ・音楽ファイル置き場・共有フォルダとして使っている。",
-            "purpose_en": "Samba that re-exports the NAS / backup-nfs storage over SMB on the LAN. The name is a leftover from its Jellyfin days; today it is backup, music storage and a shared folder."
           }
         ]
       },
       {
-        "id": "minecraft-bm",
+        "id": "w-dev-pc",
         "kind": "baremetal",
-        "name": "Minecraft鯖",
-        "name_en": "Minecraft Server",
+        "name": "W-dev-pc",
+        "name_en": "W-dev-pc",
         "hardware": {
           "model": "",
           "cpu": "Core i7-3770",
           "cores": 8,
           "memGiB": 16,
           "storage": [
-            "Kingston SQ500S37240G 240GB"
+            "Kingston SQ500S37240G 240GB",
+            "Toshiba HDD 500GB"
           ]
         },
-        "role": "スタンドアロン ベアメタル ゲームサーバー（Minecraft / Terraria・クラスター外・0.x 配下）",
-        "role_en": "Standalone bare-metal game server (Minecraft / Terraria · outside the cluster · under 0.x)",
-        "purpose": "旧 Kasm WS 機を転用したベアメタル ゲーム専用機（Kasm Workspaces は廃止・スペックは当時のまま）。Proxmox クラスター waras-nw には参加せず、192.168.0.x セグメント配下で単体稼働。仮想化オーバーヘッドの排除・ゲーム鯖としての明確な分離・クラスターのクォーラムを4台にしない判断から、あえてベアメタル運用を選択した。Minecraft（Purpur）に加え、身内用の Terraria サバイバル鯖も同一機で稼働。リソースに余裕があるため他用途への活用余地も残している。Minecraft へのアクセスは別拠点（東京）の Velocity プロキシ経由のみで、Terraria は LAN 内限定。いずれも直接の外部露出はゼロ。",
-        "purpose_en": "A dedicated bare-metal game box repurposed from the former Kasm WS machine (Kasm Workspaces retired; the specs are unchanged from then). It does not join the Proxmox cluster waras-nw and runs standalone under the 192.168.0.x segment. Bare-metal operation was chosen deliberately to eliminate virtualization overhead, keep the game servers cleanly separated, and avoid pushing the cluster quorum to four nodes. Alongside Minecraft (Purpur), it also hosts a Terraria survival server for close friends on the same box. With resources to spare, headroom is left for other uses. Minecraft access is only via the Velocity proxy at an off-site location (Tokyo), while Terraria is LAN-only — neither has any direct external exposure.",
+        "role": "リモート開発機（Arch Linux・クラスター外）",
+        "role_en": "Remote dev box (Arch Linux · outside the cluster)",
+        "purpose": "旧ゲーム鯖（さらに前は Kasm WS 用に用意した機体）を転用した Arch Linux の開発機。Proxmox クラスターには参加せず単体で動く。モニターは繋がず、普段は電源を切っておき、必要なときに Wake-on-LAN で起動して Moonlight（Sunshine）と SSH で遠隔操作する。Minecraft は外部のサーバーへ統合したため、この機体からは撤去した。",
+        "purpose_en": "An Arch Linux dev box repurposed from the former game server (and, before that, the machine set aside for Kasm WS). It runs standalone and does not join the Proxmox cluster. No monitor is attached: it stays powered off until needed, is woken with Wake-on-LAN, and is driven remotely over Moonlight (Sunshine) and SSH. Minecraft was consolidated onto an external server and removed from this box.",
         "workloads": [
           {
             "kind": "baremetal",
-            "name": "Minecraft (Purpur)",
+            "name": "Arch Linux + Hyprland",
             "status": "running",
-            "icon": "game",
-            "caption": "Purpur サバイバル",
-            "caption_en": "Purpur survival server",
-            "os": "Debian 13",
-            "purpose": "常時稼働の Purpur サバイバルサーバー（Java Edition）",
-            "purpose_en": "An always-on Purpur survival server (Java Edition)",
+            "icon": "linux",
+            "caption": "WoL で起動するリモート開発環境",
+            "caption_en": "Remote dev environment woken via WoL",
+            "os": "Arch Linux",
+            "purpose": "画面を持たないヘッドレスの開発環境。仮想ディスプレイを Sunshine で配信し、手元の PC・ノート PC・Chromebook から操作する。",
+            "purpose_en": "A headless development environment. A virtual display is streamed by Sunshine and driven from a desktop, a laptop, or a Chromebook.",
             "details": [
-              "GraalVM 17 / 21 / 25.1 を併用 — サーバー構成に応じて Java ランタイムを使い分け",
-              "必要時は ATM10 や持ち寄り Mod のサーバーも起動できる構成",
-              "webmap は Cloudflare Tunnel 経由で公開 / リソース監視は btop",
-              "アクセスは別拠点（東京）の Velocity 経由のみ — 直接の外部露出なし",
-              "DriveBackupV2 でワールドデータを HP-2 の MC-Backup CT へ毎晩バックアップ（深夜4時・40MB/s 帯域制限・1週間分保持）"
+              "Quadro P600 を追加（BIOS を更新して認識）。Sunshine は NVENC（H.264 / HEVC）でエンコード",
+              "Hyprland（Wayland）の仮想出力をそのまま配信するので、ダミープラグも物理モニターも不要",
+              "btrfs + snapper でスナップショット、btrbk で HDD へ日次バックアップ",
+              "SMART の異常は smartd から Discord Webhook へ通知"
             ],
             "details_en": [
-              "Runs GraalVM 17 / 21 / 25.1 side by side — switching the Java runtime to suit the server setup",
-              "Configured to also spin up ATM10 or bring-your-own-mod servers when needed",
-              "The webmap is exposed via Cloudflare Tunnel / resource monitoring with btop",
-              "Access only via the off-site (Tokyo) Velocity — no direct external exposure",
-              "World data backed up nightly to HP-2's MC-Backup CT via DriveBackupV2 (4 AM · 40MB/s cap · 1-week retention)"
+              "Quadro P600 added (recognised after a BIOS update). Sunshine encodes with NVENC (H.264 / HEVC)",
+              "Streams a Hyprland (Wayland) virtual output directly — no dummy plug or physical monitor needed",
+              "btrfs + snapper snapshots, with btrbk replicating to the HDD daily",
+              "SMART errors are reported from smartd to a Discord webhook"
             ]
-          },
-          {
-            "kind": "baremetal",
-            "name": "Terraria",
-            "status": "running",
-            "icon": "game",
-            "caption": "身内用サバイバル",
-            "caption_en": "Private survival server",
-            "os": "Debian 13",
-            "purpose": "身内用のサバイバルサーバー（LAN 内限定・外部公開なし）",
-            "purpose_en": "A survival server for close friends (LAN-only · no external exposure)"
           }
         ]
       }
     ],
     "network_design": {
-      "topology": "OPNsense（HP-2 VM:500）をメインファイアウォール/ルータとして、LAN を 192.168.0.x（メイン）と 192.168.1.x（OPNsense で分離した隔離セグメント）に分割。各セグメントに Twingate コネクタと AdGuard Home を冗長配置する。公開トラフィックは Cloudflare Tunnel 経由のみで、内部管理は Twingate ゼロトラスト VPN で分離。",
-      "topology_en": "With OPNsense (HP-2 VM:500) as the main firewall/router, the LAN is split into 192.168.0.x (main) and 192.168.1.x (an isolated segment separated by OPNsense). A Twingate connector and AdGuard Home are deployed redundantly on each segment. Public traffic goes only through Cloudflare Tunnel, and internal management is isolated behind a Twingate zero-trust VPN.",
+      "topology": "OPNsense（HP-2 VM:500）をメインファイアウォール/ルータとして、LAN を 192.168.0.x（メイン）と 192.168.1.x（OPNsense で分離した隔離セグメント）に分割する。各セグメントに Twingate コネクタと AdGuard Home を冗長配置する。Web の公開は Cloudflare Tunnel 経由のみ。外からの管理アクセスは Twingate と、OPNsense 終端の WireGuard（許可したホストだけに届くスプリットトンネル）に限る。別拠点とは IPsec の拠点間 VPN でつなぐ。",
+      "topology_en": "With OPNsense (HP-2 VM:500) as the main firewall/router, the LAN is split into 192.168.0.x (main) and 192.168.1.x (an isolated segment separated by OPNsense). A Twingate connector and AdGuard Home are deployed redundantly on each segment. Web publishing goes only through Cloudflare Tunnel. Remote management is limited to Twingate and WireGuard terminated on OPNsense (a split tunnel that reaches only allow-listed hosts). An off-site location is linked over a site-to-site IPsec VPN.",
       "security": [
         "OPNsense メイン FW/ルータ — 192.168.0.x / 192.168.1.x のセグメント分離とファイアウォール制御",
         "AdGuard Home — 各セグメントに冗長配置し DNS フィルタリング（広告 / トラッカー / マルウェア）",
-        "Cloudflare Tunnel — ポートフォワード不要・受信接続ゼロ。CF Edge が TLS 終端、Anycast で DDoS 軽減（portfolio / FileBrowser / MC webmap など公開サービス共通）",
-        "Twingate ゼロトラスト VPN — SSH・Proxmox WebUI・全内部サービスへのアクセスを Twingate 経由に限定（2セグメント冗長）",
-        "外部ポート開放ゼロ — 受信接続なし。Minecraft も東京の Velocity プロキシ経由で公開し、自宅は直接開放しない",
-        "Anubis Bot Protection — portfolio への自動スクレイパー・DDoS をリバースプロキシ層でフィルタ",
+        "Cloudflare Tunnel — ポートフォワード不要。CF Edge が TLS 終端、Anycast で DDoS 軽減（Web 公開サービス共通）",
+        "Twingate ゼロトラスト — SSH・Proxmox WebUI・内部サービスへの外からのアクセスは Twingate か VPN 経由に限定（2セグメント冗長）",
+        "VPN — OPNsense 終端の WireGuard は公開鍵認証で、届く宛先は OPNsense のエイリアスで許可したホストだけ。管理画面には入れない",
+        "拠点間 VPN（IPsec）— 相手拠点に見せるのは 1 ホストだけで、ACL で通信を絞り込んでいる",
+        "Anubis Bot Protection — portfolio への自動スクレイパー・DDoS をCloudflare Tunnel の直後でフィルタ",
         "Ed25519 SSH鍵 + パスワード認証無効 — 全サーバーで鍵認証のみ許可",
         "TOTP 2FA — Proxmox WebUI への2段階認証必須"
       ],
       "security_en": [
         "OPNsense main FW/router — segmentation of 192.168.0.x / 192.168.1.x and firewall control",
         "AdGuard Home — deployed redundantly per segment for DNS filtering (ads / trackers / malware)",
-        "Cloudflare Tunnel — no port forwarding, zero inbound. The CF edge terminates TLS and mitigates DDoS with Anycast (shared across public services such as portfolio / FileBrowser / MC webmap)",
-        "Twingate zero-trust VPN — access to SSH, Proxmox WebUI, and all internal services limited to Twingate (2-segment redundancy)",
-        "Zero external ports — no inbound. Minecraft is also exposed via the Velocity proxy in Tokyo, with nothing opened directly at home",
-        "Anubis bot protection — filters automated scrapers and DDoS against the portfolio at the reverse-proxy layer",
+        "Cloudflare Tunnel — no port forwarding. The CF edge terminates TLS and mitigates DDoS with Anycast (shared across all published web services)",
+        "Twingate zero-trust — remote access to SSH, Proxmox WebUI, and internal services only through Twingate or the VPN (2-segment redundancy)",
+        "VPN — WireGuard terminated on OPNsense uses public-key auth, and reaches only hosts allow-listed in an OPNsense alias. The admin UI is not reachable",
+        "Site-to-site VPN (IPsec) — only one host is exposed to the remote site, with traffic narrowed by ACLs",
+        "Anubis bot protection — filters automated scrapers and DDoS against the portfolio right behind Cloudflare Tunnel",
         "Ed25519 SSH keys + password auth disabled — key auth only on every server",
         "TOTP 2FA — two-factor authentication required for the Proxmox WebUI"
       ],
@@ -534,12 +571,21 @@
         },
         {
           "icon": "",
-          "name": "NEC IX2105",
+          "name": "VPN ルーター",
           "address": "192.168.1.3",
           "role": "拠点間 VPN",
           "role_en": "Site-to-site VPN",
-          "note": "Uptime Kuma で相互監視している相手拠点との間を結ぶ。隔離セグメント側に置いている。",
-          "note_en": "Links the site I run mutual Uptime Kuma monitoring with. Sits on the isolated segment."
+          "note": "Uptime Kuma で相互監視している別拠点と IPsec でつなぐ。相手拠点に見せるのは 1 ホストだけで、管理画面は接続元を絞っている。隔離セグメント側に置いている。",
+          "note_en": "Links the site I run mutual Uptime Kuma monitoring with over IPsec. Only one host is exposed to the remote site, and the admin UI is restricted by source. Sits on the isolated segment."
+        },
+        {
+          "icon": "",
+          "name": "OMRON BY50S",
+          "address": "USB → Dell",
+          "role": "UPS",
+          "role_en": "UPS",
+          "note": "Dell・HP-2・スイッチ・AP に給電する。Dell の NUT サーバーを HP-2 も監視し、停電時は両ノードが停止する（HP-1 は UPS の外）。状態は homepage にも表示。",
+          "note_en": "Powers the Dell, HP-2, the switch and the AP. HP-2 also watches the NUT server on the Dell, so both nodes shut down on a power cut (HP-1 is not on the UPS). Its status is shown on homepage too."
         }
       ]
     },
@@ -548,19 +594,19 @@
         "root_login": "disabled",
         "password_auth": "disabled",
         "key_type": "Ed25519",
-        "access_method": "Twingate tunnel only"
+        "access_method": "Twingate / VPN only"
       },
       "backup_strategy": [
         "Google Drive クラウドバックアップ",
         "USB ストレージ コールドバックアップ",
         "Proxmox VM バックアップ",
-        "DriveBackupV2 — Minecraft ワールドを HP-2 の MC-Backup CT へ毎晩保管（1週間分・深夜4時・40MB/s 帯域制限）"
+        "snapper + btrbk — W-dev-pc の SSD を HDD へ日次で複製"
       ],
       "backup_strategy_en": [
         "Google Drive cloud backup",
         "USB storage cold backup",
         "Proxmox VM backup",
-        "DriveBackupV2 — Minecraft worlds kept nightly on HP-2's MC-Backup CT (1-week retention · 4 AM · 40MB/s bandwidth cap)"
+        "snapper + btrbk — W-dev-pc's SSD replicated to its HDD daily"
       ],
       "authentication": {
         "proxmox": "TOTP 2FA enabled",
@@ -602,7 +648,13 @@
           "ZenNotes（Markdown ノート同期）へ移行（後に廃止 — Google Keep / Discord / GitHub 等へ集約）",
           "Cloudflare Tunnel 公開（portfolio.warasugi.com）",
           "Minecraft をベアメタル専用機へ移行（Kasm WS 廃止・ハード転用）+ MC-Backup CT 新設（DriveBackupV2 / FileBrowser）",
-          "同ベアメタル機に Terraria サバイバル鯖を追加（身内用・LAN 内限定）"
+          "同ベアメタル機に Terraria サバイバル鯖を追加（身内用・LAN 内限定）",
+          "Minecraft を外部のサーバーへ統合し、自宅のゲーム鯖・Velocity を撤去（バックアップ CT は停止）",
+          "ベアメタル機を Arch Linux のリモート開発機へ転用（Quadro P600・Wake-on-LAN・Sunshine）",
+          "homepage ダッシュボード（CT110）+ 自作拡張（Bun + Hono）",
+          "UPS（OMRON BY50S）+ NUT による停電時シャットダウン",
+          "拠点間 VPN（IPsec）と WireGuard リモートアクセス",
+          "隔離した検証用 VM とログ集約 CT を追加"
         ],
         "components_en": [
           "Added 2× HP Z240 SFF",
@@ -617,7 +669,13 @@
           "Migrated to ZenNotes (Markdown note sync), later retired — consolidated into Google Keep / Discord / GitHub, etc.",
           "Cloudflare Tunnel exposure (portfolio.warasugi.com)",
           "Migrated Minecraft to a dedicated bare-metal box (Kasm WS retired, hardware repurposed) + set up a new MC-Backup CT (DriveBackupV2 / FileBrowser)",
-          "Added a Terraria survival server on the same bare-metal box (private · LAN-only)"
+          "Added a Terraria survival server on the same bare-metal box (private · LAN-only)",
+          "Consolidated Minecraft onto an external server and removed the home game server and Velocity (the backup CT is stopped)",
+          "Repurposed the bare-metal box as a remote Arch Linux dev machine (Quadro P600 · Wake-on-LAN · Sunshine)",
+          "homepage dashboard (CT110) + self-built extension (Bun + Hono)",
+          "Shutdown on power loss with a UPS (OMRON BY50S) + NUT",
+          "Site-to-site VPN (IPsec) and WireGuard remote access",
+          "Added an isolated lab VM and a log-aggregation CT"
         ]
       },
       "phase_3_future": {
@@ -629,7 +687,8 @@
           "SFP+ カード + DAC ケーブル — 3ノード間をトライアングル 10G メッシュで接続",
           "Ceph 分散ストレージ構築 — 10G 専用バックプレーン上でノード間のストレージ冗長化・ライブマイグレーション対応",
           "Z240 SFF 追加 — Proxmox HA クラスタへの拡張、クォーラム確保",
-          "IP 体系移行 — OPNsense の VLAN ベースセグメントへ本格移行"
+          "IP 体系移行 — OPNsense の VLAN ベースセグメントへ本格移行",
+          "UPS 連携の改善 — バッテリー駆動が一定時間続いたら全体を停止し、HP-2 の VM/CT が止まりきるまで待つ"
         ],
         "components_en": [
           "Introduce a Panasonic L2 managed switch — full separation of management, service, and Ceph-dedicated links via VLAN design",
@@ -637,17 +696,20 @@
           "SFP+ cards + DAC cables — connect the 3 nodes in a triangular 10G mesh",
           "Build Ceph distributed storage — inter-node storage redundancy and live migration on a dedicated 10G backplane",
           "Add a Z240 SFF — expand into a Proxmox HA cluster and secure quorum",
-          "IP scheme migration — a full move to OPNsense's VLAN-based segments"
+          "IP scheme migration — a full move to OPNsense's VLAN-based segments",
+          "Better UPS handling — shut everything down after a sustained run on battery, and wait for HP-2's VMs/CTs to stop"
         ]
       },
       "phase_4_longterm": {
         "status": "長期構想（1年以上先）",
         "status_en": "Long-term vision (1+ years out)",
         "components": [
-          "Mac mini — OpenClaw や LocalLLM サーバーとして活用、推論ワークロードの分散処理基盤"
+          "Mac mini — 開発用のメイン機（AI 用途は下の別機に分ける）",
+          "GMKtec EVO-X など 128GB 級ユニファイドメモリ機 — ローカル LLM / 推論基盤"
         ],
         "components_en": [
-          "Mac mini — used as an OpenClaw / local-LLM server, a platform for distributing inference workloads"
+          "Mac mini — main machine for development (AI workloads go to the separate box below)",
+          "A 128GB-class unified-memory box such as the GMKtec EVO-X — a local LLM / inference platform"
         ]
       }
     },
@@ -663,11 +725,13 @@
         "AdGuard Home",
         "Twingate",
         "Cloudflare Tunnel",
-        "Caddy",
-        "Linux networking"
+        "Linux networking",
+        "WireGuard",
+        "IPsec"
       ],
       "storage": [
         "Ext4",
+        "btrfs",
         "SSD",
         "HDD",
         "Google Drive"
@@ -682,17 +746,14 @@
       "applications": [
         "Zabbix",
         "Uptime Kuma",
-        "Minecraft (Purpur)",
-        "Terraria",
-        "GraalVM",
-        "Velocity",
+        "gethomepage",
+        "NUT",
         "VOICEVOX",
         "Discord Bot",
         "Samba",
         "MeTube",
-        "DriveBackupV2",
-        "FileBrowser",
-        "Bun + Hono"
+        "Bun + Hono",
+        "Sunshine / Moonlight"
       ]
     },
     "learning_outcomes": [
@@ -702,13 +763,16 @@
       "Proxmox VE クラスター構築・運用（3ノード waras-nw）",
       "Ed25519 SSH 鍵認証セキュリティ",
       "Zabbix によるインフラ監視",
-      "Caddy + Anubis + Cloudflare Tunnel によるリバースプロキシ / 公開設計",
+      "Cloudflare Tunnel + Anubis による公開設計（リバースプロキシを挟まない構成）",
       "Linux VM / LXC コンテナ管理",
-      "ベアメタル Minecraft サーバー運用（Purpur + GraalVM）と DriveBackupV2 による世代バックアップ設計（深夜転送 + 帯域制限で帯域圧迫を防止）"
+      "IPsec の拠点間 VPN と WireGuard リモートアクセスの設計（非対称経路で TCP だけが落ちる問題の切り分け）",
+      "NUT による UPS 監視と停電時シャットダウンの設計",
+      "SNMP / 各種 API を使った自作ダッシュボード拡張（Bun + Hono）",
+      "Arch Linux + Hyprland のヘッドレス リモート開発環境（Sunshine NVENC・Wake-on-LAN・BIOS 更新）"
     ],
     "operational_practices": {
-      "monitoring": "Zabbix サーバー (CT400) + Discord-Pin-Service (CT104) による webhook 通知 + Proxmox Web UI",
-      "backups": "手動 + Google Drive クラウドバックアップ + DriveBackupV2（Minecraft ワールド・1週間分）",
+      "monitoring": "Zabbix サーバー (CT400) + Discord-Pin-Service (CT104) による webhook 通知 + homepage ダッシュボード (CT110) + Proxmox Web UI",
+      "backups": "手動 + Google Drive クラウドバックアップ + Proxmox VM バックアップ",
       "updates": "定期更新 + 手動確認",
       "documentation": "メモは Google Keep、ノートは Discord・GitHub・物理で管理。ZenNotes はローカル運用で足りるため CT を廃止した"
     },
@@ -720,33 +784,37 @@
         "alerting": "Zabbix のアラートに加え、Discord-Pin-Service (CT104) が各種通知の webhook 処理を引き受けている"
       },
       "access_management": {
-        "internal": "Twingate VPN 経由でのみ Proxmox WebUI・SSH にアクセス可能",
-        "remote_desktop": "リモートアクセスは Twingate ゼロトラスト経由（0.x / 1.x の2セグメント冗長）",
+        "internal": "Proxmox WebUI・SSH へは Twingate か VPN 経由でのみアクセス可能",
+        "remote_desktop": "リモートアクセスは Twingate ゼロトラスト経由（0.x / 1.x の2セグメント冗長）。予備として OPNsense 終端の WireGuard",
         "authentication": "Ed25519 SSH鍵認証 + Proxmox TOTP 2FA"
       },
       "reliability": {
         "uptime_target": "ホームラボとして合理的な稼働率を維持",
-        "restart_policy": "Proxmox の自動起動設定で CT/VM はホスト再起動後に自動復旧",
-        "backup": "Proxmox Backup Server による定期スナップショット（計画中）。Minecraft ワールドは DriveBackupV2 で毎晩 MC-Backup CT (CT100) へ保管済み"
+        "restart_policy": "Proxmox の自動起動設定で CT/VM はホスト再起動後に自動復旧。停電時は UPS + NUT で Dell / HP-2 を停止する",
+        "backup": "Proxmox Backup Server による定期スナップショット（計画中）"
       }
     },
     "architecture_notes": [
       "ネットワーク中核 — OPNsense (HP-2 VM500) が 192.168.0.x / 192.168.1.x を分離しルーティング",
       "DNS 冗長 — AdGuard Home を各セグメントに配置 (1.x: CT106 / 0.x: CT107)",
       "ゼロトラスト冗長 — Twingate を 2 セグメントに配置 (1.x: HP-2 CT105 / 0.x: Dell CT102)",
-      "公開は Cloudflare Tunnel のみ — portfolio.warasugi.com (Dell CT103) を受信ゼロで公開",
-      "Minecraft はベアメタル専用機（Debian 13 · 0.x 配下 · 旧 Kasm WS 転用）で Purpur サバイバルを常時稼働 — アクセスは別拠点（東京）の Velocity 経由のみで直接露出ゼロ（HP-1 CT301 連携）。GraalVM 17/21/25.1 併用・webmap は Cloudflare Tunnel 公開。同一機で身内用の Terraria サバイバル鯖（LAN 内限定・外部公開なし）も稼働",
-      "ワールドバックアップ — DriveBackupV2 が深夜4時に HP-2 MC-Backup (CT100) へ転送（40MB/s 帯域制限・1週間分保持）。取り出しは FileBrowser（Cloudflare Tunnel 公開）",
-      "監視・多層防御 — Zabbix (Dell CT400) + Ed25519 SSH鍵 + TOTP 2FA + Anubis"
+      "Web 公開は Cloudflare Tunnel のみ — portfolio.warasugi.com (Dell CT103) を Web 用の受信ポートを開けずに公開",
+      "リモートアクセス — Twingate に加えて OPNsense 終端の WireGuard。別拠点とは IPsec の拠点間 VPN で接続",
+      "管理画面の集約 — homepage (Dell CT110) に各ノード・ネットワーク機器・UPS の状態を集約。標準ウィジェットに無い値は自作の Bun + Hono 拡張で補う",
+      "電源 — UPS (OMRON BY50S) を Dell の NUT で監視し、HP-2 も追従して停止",
+      "監視・多層防御 — Zabbix (Dell CT400) + Ed25519 SSH鍵 + TOTP 2FA + Anubis",
+      "クラスター外 — 旧ゲーム鯖を Arch Linux の開発機 W-dev-pc に転用。WoL で起動し Moonlight / SSH で操作"
     ],
     "architecture_notes_en": [
       "Network core — OPNsense (HP-2 VM500) separates and routes 192.168.0.x / 192.168.1.x",
       "DNS redundancy — AdGuard Home deployed per segment (1.x: CT106 / 0.x: CT107)",
       "Zero-trust redundancy — Twingate deployed across 2 segments (1.x: HP-2 CT105 / 0.x: Dell CT102)",
-      "Public exposure via Cloudflare Tunnel only — portfolio.warasugi.com (Dell CT103) served with zero inbound",
-      "Minecraft runs on a dedicated bare-metal box (Debian 13 · under 0.x · repurposed Kasm WS) hosting an always-on Purpur survival server — access only via off-site (Tokyo) Velocity with zero direct exposure (linked to HP-1 CT301). GraalVM 17/21/25.1 in use; webmap exposed via Cloudflare Tunnel. The same box also runs a LAN-only Terraria survival server for close friends (no external exposure)",
-      "World backup — DriveBackupV2 transfers to HP-2 MC-Backup (CT100) at 4 AM (40MB/s bandwidth cap · 1-week retention). Retrieval via FileBrowser (exposed over Cloudflare Tunnel)",
-      "Monitoring & defense-in-depth — Zabbix (Dell CT400) + Ed25519 SSH keys + TOTP 2FA + Anubis"
+      "Web publishing via Cloudflare Tunnel only — portfolio.warasugi.com (Dell CT103) served without opening any inbound web port",
+      "Remote access — Twingate plus WireGuard terminated on OPNsense. The off-site location is linked over a site-to-site IPsec VPN",
+      "Single admin dashboard — homepage (Dell CT110) gathers the status of the nodes, network gear and UPS; a self-built Bun + Hono extension fills the gaps in the stock widgets",
+      "Power — the UPS (OMRON BY50S) is watched by NUT on the Dell, and HP-2 follows it down",
+      "Monitoring & defense-in-depth — Zabbix (Dell CT400) + Ed25519 SSH keys + TOTP 2FA + Anubis",
+      "Outside the cluster — the former game server is now W-dev-pc, an Arch Linux dev box woken via WoL and driven over Moonlight / SSH"
     ],
     "diagram": {
       "legend": [
@@ -772,23 +840,23 @@
         },
         {
           "icon": "",
-          "text": "公開 — Cloudflare Tunnel で portfolio.warasugi.com を受信ゼロ公開 / 外部ポート開放なし",
-          "text_en": "Public — portfolio.warasugi.com served via Cloudflare Tunnel with zero inbound / no external ports"
+          "text": "公開 — Web は Cloudflare Tunnel のみ (portfolio.warasugi.com) / 外からの管理は Twingate・VPN 経由",
+          "text_en": "Public — web only via Cloudflare Tunnel (portfolio.warasugi.com) / remote management via Twingate or VPN"
         },
         {
           "icon": "",
-          "text": "監視 — Zabbix (Dell CT400) + Discord-Pin-Service (CT104)",
-          "text_en": "Monitoring — Zabbix (Dell CT400) + Discord-Pin-Service (CT104)"
+          "text": "監視 — Zabbix (Dell CT400) + Discord-Pin-Service (CT104) + homepage (CT110)",
+          "text_en": "Monitoring — Zabbix (Dell CT400) + Discord-Pin-Service (CT104) + homepage (CT110)"
         },
         {
           "icon": "",
-          "text": "ベアメタルMC — Purpur サバイバル常時稼働 (i7-3770 / 16GB / SSD 240GB · Debian 13 · 旧 Kasm WS 転用) クラスター外・0.x 配下",
-          "text_en": "Bare-metal MC — always-on Purpur survival (i7-3770 / 16GB / SSD 240GB · Debian 13 · repurposed Kasm WS), outside cluster, under 0.x"
+          "text": "クラスター外 — W-dev-pc (i7-3770 / 16GB / Quadro P600 · Arch Linux) WoL で起動するリモート開発機",
+          "text_en": "Outside the cluster — W-dev-pc (i7-3770 / 16GB / Quadro P600 · Arch Linux), a remote dev box woken via WoL"
         },
         {
           "icon": "",
-          "text": "ワールドバックアップ — DriveBackupV2 → HP-2 MC-Backup (CT100)。深夜4時・40MB/s 制限・1週間分保持",
-          "text_en": "World backup — DriveBackupV2 → HP-2 MC-Backup (CT100). 4 AM · 40MB/s cap · 1-week retention"
+          "text": "電源 — UPS (OMRON BY50S) を NUT で監視。停電時は Dell / HP-2 を停止",
+          "text_en": "Power — UPS (OMRON BY50S) watched by NUT; the Dell and HP-2 shut down on a power cut"
         }
       ]
     }

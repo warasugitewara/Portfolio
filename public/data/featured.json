@@ -9,20 +9,21 @@
       "background": "A Proxmox VE cluster built from three used PCs. I designed everything myself — network segmentation, security, backups and monitoring — and it runs real services 24/7, including Discord bots and this site.",
       "background_ja": "中古 PC 3台で構築した Proxmox VE クラスター。ネットワーク設計・セキュリティ・バックアップ・監視まで全て自分で設計し、Discord ボットや本サイトなどの実サービスを常時運用している。",
       "points": [
-        "OPNsense network segmentation with zero open inbound ports — published via Cloudflare Tunnel and an off-site Velocity proxy",
-        "Redundant AdGuard Home + Twingate across two segments, monitored with Zabbix",
-        "Generational Minecraft world backups via DriveBackupV2 to a dedicated CT (late-night transfer with a bandwidth cap)"
+        "OPNsense network segmentation; web services published only via Cloudflare Tunnel, remote management only via Twingate / VPN",
+        "Redundant AdGuard Home + Twingate across two segments, with a site-to-site IPsec VPN to an off-site location",
+        "A homepage dashboard with a self-built Bun + Hono extension, and UPS-driven shutdown via NUT"
       ],
       "points_ja": [
-        "OPNsense でセグメント分離し、公開は Cloudflare Tunnel / 別拠点 Velocity 経由 — 外部ポート開放ゼロ",
-        "AdGuard Home・Twingate を2セグメントに冗長配置し、Zabbix で全体を監視",
-        "Minecraft ワールドは DriveBackupV2 で専用 CT へ世代バックアップ（深夜転送・帯域制限）"
+        "OPNsense でセグメント分離。Web の公開は Cloudflare Tunnel のみ、外からの管理は Twingate / VPN のみ",
+        "AdGuard Home・Twingate を2セグメントに冗長配置し、別拠点と IPsec の拠点間 VPN で接続",
+        "自作拡張（Bun + Hono）付きの homepage ダッシュボードと、NUT による UPS 連動シャットダウン"
       ],
       "tech": [
         "Proxmox VE",
         "OPNsense",
         "Cloudflare Tunnel",
         "Twingate",
+        "WireGuard",
         "Zabbix"
       ],
       "link": "/infrastructure",
@@ -99,12 +100,12 @@
       "background_ja": "GitHub Pages から自宅サーバーへ移行し、ビルドツールから配信基盤まで自分で選定。軽量・高速を最優先にした構成で、コンテンツは JSON データ駆動・日英 i18n 対応。",
       "points": [
         "Sub-second builds with Vite+ (Vite 8 + Rolldown + Oxc)",
-        "Served by Bun + Hono behind Caddy + Anubis + Cloudflare Tunnel",
+        "Served by Bun + Hono behind Anubis + Cloudflare Tunnel",
         "Runs as a systemd service in an LXC container on Proxmox"
       ],
       "points_ja": [
         "Vite+（Vite 8 + Rolldown + Oxc）でサブ秒ビルド",
-        "Bun + Hono で配信し、Caddy + Anubis + Cloudflare Tunnel の多層構成で公開",
+        "Bun + Hono で配信し、Anubis + Cloudflare Tunnel を通して公開",
         "systemd サービス化して Proxmox 上の LXC で稼働"
       ],
       "tech": [

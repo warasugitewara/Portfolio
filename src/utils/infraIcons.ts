@@ -22,6 +22,8 @@ const ICONS: Record<string, string> = {
   video: "",
   chart: "",
   storage: "",
+  dashboard: "",
+  linux: "",
 };
 
 export const ICON_FALLBACK = "";

@@ -53,6 +53,7 @@
       "items": [
         "Proxmox VE",
         "Linux",
+        "Arch Linux / Hyprland",
         "Docker",
         "Cloudflare",
         "Neovim",
@@ -60,9 +61,10 @@
         "Nushell",
         "OPNsense",
         "Twingate",
+        "WireGuard",
+        "IPsec",
         "Zabbix",
         "Uptime Kuma",
-        "Caddy",
         "Samba",
         "chezmoi"
       ]

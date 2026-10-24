@@ -43,11 +43,11 @@ React 19 SPA を、**開発時は `vp dev`、本番時は Bun + Hono (`server.ts
 
 詳細は README の「🧰 既知の技術的負債（TODO）」を参照。要点:
 
-- **インフラ構成図の行は JSON から導出**: `src/pages/InfrastructurePage.tsx` は `public/data/infrastructure.json` の `nodes[*].workloads` から図の行（名前・ID・並び）を自動生成する。CT/VM を増減・改名しても図は自動追従する。**新規 CT を追加した場合のみ**、アイコンと短いキャプションを同ファイルの `DGM_META`（CT/VM ID キー）に追記すること（未登録なら 📦 と空キャプションにフォールバック）。なお SVG 内の凡例・ネットワーク図の文言は i18n JSON（`dgmLegend*` / `netSeg*` 等）に別管理なので、必要に応じてそちらも更新する。
-- `profile.json` の `stats` はハードコード数値。**CT/VM を増減したら Hero のスタッツも見直す**。
+- **インフラ構成図の行は JSON から導出**: `src/pages/InfrastructurePage.tsx` は `public/data/infrastructure.json` の `nodes[*].workloads` から図の行（名前・ID・並び）を自動生成する。CT/VM を増減・改名しても図は自動追従する。新規 CT は workload に `icon`（意味名）と `caption` / `caption_en` を持たせる。意味名→グリフの対応は `src/utils/infraIcons.ts`、使えるグリフはフォントサブセット（`public/fonts/subset-waras-console.py`）に含まれるものだけ（無いと豆腐になる）。凡例・構成メモは `infrastructure.json` の `diagram.legend` / `architecture_notes`、ネットワーク図の文言は i18n JSON（`net*` / `dgm*`）に別管理。
+- `profile.json` の `stats` は `derive` 付きのものだけ `infrastructure.json` から自動算出し、それ以外はハードコード。**開放ポート数のようなセキュリティ上の手掛かりは載せない**。
 
 ## デプロイ運用（非自明）
 
 **本番は自宅サーバーのみ**（GitHub Pages は不使用）:
-- **自宅サーバー**: Proxmox VE 上の `/opt/portfolio` に配置し、systemd `portfolio.service` として稼働。Caddy がリバースプロキシ、Cloudflare Tunnel 経由で **`portfolio.warasugi.com`**（メインドメイン）を配信。GitHub へは**このホストから push する**運用なので、リモートが常に最新とは限らない。本番反映は `git pull` → `npm ci` → `npm run build` → `systemctl restart portfolio.service`。
+- **自宅サーバー**: Proxmox VE 上の `/opt/portfolio` に配置し、systemd `portfolio.service` として稼働。Cloudflare Tunnel → Anubis → Hono（リバースプロキシは挟まない）の経路で **`portfolio.warasugi.com`**（メインドメイン）を配信。GitHub へは**このホストから push する**運用なので、リモートが常に最新とは限らない。本番反映は `git pull` → `npm ci` → `npm run build` → `systemctl restart portfolio.service`。
 - **snake SVG**: contribution snake はプロフィールリポジトリ（warasugitewara/warasugitewara）の raw URL を `Snake.tsx` が直接参照。本リポジトリでの生成・配信は廃止済み。

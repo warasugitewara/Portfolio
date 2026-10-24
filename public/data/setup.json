@@ -4,12 +4,12 @@
       {
         "label": "端末・シェル",
         "label_en": "Terminal & shell",
-        "items": ["WezTerm", "Nushell", "Starship", "Neovim (LazyVim)"]
+        "items": ["WezTerm", "Nushell", "Starship", "zellij", "Neovim (LazyVim)"]
       },
       {
         "label": "OS",
         "label_en": "OS",
-        "items": ["Windows 11", "Proxmox VE", "Debian 12 / 13", "Arch Linux"]
+        "items": ["Windows 11", "Proxmox VE", "Debian 12 / 13", "Arch Linux + Hyprland"]
       },
       {
         "label": "書く・記録する",
