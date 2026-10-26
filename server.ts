@@ -66,7 +66,9 @@ app.notFound(async (c) => {
   return c.text('Not Found', 404)
 })
 
+// Anubis（同一ホスト）からだけ受ける。LAN から Anubis を迂回して届かないよう loopback に限定
 export default {
   port: 3000,
+  hostname: '127.0.0.1',
   fetch: app.fetch,
 }

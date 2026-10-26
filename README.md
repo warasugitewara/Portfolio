@@ -45,16 +45,16 @@ CLI / ターミナル風デザインの個人ポートフォリオ。React 19 + 
 
 | コマンド | 説明 |
 |---|---|
-| `npm run dev` | 開発サーバー（Vite+, port 3000） |
-| `npm run build` | 型チェック＋本番ビルド（`tsc -b && vp build` → `dist/`） |
-| `npm run preview` | ビルド成果物のローカルプレビュー |
-| `npm run type-check` | 型チェックのみ（`tsc -b --noEmit`） |
-| `npm run lint` | Lint（`vp lint .`） |
-| `npm run start` | 本番配信（Bun + Hono, `server.ts`） |
+| `bun run dev` | 開発サーバー（Vite+, port 3000） |
+| `bun run build` | 型チェック＋本番ビルド（`tsc -b && vp build` → `dist/`） |
+| `bun run preview` | ビルド成果物のローカルプレビュー |
+| `bun run type-check` | 型チェックのみ（`tsc -b --noEmit`） |
+| `bun run lint` | Lint（`vp lint .`） |
+| `bun run start` | 本番配信（Bun + Hono, `server.ts`） |
 
 ```bash
-npm install      # 依存関係のインストール
-npm run dev      # 開発開始
+bun install      # 依存関係のインストール
+bun run dev      # 開発開始
 ```
 
 ## 🏗 アーキテクチャ
@@ -67,10 +67,10 @@ npm run dev      # 開発開始
 
 **本番は自宅サーバーのみ**（GitHub Pages は不使用）。
 
-- **サービス**: `portfolio.service`（systemd）— `bun run start` で Hono サーバーを起動（port 3000）
+- **サービス**: `portfolio.service`（systemd）— `bun run start` で Hono サーバーを起動（127.0.0.1:3000。Anubis からのみ受ける）
 - **公開経路**: Cloudflare Tunnel → Anubis（port 3001）→ Hono（port 3000）。リバースプロキシは挟まない
   - TLS は Cloudflare 側で終端。Anubis は `CF-Connecting-IP` を接続元 IP として読む
-- **反映手順**: `git pull` → `npm ci` → `npm run build` → `systemctl restart portfolio.service`
+- **反映手順**: `git pull` → `bun install --frozen-lockfile` → `bun run --bun build` → `systemctl restart portfolio.service`（本番に Node.js は入れない）
 - **Snake SVG**: contribution snake はプロフィールリポジトリ（warasugitewara/warasugitewara）で生成された SVG の raw URL を直接表示（本リポジトリでの生成は廃止）。
 
 ## 📝 コンテンツ更新
