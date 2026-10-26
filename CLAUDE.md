@@ -7,17 +7,17 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## コマンド
 
 ```bash
-npm run dev          # 開発サーバー (vp dev, port 3000)
-npm run build        # tsc + vp build → dist/
-npm run preview      # ビルド成果物のプレビュー (vp preview)
-npm run lint         # Lint (vp lint .)
-npm run type-check   # tsc --noEmit
-npm run start        # 本番サーバー (bun run server.ts, dist/ を配信)
+bun run dev          # 開発サーバー (vp dev, port 3000)
+bun run build        # tsc + vp build → dist/
+bun run preview      # ビルド成果物のプレビュー (vp preview)
+bun run lint         # Lint (vp lint .)
+bun run type-check   # tsc --noEmit
+bun run start        # 本番サーバー (bun run server.ts, dist/ を配信)
 ```
 
 - **ビルドツールは素の Vite ではなく `vite-plus`（`vp` コマンド）**。`package.json` の `overrides` で `vite` / `vitest` を `@voidzero-dev/vite-plus-*`（Vite 8 + Rolldown + Oxc）に差し替えている。CLI は `vp` を使う。
 - **Lint は ESLint ではなく oxlint ベース**。ルールは `vite.config.ts` の `lint` セクションにインラインで定義（`.eslintrc` は無い）。ステージ時 `src/**/*.{ts,tsx,js,jsx}` に `vp check --fix` が走る。
-- **パッケージマネージャは npm**（`package-lock.json`）だが、`bun.lock` も存在し本番起動は Bun。テストは vitest（`npm run test` = `vp test`）。純関数は `src/utils/*.test.ts` にソースと併置する。
+- **パッケージマネージャは Bun**（`bun.lock` のみ。`package-lock.json` は廃止）。本番には Node.js を入れないので、Node 前提のスクリプトは `bun run --bun` で動くこと。テストは vitest（`bun run test` = `vp test`）。純関数は `src/utils/*.test.ts` にソースと併置する。
 
 ## アーキテクチャ
 
@@ -49,5 +49,5 @@ React 19 SPA を、**開発時は `vp dev`、本番時は Bun + Hono (`server.ts
 ## デプロイ運用（非自明）
 
 **本番は自宅サーバーのみ**（GitHub Pages は不使用）:
-- **自宅サーバー**: Proxmox VE 上の `/opt/portfolio` に配置し、systemd `portfolio.service` として稼働。Cloudflare Tunnel → Anubis → Hono（リバースプロキシは挟まない）の経路で **`portfolio.warasugi.com`**（メインドメイン）を配信。GitHub へは**このホストから push する**運用なので、リモートが常に最新とは限らない。本番反映は `git pull` → `npm ci` → `npm run build` → `systemctl restart portfolio.service`。
+- **自宅サーバー**: Proxmox VE 上の `/opt/portfolio` に配置し、systemd `portfolio.service` として稼働。Cloudflare Tunnel → Anubis → Hono（リバースプロキシは挟まない）の経路で **`portfolio.warasugi.com`**（メインドメイン）を配信。GitHub へは**このホストから push する**運用なので、リモートが常に最新とは限らない。本番反映は `git pull` → `bun install --frozen-lockfile` → `bun run --bun build` → `systemctl restart portfolio.service`。Hono は `127.0.0.1:3000` だけで待ち受ける。
 - **snake SVG**: contribution snake はプロフィールリポジトリ（warasugitewara/warasugitewara）の raw URL を `Snake.tsx` が直接参照。本リポジトリでの生成・配信は廃止済み。
